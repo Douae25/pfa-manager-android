@@ -11,7 +11,9 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.textfield.TextInputEditText;
 import ma.ensate.pfa_manager.R;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
+import ma.ensate.pfa_manager.repository.UserRepository;
 import ma.ensate.pfa_manager.viewmodel.LoginViewModel;
+import ma.ensate.pfa_manager.viewmodel.LoginViewModelFactory;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModelFactory;
 
@@ -59,7 +61,9 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void setupLoginForm() {
-        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        UserRepository userRepository = new UserRepository(getApplication());
+        LoginViewModelFactory loginFactory = new LoginViewModelFactory(userRepository);
+        loginViewModel = new ViewModelProvider(this, loginFactory).get(LoginViewModel.class);
 
         TextInputEditText emailInput = findViewById(R.id.emailInput);
         TextInputEditText passwordInput = findViewById(R.id.passwordInput);
