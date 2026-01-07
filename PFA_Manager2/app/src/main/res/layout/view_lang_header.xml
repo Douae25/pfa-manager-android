@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingEnd="8dp"
+    android:layout_marginBottom="16dp">
+
+    <!-- Flèche retour (visible uniquement sur certaines pages) -->
+    <ImageView
+        android:id="@+id/backArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_back_arrow"
+        android:padding="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Retour"
+        android:visibility="gone" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/langFr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lang_fr"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="#1976D2"
+        android:padding="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
+    <TextView
+        android:id="@+id/langEn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lang_en"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="#1976D2"
+        android:padding="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+</LinearLayout>

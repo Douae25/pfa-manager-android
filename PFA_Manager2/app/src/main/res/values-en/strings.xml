@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PFA Manager</string>
+    <string name="login_title">Login</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="btn_login">Sign In</string>
+    <string name="error_empty">Please fill all fields</string>
+
+    <string name="home_title">PFA Management - ENSA Tetouan</string>
+    <string name="home_subtitle">Welcome to the PFA management app</string>
+    <string name="btn_home_connect">Sign In</string>
+
+    <!-- Landing texts -->
+    <string name="landing_title">PFA Manager</string>
+    <string name="landing_subtitle">National School of Applied Sciences</string>
+    <string name="landing_city">Tetouan</string>
+    <string name="landing_description">Manage your final-year projects efficiently</string>
+    <string name="landing_login">Sign In</string>
+    <string name="landing_footer">© 2026 ENSA Tetouan</string>
+
+    <!-- Language toggle -->
+    <string name="lang_fr">FR</string>
+    <string name="lang_en">EN</string>
+</resources>
