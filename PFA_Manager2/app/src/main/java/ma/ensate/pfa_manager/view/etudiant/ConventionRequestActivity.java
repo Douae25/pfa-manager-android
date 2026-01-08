@@ -210,10 +210,10 @@ public class ConventionRequestActivity extends AppCompatActivity {
                 // Le dossier existe déjà, mettre à jour son statut et créer la convention
                 existingDossier.setCurrent_status(PFAStatus.CONVENTION_PENDING);
                 existingDossier.setUpdated_at(System.currentTimeMillis());
-                pfaDossierRepository.update(existingDossier);
-                
-                createConvention(existingDossier.getPfa_id(), companyName, companyAddress, 
-                    supervisorName, supervisorEmail);
+                pfaDossierRepository.update(existingDossier, () -> {
+                    createConvention(existingDossier.getPfa_id(), companyName, companyAddress, 
+                        supervisorName, supervisorEmail);
+                });
             } else {
                 // Créer d'abord le dossier PFA avec statut CONVENTION_PENDING
                 PFADossier pfaDossier = new PFADossier();

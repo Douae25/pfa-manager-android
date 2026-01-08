@@ -99,6 +99,7 @@
 
     <!-- Note Fragment -->
     <string name="final_note">Final grade</string>
+    <string name="not_evaluated">Not evaluated</string>
 
     <!-- File Upload -->
     <string name="hint_file_name">File name</string>
@@ -108,6 +109,8 @@
     <string name="file_selected">Selected file: %s</string>
     <string name="error_select_file">Please select a file</string>
     <string name="error_no_convention">No convention found</string>
+    <string name="error_no_pfa_dossier">No PFA file found</string>
+    <string name="error_upload_failed">Upload failed</string>
     <string name="convention_uploaded_success">Signed convention uploaded successfully!</string>
     <string name="file_already_uploaded">File already uploaded: %s</string>
     <string name="btn_view_uploaded_file">Download signed convention</string>
