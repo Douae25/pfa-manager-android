@@ -1,10 +1,18 @@
 package ma.ensate.pfa_manager.utils;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Environment;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
+import androidx.core.content.FileProvider;
+import android.graphics.pdf.PdfDocument;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -14,22 +22,117 @@ public class ConventionPdfGenerator {
 
     public static void generateAndDownloadPdf(Context context, Convention convention) {
         try {
-            String fileName = "Convention_" + convention.getPfa_id() + "_" + System.currentTimeMillis() + ".html";
-            File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            
-            if (!downloadsDir.exists()) {
+            String fileName = "Convention_" + convention.getPfa_id() + "_" + System.currentTimeMillis() + ".pdf";
+
+            // Stocker dans le dossier d'app (pas de permission requise)
+            File downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+            if (downloadsDir != null && !downloadsDir.exists()) {
                 downloadsDir.mkdirs();
             }
-            
-            File htmlFile = new File(downloadsDir, fileName);
-            FileWriter writer = new FileWriter(htmlFile);
-            writer.write(generateHtmlContent(convention));
-            writer.close();
-            
-            Toast.makeText(context, "Convention générée: " + htmlFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+
+            File pdfFile = new File(downloadsDir, fileName);
+            createPdf(convention, pdfFile);
+
+            Toast.makeText(context, "Convention générée: " + pdfFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+
+            // Ouvrir automatiquement le fichier généré
+            openFile(context, pdfFile);
         } catch (Exception e) {
             Toast.makeText(context, "Erreur: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
+        }
+    }
+
+    private static void createPdf(Convention convention, File pdfFile) throws Exception {
+        PdfDocument document = new PdfDocument();
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create(); // A4 at 72dpi
+        PdfDocument.Page page = document.startPage(pageInfo);
+
+        Canvas canvas = page.getCanvas();
+        float centerX = pageInfo.getPageWidth() / 2f;
+        int y = 60;
+        int line = 26;
+
+        Paint titlePaint = new Paint();
+        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        titlePaint.setTextSize(18f);
+        titlePaint.setTextAlign(Paint.Align.CENTER);
+
+        Paint sectionPaint = new Paint();
+        sectionPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        sectionPaint.setTextSize(14f);
+
+        Paint labelPaint = new Paint();
+        labelPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        labelPaint.setTextSize(12f);
+
+        Paint valuePaint = new Paint();
+        valuePaint.setTextSize(12f);
+
+        // Title
+        canvas.drawText("CONVENTION DE STAGE", centerX, y, titlePaint);
+        y += 30;
+
+        // Dates
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String startDate = dateFormat.format(new Date(convention.getStart_date()));
+        String endDate = dateFormat.format(new Date(convention.getEnd_date()));
+
+        // Entreprise
+        y += 20;
+        canvas.drawText("Informations de l'entreprise", 40, y, sectionPaint);
+        y += line;
+        drawLine(canvas, labelPaint, valuePaint, "Nom:", safe(convention.getCompany_name()), y); y += line;
+        drawLine(canvas, labelPaint, valuePaint, "Adresse:", safe(convention.getCompany_address()), y); y += line;
+
+        // Superviseur
+        y += 16;
+        canvas.drawText("Superviseur", 40, y, sectionPaint);
+        y += line;
+        drawLine(canvas, labelPaint, valuePaint, "Nom:", safe(convention.getCompany_supervisor_name()), y); y += line;
+        drawLine(canvas, labelPaint, valuePaint, "Email:", safe(convention.getCompany_supervisor_email()), y); y += line;
+
+        // Dates de stage
+        y += 16;
+        canvas.drawText("Dates de stage", 40, y, sectionPaint);
+        y += line;
+        drawLine(canvas, labelPaint, valuePaint, "Du:", startDate, y); y += line;
+        drawLine(canvas, labelPaint, valuePaint, "Au:", endDate, y); y += line;
+
+        // Footer
+        y += 30;
+        canvas.drawText("Cette convention a été générée automatiquement par le système PFA.", 40, y, valuePaint);
+        y += line;
+        canvas.drawText("Signez puis déposez la version scannée dans votre espace étudiant.", 40, y, valuePaint);
+
+        document.finishPage(page);
+
+        FileOutputStream fos = new FileOutputStream(pdfFile);
+        document.writeTo(fos);
+        fos.close();
+        document.close();
+    }
+
+    private static void drawLine(Canvas canvas, Paint label, Paint value, String l, String v, int y) {
+        canvas.drawText(l, 40, y, label);
+        canvas.drawText(v, 150, y, value);
+    }
+
+    private static String safe(String s) {
+        return s == null ? "N/A" : s;
+    }
+
+    private static void openFile(Context context, File file) {
+        try {
+            Uri uri = FileProvider.getUriForFile(context, "ma.ensate.pfa_manager.fileprovider", file);
+            String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(uri, mime != null ? mime : "application/pdf");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(context, "Impossible d'ouvrir le PDF", Toast.LENGTH_SHORT).show();
         }
     }
 

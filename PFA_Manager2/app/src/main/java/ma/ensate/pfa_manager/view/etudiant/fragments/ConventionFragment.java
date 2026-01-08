@@ -132,22 +132,25 @@ public class ConventionFragment extends Fragment {
                     android.R.color.holo_orange_dark));
                 cardViewConvention.setEnabled(false);
                 cardUploadSigned.setEnabled(false);
-            } else if (currentConvention != null && currentConvention.getState() == ConventionState.VALIDATED) {
-                // Convention validée et prête à télécharger
+            } else if (currentConvention != null && (currentConvention.getState() == ConventionState.VALIDATED
+                    || currentConvention.getState() == ConventionState.GENERATED
+                    || currentConvention.getState() == ConventionState.UPLOADED)) {
+                // Convention générée / uploadée / validée : téléchargement permis (upload signé seulement si validée)
                 tvConventionStatus.setVisibility(View.VISIBLE);
                 tvConventionStatus.setText(R.string.convention_validated);
                 tvConventionStatus.setTextColor(ContextCompat.getColor(requireActivity(), 
                     android.R.color.holo_green_dark));
                 cardViewConvention.setEnabled(true);
+                // Upload signé actif pour générée/uploadée/validée
                 cardUploadSigned.setEnabled(true);
             } else if (currentConvention != null && currentConvention.getState() == ConventionState.REJECTED) {
-                // Demande refusée
+                // Demande refusée mais téléchargement et upload autorisés
                 tvConventionStatus.setVisibility(View.VISIBLE);
                 tvConventionStatus.setText(R.string.convention_rejected);
                 tvConventionStatus.setTextColor(ContextCompat.getColor(requireActivity(), 
                     android.R.color.holo_red_dark));
-                cardViewConvention.setEnabled(false);
-                cardUploadSigned.setEnabled(false);
+                cardViewConvention.setEnabled(true);
+                cardUploadSigned.setEnabled(true);
             } else {
                 // Pas de message d'indisponibilité en statut; cacher le label
                 tvConventionStatus.setVisibility(View.GONE);
@@ -173,24 +176,13 @@ public class ConventionFragment extends Fragment {
                 return;
             }
 
-            // Si la convention est validée, autoriser le téléchargement
-            if (currentConvention != null && currentConvention.getState() == ConventionState.VALIDATED) {
-                // Générer et télécharger le PDF
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (ContextCompat.checkSelfPermission(requireActivity(), 
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) 
-                        != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(requireActivity(), 
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 
-                            WRITE_PERMISSION_REQUEST);
-                    } else {
-                        generateAndDownloadPdf();
-                    }
-                } else {
-                    generateAndDownloadPdf();
-                }
-            } else if (currentConvention != null && currentConvention.getState() == ConventionState.REJECTED) {
-                Toast.makeText(requireActivity(), R.string.convention_rejected_message, Toast.LENGTH_LONG).show();
+            // Si la convention est générée / uploadée / validée / rejetée, autoriser le téléchargement
+            if (currentConvention != null && (currentConvention.getState() == ConventionState.VALIDATED
+                    || currentConvention.getState() == ConventionState.GENERATED
+                    || currentConvention.getState() == ConventionState.UPLOADED
+                    || currentConvention.getState() == ConventionState.REJECTED)) {
+                // Générer et sauvegarder (pas de permission requise : stockage app)
+                generateAndDownloadPdf();
             } else {
                 // Dans tous les autres cas, afficher que la demande n'a pas encore été traitée
                 Toast.makeText(requireActivity(), R.string.convention_pending_message, Toast.LENGTH_LONG).show();
