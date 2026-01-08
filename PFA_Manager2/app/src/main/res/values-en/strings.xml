@@ -103,12 +103,15 @@
     <!-- File Upload -->
     <string name="hint_file_name">File name</string>
     <string name="btn_select_file">Select file</string>
-    <string name="btn_upload">Upload</string>
+    <string name="btn_upload">Submit</string>
     <string name="no_file_selected">No file selected</string>
     <string name="file_selected">Selected file: %s</string>
     <string name="error_select_file">Please select a file</string>
     <string name="error_no_convention">No convention found</string>
     <string name="convention_uploaded_success">Signed convention uploaded successfully!</string>
+    <string name="file_already_uploaded">File already uploaded: %s</string>
+    <string name="btn_view_uploaded_file">Download signed convention</string>
+    <string name="error_file_not_found">File not found</string>
     <string name="deliverable_uploaded_success">Deliverable uploaded successfully!</string>
     
     <!-- Upload Activity Titles -->

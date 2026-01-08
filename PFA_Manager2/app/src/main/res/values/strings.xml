@@ -103,12 +103,15 @@
     <!-- File Upload -->
     <string name="hint_file_name">Nom du fichier</string>
     <string name="btn_select_file">Sélectionner un fichier</string>
-    <string name="btn_upload">Télécharger</string>
+    <string name="btn_upload">Déposer</string>
     <string name="no_file_selected">Aucun fichier sélectionné</string>
     <string name="file_selected">Fichier sélectionné : %s</string>
     <string name="error_select_file">Veuillez sélectionner un fichier</string>
     <string name="error_no_convention">Aucune convention trouvée</string>
     <string name="convention_uploaded_success">Convention signée téléchargée avec succès !</string>
+    <string name="file_already_uploaded">Fichier déjà déposé: %s</string>
+    <string name="btn_view_uploaded_file">Télécharger la convention signée</string>
+    <string name="error_file_not_found">Fichier introuvable</string>
     <string name="deliverable_uploaded_success">Livrable téléchargé avec succès !</string>
     
     <!-- Upload Activity Titles -->

@@ -43,4 +43,14 @@ public class RoleConverter {
     public SoutenanceStatus toSoutenanceStatus(String statusString) {
         return statusString == null ? null : SoutenanceStatus.valueOf(statusString);
     }
+    
+    @TypeConverter
+    public String fromDeliverableType(DeliverableType type) {
+        return type == null ? null : type.name();
+    }
+    
+    @TypeConverter
+    public DeliverableType toDeliverableType(String typeString) {
+        return typeString == null ? null : DeliverableType.valueOf(typeString);
+    }
 }

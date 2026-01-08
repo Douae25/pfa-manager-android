@@ -207,16 +207,20 @@ public class ConventionRequestActivity extends AppCompatActivity {
         // Vérifier si l'étudiant a déjà un dossier PFA
         pfaDossierRepository.getByStudentId(currentUser.getUser_id(), existingDossier -> {
             if (existingDossier != null) {
-                // Le dossier existe déjà, créer directement la convention
+                // Le dossier existe déjà, mettre à jour son statut et créer la convention
+                existingDossier.setCurrent_status(PFAStatus.CONVENTION_PENDING);
+                existingDossier.setUpdated_at(System.currentTimeMillis());
+                pfaDossierRepository.update(existingDossier);
+                
                 createConvention(existingDossier.getPfa_id(), companyName, companyAddress, 
                     supervisorName, supervisorEmail);
             } else {
-                // Créer d'abord le dossier PFA
+                // Créer d'abord le dossier PFA avec statut CONVENTION_PENDING
                 PFADossier pfaDossier = new PFADossier();
                 pfaDossier.setStudent_id(currentUser.getUser_id());
                 pfaDossier.setTitle(projectTitle.isEmpty() ? null : projectTitle);
                 pfaDossier.setDescription(projectDescription.isEmpty() ? null : projectDescription);
-                pfaDossier.setCurrent_status(PFAStatus.IN_PROGRESS);
+                pfaDossier.setCurrent_status(PFAStatus.CONVENTION_PENDING);
                 pfaDossier.setUpdated_at(System.currentTimeMillis());
 
                 // Insérer le dossier PFA
@@ -240,7 +244,7 @@ public class ConventionRequestActivity extends AppCompatActivity {
         convention.setCompany_supervisor_email(supervisorEmail);
         convention.setStart_date(selectedStartDate.getTimeInMillis());
         convention.setEnd_date(selectedEndDate.getTimeInMillis());
-        convention.setState(ConventionState.GENERATED);
+        convention.setState(ConventionState.PENDING);
         convention.setIs_validated(false);
 
         // Sauvegarder la convention dans la base de données

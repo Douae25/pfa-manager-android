@@ -77,32 +77,34 @@ public class MainActivity extends AppCompatActivity {
         Button loginBtn = findViewById(R.id.loginBtn);
 
         loginBtn.setOnClickListener(v -> {
-            String email = emailInput.getText().toString();
-            String password = passwordInput.getText().toString();
+            String email = emailInput.getText().toString().trim();
+            String password = passwordInput.getText().toString().trim();
+            
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
             loginViewModel.login(email, password);
         });
 
+        // Observer unique pour éviter les doublons
         loginViewModel.getLoginResult().observe(this, result -> {
             if ("Success".equals(result)) {
                 Toast.makeText(this, "Bienvenue !", Toast.LENGTH_SHORT).show();
-                // Rediriger selon le rôle de l'utilisateur
-                redirectBasedOnRole();
+                // Observer du user connecté
+                loginViewModel.getLoggedInUser().observe(this, user -> {
+                    if (user != null) {
+                        if (user.getRole() == Role.STUDENT) {
+                            Intent intent = new Intent(MainActivity.this, StudentSpaceActivity.class);
+                            intent.putExtra("user", user);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+                });
             } else {
                 Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-    
-    private void redirectBasedOnRole() {
-        loginViewModel.getLoggedInUser().observe(this, user -> {
-            if (user != null) {
-                if (user.getRole() == Role.STUDENT) {
-                    // Redirection vers l'espace étudiant
-                    Intent intent = new Intent(MainActivity.this, StudentSpaceActivity.class);
-                    intent.putExtra("user", user);
-                    startActivity(intent);
-                    finish();
-                } 
             }
         });
     }

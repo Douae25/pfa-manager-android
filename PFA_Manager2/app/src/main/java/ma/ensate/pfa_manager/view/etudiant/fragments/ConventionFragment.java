@@ -191,7 +191,8 @@ public class ConventionFragment extends Fragment {
         
         // Télécharger la convention signée
         cardUploadSigned.setOnClickListener(v -> {
-            if (currentConvention == null || currentConvention.getState() != ConventionState.VALIDATED) {
+            // Empêcher l'accès seulement si la convention est en état PENDING
+            if (currentConvention == null || currentConvention.getState() == ConventionState.PENDING) {
                 Toast.makeText(requireActivity(), R.string.cannot_upload_unsigned_convention, Toast.LENGTH_SHORT).show();
                 return;
             }
