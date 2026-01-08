@@ -38,6 +38,15 @@ public class UserRepository {
         executorService.execute(() -> userDao.delete(user));
     }
     
+    public void getUserById(Long userId, OnUserFetchedListener listener) {
+        executorService.execute(() -> {
+            User user = userDao.getUserById(userId);
+            if (listener != null) {
+                listener.onUserFetched(user);
+            }
+        });
+    }
+    
     public void getUserByEmail(String email, OnUserFetchedListener listener) {
         executorService.execute(() -> {
             User user = userDao.getUserByEmail(email);

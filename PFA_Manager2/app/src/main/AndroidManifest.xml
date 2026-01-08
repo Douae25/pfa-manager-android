@@ -25,6 +25,22 @@
         android:name=".view.MainActivity"
         android:exported="false" />
 
+    <activity
+        android:name=".view.etudiant.StudentSpaceActivity"
+        android:exported="false" />
+
+    <activity
+        android:name=".view.etudiant.ConventionRequestActivity"
+        android:exported="false" />
+
+    <activity
+        android:name=".view.etudiant.UploadSignedConventionActivity"
+        android:exported="false" />
+
+    <activity
+        android:name=".view.etudiant.UploadDeliverablesActivity"
+        android:exported="false" />
+
 </application>
 
 </manifest>
