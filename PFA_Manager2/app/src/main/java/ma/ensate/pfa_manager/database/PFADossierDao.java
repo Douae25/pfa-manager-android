@@ -1,5 +1,6 @@
 package ma.ensate.pfa_manager.database;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -35,4 +36,10 @@ public interface PFADossierDao {
     
     @Query("SELECT * FROM pfa_dossiers WHERE current_status = :status")
     List<PFADossier> getByStatus(PFAStatus status);
+
+    @Query("SELECT COUNT(*) FROM pfa_dossiers WHERE supervisor_id = :supervisorId")
+    LiveData<Integer> countPFAsBySupervisor(Long supervisorId);
+
+    @Query("SELECT * FROM pfa_dossiers WHERE supervisor_id = :supervisorId")
+    LiveData<List<PFADossier>> getPFAsBySupervisor(Long supervisorId);
 }

@@ -1,5 +1,6 @@
 package ma.ensate.pfa_manager.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,11 +13,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import ma.ensate.pfa_manager.R;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
+import ma.ensate.pfa_manager.util.TestDataHelper;
 import ma.ensate.pfa_manager.viewmodel.LoginViewModel;
 import ma.ensate.pfa_manager.viewmodel.LoginViewModelFactory;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModelFactory;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,17 +29,21 @@ public class MainActivity extends AppCompatActivity {
         LanguageRepository languageRepository = new LanguageRepository(this);
         SettingsViewModelFactory factory = new SettingsViewModelFactory(languageRepository);
         settingsViewModel = new ViewModelProvider(this, factory).get(SettingsViewModel.class);
-        
+
         settingsViewModel.applySavedLanguage();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // ⚠️ IMPORTANT : Insérer les données de test UNE SEULE FOIS
+        // Décommenter cette ligne UNIQUEMENT lors du premier lancement
+        TestDataHelper.insertTestData(this);
+
         setupLanguageToggle();
         setupBackNavigation();
         setupLoginForm();
     }
-    
+
     private void setupLanguageToggle() {
         TextView langFr = findViewById(R.id.langFr);
         TextView langEn = findViewById(R.id.langEn);
@@ -51,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             recreate();
         });
     }
-    
+
     private void setupBackNavigation() {
         ImageView backArrow = findViewById(R.id.backArrow);
         if (backArrow != null) {
@@ -59,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             backArrow.setOnClickListener(v -> finish());
         }
     }
-    
+
     private void setupLoginForm() {
         UserRepository userRepository = new UserRepository(getApplication());
         LoginViewModelFactory loginFactory = new LoginViewModelFactory(userRepository);
@@ -70,14 +75,24 @@ public class MainActivity extends AppCompatActivity {
         Button loginBtn = findViewById(R.id.loginBtn);
 
         loginBtn.setOnClickListener(v -> {
-            String email = emailInput.getText().toString();
-            String password = passwordInput.getText().toString();
+            String email = emailInput.getText().toString().trim();
+            String password = passwordInput.getText().toString().trim();
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             loginViewModel.login(email, password);
         });
 
         loginViewModel.getLoginResult().observe(this, result -> {
             if ("Success".equals(result)) {
                 Toast.makeText(this, "Bienvenue !", Toast.LENGTH_SHORT).show();
+                // TODO: Naviguer vers le Dashboard
+                Intent intent = new Intent(this, EncadrantDashboardActivity.class);
+                startActivity(intent);
+                finish();
             } else {
                 Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
             }

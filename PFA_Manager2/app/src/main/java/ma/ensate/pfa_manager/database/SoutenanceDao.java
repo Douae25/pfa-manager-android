@@ -1,5 +1,6 @@
 package ma.ensate.pfa_manager.database;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -32,4 +33,20 @@ public interface SoutenanceDao {
     
     @Query("SELECT * FROM soutenances")
     List<Soutenance> getAll();
+
+    @Query("SELECT COUNT(*) FROM soutenances s " +
+            "INNER JOIN pfa_dossiers p ON s.pfa_id = p.pfa_id " +
+            "WHERE p.supervisor_id = :supervisorId AND s.status = 'PLANNED'")
+    LiveData<Integer> countPlannedSoutenancesBySupervisor(Long supervisorId);
+
+    @Query("SELECT s.* FROM soutenances s " +
+            "INNER JOIN pfa_dossiers p ON s.pfa_id = p.pfa_id " +
+            "WHERE p.supervisor_id = :supervisorId AND s.status = 'PLANNED' " +
+            "ORDER BY s.date_soutenance ASC LIMIT 3")
+    LiveData<List<Soutenance>> getUpcomingSoutenances(Long supervisorId);
+
+    @Query("SELECT COUNT(*) FROM conventions c " +
+            "INNER JOIN pfa_dossiers p ON c.pfa_id = p.pfa_id " +
+            "WHERE p.supervisor_id = :supervisorId AND c.state = 'UPLOADED'")
+    LiveData<Integer> countConventionsToValidate(Long supervisorId);
 }

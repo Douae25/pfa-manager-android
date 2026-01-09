@@ -1,6 +1,7 @@
 package ma.ensate.pfa_manager.repository;
 
 import android.app.Application;
+import androidx.lifecycle.LiveData;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -9,17 +10,18 @@ import ma.ensate.pfa_manager.database.UserDao;
 import ma.ensate.pfa_manager.model.User;
 
 public class UserRepository {
-    
+
     private UserDao userDao;
     private ExecutorService executorService;
-    
+
     public UserRepository(Application application) {
         AppDatabase database = AppDatabase.getInstance(application);
         userDao = database.userDao();
         executorService = Executors.newSingleThreadExecutor();
     }
-    
-    // Insert User
+
+    // ========== MÉTHODES ASYNCHRONES (avec Callbacks) ==========
+
     public void insert(User user, OnUserInsertedListener listener) {
         executorService.execute(() -> {
             long id = userDao.insert(user);
@@ -29,33 +31,35 @@ public class UserRepository {
             }
         });
     }
-    
+
     public void update(User user) {
         executorService.execute(() -> userDao.update(user));
     }
-    
+
     public void delete(User user) {
         executorService.execute(() -> userDao.delete(user));
     }
-    
+
+    // ✅ CORRIGÉ : Utiliser getUserByEmailSync() pour opération synchrone
     public void getUserByEmail(String email, OnUserFetchedListener listener) {
         executorService.execute(() -> {
-            User user = userDao.getUserByEmail(email);
+            User user = userDao.getUserByEmailSync(email);  // ✅ Méthode SYNC
             if (listener != null) {
                 listener.onUserFetched(user);
             }
         });
     }
-    
+
+    // ✅ CORRIGÉ : Utiliser login() qui est déjà synchrone
     public void login(String email, String password, OnUserFetchedListener listener) {
         executorService.execute(() -> {
-            User user = userDao.login(email, password);
+            User user = userDao.login(email, password);  // ✅ Déjà synchrone
             if (listener != null) {
                 listener.onUserFetched(user);
             }
         });
     }
-    
+
     public void getAllUsers(OnUsersListFetchedListener listener) {
         executorService.execute(() -> {
             List<User> users = userDao.getAllUsers();
@@ -64,15 +68,28 @@ public class UserRepository {
             }
         });
     }
-    
+
+    // ========== MÉTHODES LIVEDATA (pour observation UI) ==========
+
+    // Retourne LiveData pour observer les changements en temps réel
+    public LiveData<User> getUserByIdLiveData(Long userId) {
+        return userDao.getUserById(userId);
+    }
+
+    public LiveData<User> getUserByEmailLiveData(String email) {
+        return userDao.getUserByEmail(email);
+    }
+
+    // ========== INTERFACES CALLBACKS ==========
+
     public interface OnUserInsertedListener {
         void onUserInserted(User user);
     }
-    
+
     public interface OnUserFetchedListener {
         void onUserFetched(User user);
     }
-    
+
     public interface OnUsersListFetchedListener {
         void onUsersListFetched(List<User> users);
     }
