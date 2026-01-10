@@ -37,9 +37,12 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation("com.google.code.gson:gson:2.10.1")
     
     // Room Database
     implementation(libs.room.runtime)
+    implementation(libs.recyclerview)
+    implementation(libs.preference)
     annotationProcessor(libs.room.compiler)
     
     testImplementation(libs.junit)

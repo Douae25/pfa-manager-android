@@ -25,6 +25,14 @@
         android:name=".view.MainActivity"
         android:exported="false" />
 
+    <activity
+        android:name=".view.AdminActivity"
+        android:exported="false" />
+
+    <activity
+        android:name=".view.ConventionListActivity"
+        android:exported="false" />
+
 </application>
 
 </manifest>
