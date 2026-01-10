@@ -11,9 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.textfield.TextInputEditText;
 import ma.ensate.pfa_manager.R;
+import ma.ensate.pfa_manager.model.PFADossier;
+import ma.ensate.pfa_manager.model.PFAStatus;
 import ma.ensate.pfa_manager.model.Role;
 import ma.ensate.pfa_manager.model.User;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
+import ma.ensate.pfa_manager.repository.PFADossierRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
 import ma.ensate.pfa_manager.view.etudiant.StudentSpaceActivity;
 import ma.ensate.pfa_manager.viewmodel.LoginViewModel;
@@ -111,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
     
     private void insertTestUserIfNeeded() {
         UserRepository userRepository = new UserRepository(getApplication());
+        PFADossierRepository pfaDossierRepository = new PFADossierRepository(getApplication());
         
         // Vérifier si l'utilisateur existe déjà
         userRepository.getUserByEmail("student@ensa.ma", user -> {
@@ -127,9 +131,19 @@ public class MainActivity extends AppCompatActivity {
                 
                 // Insérer dans la base de données
                 userRepository.insert(testUser, insertedUser -> {
-                    runOnUiThread(() -> 
-                        Toast.makeText(this, "Utilisateur de test créé: student@ensa.ma / student123", Toast.LENGTH_LONG).show()
-                    );
+                    // Créer un PFADossier pour l'utilisateur
+                    PFADossier pfaDossier = new PFADossier();
+                    pfaDossier.setStudent_id(insertedUser.getUser_id());
+                    pfaDossier.setTitle("Test PFA Project");
+                    pfaDossier.setDescription("Test project for student");
+                    pfaDossier.setCurrent_status(PFAStatus.ASSIGNED);
+                    pfaDossier.setUpdated_at(System.currentTimeMillis());
+                    
+                    pfaDossierRepository.insert(pfaDossier, createdDossier -> {
+                        runOnUiThread(() -> 
+                            Toast.makeText(this, "Utilisateur de test créé: student@ensa.ma / student123", Toast.LENGTH_LONG).show()
+                        );
+                    });
                 });
             }
         });

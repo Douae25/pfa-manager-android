@@ -40,51 +40,218 @@
     </LinearLayout>
 
     <!-- Content -->
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_weight="1">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/upload_deliverables_info"
-            android:textSize="16sp"
-            android:textColor="#666666"
-            android:layout_marginBottom="24dp" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- Files List -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewFiles"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/upload_deliverables_info"
+                android:textSize="16sp"
+                android:textColor="#666666"
+                android:layout_marginBottom="24dp" />
 
-        <TextView
-            android:id="@+id/tvEmptyState"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:text="@string/no_files_added"
-            android:textColor="#999999"
-            android:textSize="14sp"
-            android:gravity="center"
-            android:layout_marginBottom="16dp" />
+            <!-- Rapport d'Avancement Section (Before Soutenance) -->
+            <LinearLayout
+                android:id="@+id/sectionRapportAvancement"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginBottom="20dp">
 
-        <!-- Button Add File -->
-        <Button
-            android:id="@+id/btnAddFile"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="@string/btn_add_file"
-            android:textSize="16sp"
-            android:textColor="@android:color/white"
-            android:backgroundTint="#FFA500"
-            android:layout_marginBottom="12dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/deliverable_rapport_avancement"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#0D47A1"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- RecyclerView for multiple rapport d'avancement files -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewRapportAvancement"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvEmptyRapportAvancement"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_files_added"
+                    android:textColor="#999999"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Button Add Rapport d'Avancement -->
+                <Button
+                    android:id="@+id/btnAddRapportAvancement"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:text="@string/btn_add_file"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/white"
+                    android:backgroundTint="#FFA500" />
+            </LinearLayout>
+
+            <!-- Présentation Section (Before Soutenance) -->
+            <LinearLayout
+                android:id="@+id/sectionPresentation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginBottom="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/deliverable_presentation"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#0D47A1"
+                    android:layout_marginBottom="12dp" />
+
+                <FrameLayout
+                    android:id="@+id/presentationContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+
+                    <Button
+                        android:id="@+id/btnAddPresentation"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:text="@string/btn_add_file"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/white"
+                        android:backgroundTint="#FFA500" />
+
+                    <TextView
+                        android:id="@+id/tvPresentationName"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:text="@string/no_file_selected"
+                        android:textColor="#999999"
+                        android:textSize="14sp"
+                        android:gravity="center_vertical|start"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:visibility="gone"
+                        android:background="@android:color/white" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:id="@+id/presentationControls"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    android:gravity="end"
+                    android:spacing="8dp">
+
+                    <Button
+                        android:id="@+id/btnRemovePresentation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="@string/btn_remove"
+                        android:textSize="12sp"
+                        android:textColor="@android:color/white"
+                        android:backgroundTint="#D32F2F"
+                        android:layout_marginEnd="8dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Rapport Final Section (After Soutenance) -->
+            <LinearLayout
+                android:id="@+id/sectionRapportFinal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginBottom="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/deliverable_rapport_final"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#0D47A1"
+                    android:layout_marginBottom="12dp" />
+
+                <FrameLayout
+                    android:id="@+id/rapportFinalContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+
+                    <Button
+                        android:id="@+id/btnAddRapportFinal"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:text="@string/btn_add_file"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/white"
+                        android:backgroundTint="#FFA500" />
+
+                    <TextView
+                        android:id="@+id/tvRapportFinalName"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:text="@string/no_file_selected"
+                        android:textColor="#999999"
+                        android:textSize="14sp"
+                        android:gravity="center_vertical|start"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:visibility="gone"
+                        android:background="@android:color/white" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:id="@+id/rapportFinalControls"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    android:gravity="end"
+                    android:spacing="8dp">
+
+                    <Button
+                        android:id="@+id/btnRemoveRapportFinal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="@string/btn_remove"
+                        android:textSize="12sp"
+                        android:textColor="@android:color/white"
+                        android:backgroundTint="#D32F2F"
+                        android:layout_marginEnd="8dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@android:color/white"
+        android:elevation="4dp">
 
         <!-- Button Upload All -->
         <Button
@@ -95,7 +262,7 @@
             android:textSize="16sp"
             android:textColor="@android:color/white"
             android:backgroundTint="#1976D2" />
-
     </LinearLayout>
 
 </LinearLayout>
+

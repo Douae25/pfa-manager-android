@@ -90,6 +90,11 @@
     <string name="card_upload_after">Livrables après soutenance</string>
     <string name="card_upload_after_desc">Rapport final corrigé</string>
 
+    <!-- Deliverable Types -->
+    <string name="deliverable_rapport_avancement">Rapport d\'avancement</string>
+    <string name="deliverable_presentation">Présentation</string>
+    <string name="deliverable_rapport_final">Rapport final</string>
+
     <!-- Soutenance Fragment -->
     <string name="soutenance_info_title">Informations de soutenance</string>
     <string name="soutenance_date">Date :</string>
@@ -105,6 +110,7 @@
     <string name="hint_file_name">Nom du fichier</string>
     <string name="btn_select_file">Sélectionner un fichier</string>
     <string name="btn_upload">Déposer</string>
+    <string name="btn_remove">Supprimer</string>
     <string name="no_file_selected">Aucun fichier sélectionné</string>
     <string name="file_selected">Fichier sélectionné : %s</string>
     <string name="error_select_file">Veuillez sélectionner un fichier</string>

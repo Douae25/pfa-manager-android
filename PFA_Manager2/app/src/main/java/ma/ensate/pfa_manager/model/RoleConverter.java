@@ -53,4 +53,22 @@ public class RoleConverter {
     public DeliverableType toDeliverableType(String typeString) {
         return typeString == null ? null : DeliverableType.valueOf(typeString);
     }
+    
+    @TypeConverter
+    public String fromDeliverableFileType(DeliverableFileType fileType) {
+        return fileType == null ? null : fileType.name();
+    }
+    
+    @TypeConverter
+    public DeliverableFileType toDeliverableFileType(String fileTypeString) {
+        if (fileTypeString == null || fileTypeString.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return DeliverableFileType.valueOf(fileTypeString);
+        } catch (IllegalArgumentException e) {
+            // Handle invalid enum values gracefully
+            return null;
+        }
+    }
 }

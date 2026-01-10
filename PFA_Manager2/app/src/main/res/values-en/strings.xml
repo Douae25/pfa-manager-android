@@ -90,6 +90,11 @@
     <string name="card_upload_after">Deliverables after defense</string>
     <string name="card_upload_after_desc">Final corrected report</string>
 
+    <!-- Deliverable Types -->
+    <string name="deliverable_rapport_avancement">Progress Report</string>
+    <string name="deliverable_presentation">Presentation</string>
+    <string name="deliverable_rapport_final">Final Report</string>
+
     <!-- Soutenance Fragment -->
     <string name="soutenance_info_title">Defense information</string>
     <string name="soutenance_date">Date:</string>
@@ -105,6 +110,7 @@
     <string name="hint_file_name">File name</string>
     <string name="btn_select_file">Select file</string>
     <string name="btn_upload">Submit</string>
+    <string name="btn_remove">Remove</string>
     <string name="no_file_selected">No file selected</string>
     <string name="file_selected">Selected file: %s</string>
     <string name="error_select_file">Please select a file</string>

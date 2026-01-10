@@ -2,6 +2,7 @@ package ma.ensate.pfa_manager.view.etudiant;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -186,6 +187,7 @@ public class ConventionRequestActivity extends AppCompatActivity {
     }
 
     private void submitConventionRequest() {
+        try {
         // Validation des champs obligatoires
         String companyName = inputCompanyName.getText().toString().trim();
         String companyAddress = inputCompanyAddress.getText().toString().trim();
@@ -206,13 +208,20 @@ public class ConventionRequestActivity extends AppCompatActivity {
 
         // Vérifier si l'étudiant a déjà un dossier PFA
         pfaDossierRepository.getByStudentId(currentUser.getUser_id(), existingDossier -> {
+            try {
             if (existingDossier != null) {
                 // Le dossier existe déjà, mettre à jour son statut et créer la convention
                 existingDossier.setCurrent_status(PFAStatus.CONVENTION_PENDING);
                 existingDossier.setUpdated_at(System.currentTimeMillis());
                 pfaDossierRepository.update(existingDossier, () -> {
+                    try {
                     createConvention(existingDossier.getPfa_id(), companyName, companyAddress, 
                         supervisorName, supervisorEmail);
+                    } catch (Exception e) {
+                        Log.e("ConventionRequest", "Error creating convention for existing dossier", e);
+                        runOnUiThread(() -> Toast.makeText(ConventionRequestActivity.this, 
+                            "Erreur: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                    }
                 });
             } else {
                 // Créer d'abord le dossier PFA avec statut CONVENTION_PENDING
@@ -225,17 +234,33 @@ public class ConventionRequestActivity extends AppCompatActivity {
 
                 // Insérer le dossier PFA
                 pfaDossierRepository.insert(pfaDossier, insertedDossier -> {
+                    try {
                     // Puis créer la convention liée à ce dossier
                     createConvention(insertedDossier.getPfa_id(), companyName, companyAddress, 
                         supervisorName, supervisorEmail);
+                    } catch (Exception e) {
+                        Log.e("ConventionRequest", "Error creating convention for new dossier", e);
+                        runOnUiThread(() -> Toast.makeText(ConventionRequestActivity.this,
+                            "Erreur: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                    }
                 });
             }
+            } catch (Exception e) {
+                Log.e("ConventionRequest", "Error in getByStudentId callback", e);
+                runOnUiThread(() -> Toast.makeText(ConventionRequestActivity.this, 
+                    "Erreur: " + e.getMessage(), Toast.LENGTH_LONG).show());
+            }
         });
+        } catch (Exception e) {
+            Log.e("ConventionRequest", "Error in submitConventionRequest", e);
+            Toast.makeText(this, "Erreur: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void createConvention(Long pfaId, String companyName, String companyAddress,
                                    String supervisorName, String supervisorEmail) {
-        // Créer l'objet Convention
+        try {
+            // Créer l'objet Convention
         Convention convention = new Convention();
         convention.setPfa_id(pfaId);
         convention.setCompany_name(companyName);
@@ -249,10 +274,26 @@ public class ConventionRequestActivity extends AppCompatActivity {
 
         // Sauvegarder la convention dans la base de données
         conventionRepository.insert(convention, insertedConvention -> {
-            runOnUiThread(() -> {
-                Toast.makeText(this, R.string.convention_request_success, Toast.LENGTH_LONG).show();
-                finish();
-            });
+            try {
+                Log.d("ConventionRequest", "Convention created successfully with ID: " + insertedConvention.getConvention_id());
+                runOnUiThread(() -> {
+                    try {
+                        Toast.makeText(ConventionRequestActivity.this, R.string.convention_request_success, Toast.LENGTH_LONG).show();
+                        Log.d("ConventionRequest", "About to finish activity");
+                        ConventionRequestActivity.this.finish();
+                    } catch (Exception e) {
+                        Log.e("ConventionRequest", "Error in UI thread callback", e);
+                    }
+                });
+            } catch (Exception e) {
+                Log.e("ConventionRequest", "Error in convention insert callback", e);
+                runOnUiThread(() -> Toast.makeText(ConventionRequestActivity.this, 
+                    "Erreur: " + e.getMessage(), Toast.LENGTH_LONG).show());
+            }
         });
+        } catch (Exception e) {
+            Log.e("ConventionRequest", "Error in createConvention", e);
+            Toast.makeText(this, "Erreur: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 }
