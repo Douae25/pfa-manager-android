@@ -10,11 +10,18 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.textfield.TextInputEditText;
+
 import ma.ensate.pfa_manager.R;
+// Imports combinés
+import ma.ensate.pfa_manager.model.PFADossier;
+import ma.ensate.pfa_manager.model.PFAStatus;
+import ma.ensate.pfa_manager.model.Role;
 import ma.ensate.pfa_manager.model.User;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
+import ma.ensate.pfa_manager.repository.PFADossierRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
 import ma.ensate.pfa_manager.util.TestDataHelper;
+import ma.ensate.pfa_manager.view.etudiant.StudentSpaceActivity;
 import ma.ensate.pfa_manager.viewmodel.LoginViewModel;
 import ma.ensate.pfa_manager.viewmodel.LoginViewModelFactory;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
@@ -31,9 +38,13 @@ public class MainActivity extends AppCompatActivity {
         SettingsViewModelFactory factory = new SettingsViewModelFactory(languageRepository);
         settingsViewModel = new ViewModelProvider(this, factory).get(SettingsViewModel.class);
         settingsViewModel.applySavedLanguage();
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        TestDataHelper.insertTestData(this);
+
+        TestDataHelper.insertTestData(this); 
+        insertTestUserIfNeeded();
+
         setupLanguageToggle();
         setupBackNavigation();
         setupLoginForm();
@@ -87,12 +98,16 @@ public class MainActivity extends AppCompatActivity {
                 redirectUser(user);
             }
         });
-
+        
+        
         loginViewModel.getErrorMessage().observe(this, error -> {
-            Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
+    // 3. Fonction de redirection centralisée (C'est ici qu'on fusionne la logique)
     private void redirectUser(User user) {
         Intent intent = null;
 
@@ -101,7 +116,8 @@ public class MainActivity extends AppCompatActivity {
                 intent = new Intent(this, EncadrantDashboardActivity.class);
                 break;
             case STUDENT:
-                // intent = new Intent(this, StudentDashboardActivity.class);
+                intent = new Intent(this, StudentSpaceActivity.class);
+                intent.putExtra("user", user);
                 break;
             case ADMIN:
                 // intent = new Intent(this, AdminDashboardActivity.class);
@@ -118,5 +134,38 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Interface non disponible pour ce rôle", Toast.LENGTH_SHORT).show();
         }
+    }
+    
+    private void insertTestUserIfNeeded() {
+        UserRepository userRepository = new UserRepository(getApplication());
+        PFADossierRepository pfaDossierRepository = new PFADossierRepository(getApplication());
+        
+        userRepository.getUserByEmail("student@ensa.ma", user -> {
+            if (user == null) {
+                User testUser = new User();
+                testUser.setEmail("student@ensa.ma");
+                testUser.setPassword("student123");
+                testUser.setFirst_name("Ahmed");
+                testUser.setLast_name("Alami");
+                testUser.setRole(Role.STUDENT);
+                testUser.setPhone_number("0612345678");
+                testUser.setCreated_at(System.currentTimeMillis());
+                
+                userRepository.insert(testUser, insertedUser -> {
+                    PFADossier pfaDossier = new PFADossier();
+                    pfaDossier.setStudent_id(insertedUser.getUser_id());
+                    pfaDossier.setTitle("Test PFA Project");
+                    pfaDossier.setDescription("Test project for student");
+                    pfaDossier.setCurrent_status(PFAStatus.ASSIGNED);
+                    pfaDossier.setUpdated_at(System.currentTimeMillis());
+                    
+                    pfaDossierRepository.insert(pfaDossier, createdDossier -> {
+                        runOnUiThread(() -> 
+                            Toast.makeText(this, "Compte Étudiant de test créé", Toast.LENGTH_SHORT).show()
+                        );
+                    });
+                });
+            }
+        });
     }
 }
