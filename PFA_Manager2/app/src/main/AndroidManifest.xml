@@ -33,6 +33,14 @@
         android:name=".view.ConventionListActivity"
         android:exported="false" />
 
+    <activity
+        android:name=".view.ConventionDetailActivity"
+        android:exported="false" />
+
+    <activity
+        android:name=".view.ManageUsersActivity"
+        android:exported="false" />
+
 </application>
 
 </manifest>

@@ -22,6 +22,7 @@ public class ConventionAdapter extends RecyclerView.Adapter<ConventionAdapter.Co
         void onReject(Convention convention);
         void onValidate(Convention convention);
         void onRejectUploaded(Convention convention);
+        void onViewDetails(Convention convention);
     }
     
     public ConventionAdapter(List<Convention> conventions, ConventionActionListener listener, boolean isPendingView) {
@@ -77,10 +78,10 @@ public class ConventionAdapter extends RecyclerView.Adapter<ConventionAdapter.Co
         }
         
         public void bind(Convention convention, ConventionActionListener listener, boolean isPendingView) {
-            companyName.setText("Entreprise: " + convention.getCompany_name());
-            studentInfo.setText("Superviseur: " + convention.getCompany_supervisor_name());
-            startDate.setText("Début: " + formatDate(convention.getStart_date()));
-            endDate.setText("Fin: " + formatDate(convention.getEnd_date()));
+            companyName.setText(itemView.getContext().getString(R.string.label_company) + ": " + convention.getCompany_name());
+            studentInfo.setText(itemView.getContext().getString(R.string.label_supervisor) + ": " + convention.getCompany_supervisor_name());
+            startDate.setText(itemView.getContext().getString(R.string.label_start) + ": " + formatDate(convention.getStart_date()));
+            endDate.setText(itemView.getContext().getString(R.string.label_end) + ": " + formatDate(convention.getEnd_date()));
             
             if (isPendingView) {
                 // Afficher les boutons pour les demandes PENDING
@@ -101,10 +102,17 @@ public class ConventionAdapter extends RecyclerView.Adapter<ConventionAdapter.Co
                 btnValidate.setOnClickListener(v -> listener.onValidate(convention));
                 btnRejectUploaded.setOnClickListener(v -> listener.onRejectUploaded(convention));
             }
+
+            // ouvrir le détail quand on clique sur la carte
+            itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onViewDetails(convention);
+                }
+            });
         }
         
         private String formatDate(Long timestamp) {
-            if (timestamp == null) return "N/A";
+            if (timestamp == null) return itemView.getContext().getString(R.string.value_na);
             return new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date(timestamp));
         }
     }

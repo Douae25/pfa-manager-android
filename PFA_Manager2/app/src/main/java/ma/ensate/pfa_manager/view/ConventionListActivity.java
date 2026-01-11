@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -16,6 +17,9 @@ import ma.ensate.pfa_manager.viewmodel.AdminViewModel;
 import ma.ensate.pfa_manager.viewmodel.AdminViewModelFactory;
 import ma.ensate.pfa_manager.repository.ConventionRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
+import ma.ensate.pfa_manager.repository.LanguageRepository;
+import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
+import ma.ensate.pfa_manager.viewmodel.SettingsViewModelFactory;
 import ma.ensate.pfa_manager.model.Convention;
 
 public class ConventionListActivity extends AppCompatActivity {
@@ -23,14 +27,23 @@ public class ConventionListActivity extends AppCompatActivity {
     public static final String EXTRA_MODE = "mode"; // "PENDING" or "UPLOADED"
 
     private AdminViewModel adminViewModel;
+    private SettingsViewModel settingsViewModel;
     private RecyclerView conventionRecyclerView;
     private LinearLayout emptyStateView;
     private ConventionAdapter conventionAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Setup language first
+        LanguageRepository languageRepository = new LanguageRepository(this);
+        SettingsViewModelFactory settingsFactory = new SettingsViewModelFactory(languageRepository);
+        settingsViewModel = new ViewModelProvider(this, settingsFactory).get(SettingsViewModel.class);
+        settingsViewModel.applySavedLanguage();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_convention_list);
+
+        setupLanguageToggle();
 
         conventionRecyclerView = findViewById(R.id.conventionRecyclerView);
         emptyStateView = findViewById(R.id.emptyStateView);
@@ -61,6 +74,27 @@ public class ConventionListActivity extends AppCompatActivity {
         adminViewModel.getActionResult().observe(this, result -> {
             if (result != null) Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void setupLanguageToggle() {
+        TextView langFr = findViewById(R.id.langFr);
+        TextView langEn = findViewById(R.id.langEn);
+        Log.d("ConventionListActivity", "langFr: " + (langFr == null ? "NULL" : "found"));
+        Log.d("ConventionListActivity", "langEn: " + (langEn == null ? "NULL" : "found"));
+        if (langFr != null) {
+            langFr.setOnClickListener(v -> {
+                Log.d("ConventionListActivity", "FR clicked");
+                settingsViewModel.changeLanguage("fr");
+                recreate();
+            });
+        }
+        if (langEn != null) {
+            langEn.setOnClickListener(v -> {
+                Log.d("ConventionListActivity", "EN clicked");
+                settingsViewModel.changeLanguage("en");
+                recreate();
+            });
+        }
     }
 
     private void updateListForMode(java.util.List<Convention> conventions, boolean pendingMode) {
@@ -106,6 +140,17 @@ public class ConventionListActivity extends AppCompatActivity {
                         @Override
                         public void onRejectionCancelled() {}
                     });
+                }
+
+                @Override
+                public void onViewDetails(Convention convention) {
+                    try {
+                        android.content.Intent intent = new android.content.Intent(ConventionListActivity.this, ConventionDetailActivity.class);
+                        intent.putExtra("convention_id", convention.getConvention_id());
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        Log.e("ConventionListActivity", "Failed to start ConventionDetailActivity", e);
+                    }
                 }
             }, pendingMode);
 

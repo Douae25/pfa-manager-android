@@ -45,9 +45,12 @@ public class AdminActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin);
 
         setupLanguageToggle();
-        setupAdminViewModel();
         setupUI();
+        setupAdminViewModel();
         setupNavigation();
+        
+        // Load initial data after ViewModel is ready
+        loadConventionRequests();
     }
 
     private void setupLanguageToggle() {
@@ -93,6 +96,17 @@ public class AdminActivity extends AppCompatActivity {
                                 public void onRejectionCancelled() {
                                 }
                             });
+                        }
+
+                        @Override
+                        public void onViewDetails(ma.ensate.pfa_manager.model.Convention convention) {
+                            try {
+                                android.content.Intent intent = new android.content.Intent(AdminActivity.this, ConventionDetailActivity.class);
+                                intent.putExtra("convention_id", convention.getConvention_id());
+                                startActivity(intent);
+                            } catch (Exception e) {
+                                Log.e("AdminActivity", "Failed to start ConventionDetailActivity", e);
+                            }
                         }
 
                         @Override
@@ -144,6 +158,17 @@ public class AdminActivity extends AppCompatActivity {
                                 }
                             });
                         }
+
+                        @Override
+                        public void onViewDetails(ma.ensate.pfa_manager.model.Convention convention) {
+                            try {
+                                android.content.Intent intent = new android.content.Intent(AdminActivity.this, ConventionDetailActivity.class);
+                                intent.putExtra("convention_id", convention.getConvention_id());
+                                startActivity(intent);
+                            } catch (Exception e) {
+                                Log.e("AdminActivity", "Failed to start ConventionDetailActivity", e);
+                            }
+                        }
                     }, false);
                     conventionRecyclerView.setAdapter(conventionAdapter);
                     updateConventionList(false);
@@ -179,9 +204,6 @@ public class AdminActivity extends AppCompatActivity {
         } else {
             Log.w("AdminActivity", "conventionRecyclerView is null in setupUI");
         }
-
-        // Load initial data
-        loadConventionRequests();
     }
 
     private void setupNavigation() {
@@ -207,7 +229,14 @@ public class AdminActivity extends AppCompatActivity {
         });
         else Log.w("AdminActivity", "cardSignedConventions is null in setupNavigation");
 
-        if (cardManageUsers != null) cardManageUsers.setOnClickListener(v -> loadUsers());
+        if (cardManageUsers != null) cardManageUsers.setOnClickListener(v -> {
+            try {
+                android.content.Intent intent = new android.content.Intent(AdminActivity.this, ManageUsersActivity.class);
+                startActivity(intent);
+            } catch (Exception e) {
+                Log.e("AdminActivity", "Failed to start ManageUsersActivity", e);
+            }
+        });
         else Log.w("AdminActivity", "cardManageUsers is null in setupNavigation");
 
         if (cardLogout != null) cardLogout.setOnClickListener(v -> logout());

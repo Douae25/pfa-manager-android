@@ -193,7 +193,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Gestion utilisateurs"
+                            android:text="Gestion des étudiants"
                             android:textSize="12sp"
                             android:textColor="#999999"
                             android:gravity="center" />
@@ -251,6 +251,11 @@
         </LinearLayout>
 
         <!-- Content Area -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/conventionRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp" />
 
         <!-- Empty State View -->
         <LinearLayout
