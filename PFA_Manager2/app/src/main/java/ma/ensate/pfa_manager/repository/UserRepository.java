@@ -40,20 +40,30 @@ public class UserRepository {
         executorService.execute(() -> userDao.delete(user));
     }
 
-    // ✅ CORRIGÉ : Utiliser getUserByEmailSync() pour opération synchrone
+    
+    
+    public void getUserById(Long userId, OnUserFetchedListener listener) {
+        executorService.execute(() -> {
+            User user = userDao.getUserById(userId);
+            if (listener != null) {
+                listener.onUserFetched(user);
+            }
+        });
+    }
+    
     public void getUserByEmail(String email, OnUserFetchedListener listener) {
         executorService.execute(() -> {
-            User user = userDao.getUserByEmailSync(email);  // ✅ Méthode SYNC
+            User user = userDao.getUserByEmailSync(email); 
             if (listener != null) {
                 listener.onUserFetched(user);
             }
         });
     }
 
-    // ✅ CORRIGÉ : Utiliser login() qui est déjà synchrone
+
     public void login(String email, String password, OnUserFetchedListener listener) {
         executorService.execute(() -> {
-            User user = userDao.login(email, password);  // ✅ Déjà synchrone
+            User user = userDao.login(email, password);  
             if (listener != null) {
                 listener.onUserFetched(user);
             }
@@ -71,7 +81,7 @@ public class UserRepository {
 
     // ========== MÉTHODES LIVEDATA (pour observation UI) ==========
 
-    // Retourne LiveData pour observer les changements en temps réel
+  
     public LiveData<User> getUserByIdLiveData(Long userId) {
         return userDao.getUserById(userId);
     }

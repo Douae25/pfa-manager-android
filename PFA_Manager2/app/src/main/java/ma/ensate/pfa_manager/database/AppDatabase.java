@@ -7,7 +7,6 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import ma.ensate.pfa_manager.model.*;
 
-// ATTENTION : J'ai passé la version à 2 ici 👇
 @Database(entities = {
         User.class,
         Department.class,
@@ -18,7 +17,7 @@ import ma.ensate.pfa_manager.model.*;
         Evaluation.class,
         EvaluationCriteria.class,
         EvaluationDetail.class
-}, version = 2, exportSchema = false) // <--- ICI C'EST 2 MAINTENANT
+}, version = 2, exportSchema = false) 
 @TypeConverters({RoleConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -41,7 +40,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             AppDatabase.class,
                             "pfa_manager_database"
                     )
-                    .fallbackToDestructiveMigration() // Ceci permet de recreer la base si la version change
+                    .fallbackToDestructiveMigration()
                     .build();
         }
         return instance;

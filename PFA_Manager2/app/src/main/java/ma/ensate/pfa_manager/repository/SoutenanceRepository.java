@@ -15,6 +15,7 @@ import ma.ensate.pfa_manager.database.PFADossierDao;
 import ma.ensate.pfa_manager.model.PFADossier;
 import ma.ensate.pfa_manager.model.PFAWithSoutenance;
 import ma.ensate.pfa_manager.model.Soutenance;
+import ma.ensate.pfa_manager.model.SoutenanceStatus;
 
 public class SoutenanceRepository {
 
@@ -28,6 +29,7 @@ public class SoutenanceRepository {
         this.pfaDossierDao = db.pfaDossierDao();
         this.executor = Executors.newSingleThreadExecutor();
     }
+
 
     public LiveData<List<PFADossier>> getPFAsEligibles(Long supervisorId) {
         return soutenanceDao.getPFAsNonPlanifies(supervisorId);
@@ -84,6 +86,7 @@ public class SoutenanceRepository {
         return result;
     }
 
+    // Méthodes spécifiques au PlanningViewModel (avec gestion d'erreur UI)
     public void planifierSoutenance(Soutenance soutenance, OnSoutenanceListener listener) {
         executor.execute(() -> {
             try {
@@ -121,8 +124,78 @@ public class SoutenanceRepository {
         });
     }
 
+
+
+    public void insert(Soutenance soutenance, OnSoutenanceInsertedListener listener) {
+        executor.execute(() -> {
+            long id = soutenanceDao.insert(soutenance);
+            soutenance.setSoutenance_id(id);
+            if (listener != null) {
+                listener.onSoutenanceInserted(soutenance);
+            }
+        });
+    }
+
+    public void update(Soutenance soutenance) {
+        executor.execute(() -> soutenanceDao.update(soutenance));
+    }
+
+    public void delete(Soutenance soutenance) {
+        executor.execute(() -> soutenanceDao.delete(soutenance));
+    }
+
+    public void getById(long id, OnSoutenanceFetchedListener listener) {
+        executor.execute(() -> {
+            Soutenance soutenance = soutenanceDao.getById(id);
+            if (listener != null) {
+                listener.onSoutenanceFetched(soutenance);
+            }
+        });
+    }
+
+    public void getByPfaId(long pfaId, OnSoutenanceFetchedListener listener) {
+        executor.execute(() -> {
+            Soutenance soutenance = soutenanceDao.getByPfaId(pfaId);
+            if (listener != null) {
+                listener.onSoutenanceFetched(soutenance);
+            }
+        });
+    }
+
+    public void getByStatus(SoutenanceStatus status, OnSoutenancesListFetchedListener listener) {
+        executor.execute(() -> {
+            List<Soutenance> soutenances = soutenanceDao.getByStatus(status);
+            if (listener != null) {
+                listener.onSoutenancesListFetched(soutenances);
+            }
+        });
+    }
+
+    public void getAll(OnSoutenancesListFetchedListener listener) {
+        executor.execute(() -> {
+            List<Soutenance> soutenances = soutenanceDao.getAll();
+            if (listener != null) {
+                listener.onSoutenancesListFetched(soutenances);
+            }
+        });
+    }
+
+
     public interface OnSoutenanceListener {
         void onSuccess(String message);
         void onError(String message);
+    }
+
+    // Interfaces standards de la branche Main
+    public interface OnSoutenanceInsertedListener {
+        void onSoutenanceInserted(Soutenance soutenance);
+    }
+
+    public interface OnSoutenanceFetchedListener {
+        void onSoutenanceFetched(Soutenance soutenance);
+    }
+
+    public interface OnSoutenancesListFetchedListener {
+        void onSoutenancesListFetched(List<Soutenance> soutenances);
     }
 }

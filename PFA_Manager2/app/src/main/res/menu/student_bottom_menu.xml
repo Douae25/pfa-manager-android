@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_convention"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="@string/nav_convention" />
+    
+    <item
+        android:id="@+id/nav_deliverables"
+        android:icon="@android:drawable/ic_menu_upload"
+        android:title="@string/nav_deliverables" />
+    
+    <item
+        android:id="@+id/nav_soutenance"
+        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:title="@string/nav_soutenance" />
+    
+    <item
+        android:id="@+id/nav_note"
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:title="@string/nav_note" />
+</menu>
