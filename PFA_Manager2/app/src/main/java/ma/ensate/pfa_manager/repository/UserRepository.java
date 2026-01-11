@@ -40,30 +40,29 @@ public class UserRepository {
         executorService.execute(() -> userDao.delete(user));
     }
 
-    
-    
     public void getUserById(Long userId, OnUserFetchedListener listener) {
         executorService.execute(() -> {
-            User user = userDao.getUserById(userId);
-            if (listener != null) {
-                listener.onUserFetched(user);
-            }
-        });
-    }
-    
-    public void getUserByEmail(String email, OnUserFetchedListener listener) {
-        executorService.execute(() -> {
-            User user = userDao.getUserByEmailSync(email); 
-            if (listener != null) {
-                listener.onUserFetched(user);
+            if (userId != null) {
+                User user = userDao.getUserByIdSync(userId);
+                if (listener != null) {
+                    listener.onUserFetched(user);
+                }
             }
         });
     }
 
+    public void getUserByEmail(String email, OnUserFetchedListener listener) {
+        executorService.execute(() -> {
+            User user = userDao.getUserByEmailSync(email);
+            if (listener != null) {
+                listener.onUserFetched(user);
+            }
+        });
+    }
 
     public void login(String email, String password, OnUserFetchedListener listener) {
         executorService.execute(() -> {
-            User user = userDao.login(email, password);  
+            User user = userDao.login(email, password);
             if (listener != null) {
                 listener.onUserFetched(user);
             }
@@ -81,7 +80,6 @@ public class UserRepository {
 
     // ========== MÉTHODES LIVEDATA (pour observation UI) ==========
 
-  
     public LiveData<User> getUserByIdLiveData(Long userId) {
         return userDao.getUserById(userId);
     }

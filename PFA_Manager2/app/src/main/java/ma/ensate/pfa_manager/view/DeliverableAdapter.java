@@ -14,12 +14,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.chip.Chip;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 import ma.ensate.pfa_manager.R;
+import ma.ensate.pfa_manager.model.DeliverableFileType;
+import ma.ensate.pfa_manager.model.DeliverableType;
 import ma.ensate.pfa_manager.model.dto.DeliverableWithStudent;
 
 public class DeliverableAdapter extends ListAdapter<DeliverableWithStudent, DeliverableAdapter.ViewHolder> {
@@ -68,6 +71,7 @@ public class DeliverableAdapter extends ListAdapter<DeliverableWithStudent, Deli
         private final MaterialCardView cardView;
         private final ImageView ivFileIcon;
         private final TextView tvFileTitle, tvPfaTitle, tvStudentInitials, tvStudentName, tvUploadDate;
+        private final Chip chipType, chipFileType;
         private final MaterialButton btnOpen;
 
         ViewHolder(@NonNull View itemView) {
@@ -79,6 +83,8 @@ public class DeliverableAdapter extends ListAdapter<DeliverableWithStudent, Deli
             tvStudentInitials = itemView.findViewById(R.id.tvStudentInitials);
             tvStudentName = itemView.findViewById(R.id.tvStudentName);
             tvUploadDate = itemView.findViewById(R.id.tvUploadDate);
+            chipType = itemView.findViewById(R.id.chipType);
+            chipFileType = itemView.findViewById(R.id.chipFileType);
             btnOpen = itemView.findViewById(R.id.btnOpen);
         }
 
@@ -96,6 +102,8 @@ public class DeliverableAdapter extends ListAdapter<DeliverableWithStudent, Deli
                 tvUploadDate.setText("Date inconnue");
             }
 
+            setDeliverableTypeChip(context, item.getDeliverableType());
+            setFileTypeChip(context, item.getDeliverableFileType());
             setFileIcon(item.getFileUri());
 
             btnOpen.setOnClickListener(v -> {
@@ -111,6 +119,47 @@ public class DeliverableAdapter extends ListAdapter<DeliverableWithStudent, Deli
             });
         }
 
+        private void setDeliverableTypeChip(Context context, DeliverableType type) {
+            if (type == null) {
+                chipType.setVisibility(View.GONE);
+                return;
+            }
+
+            chipType.setVisibility(View.VISIBLE);
+            switch (type) {
+                case BEFORE_DEFENSE:
+                    chipType.setText("Avant");
+                    chipType.setChipBackgroundColorResource(R.color.primary_light);
+                    chipType.setTextColor(context.getColor(R.color.primary));
+                    break;
+                case AFTER_DEFENSE:
+                    chipType.setText("Après");
+                    chipType.setChipBackgroundColorResource(R.color.status_planned);
+                    chipType.setTextColor(context.getColor(R.color.white));
+                    break;
+            }
+        }
+
+        private void setFileTypeChip(Context context, DeliverableFileType fileType) {
+            if (fileType == null) {
+                chipFileType.setVisibility(View.GONE);
+                return;
+            }
+
+            chipFileType.setVisibility(View.VISIBLE);
+            switch (fileType) {
+                case RAPPORT_AVANCEMENT:
+                    chipFileType.setText("Rapport");
+                    break;
+                case PRESENTATION:
+                    chipFileType.setText("Présentation");
+                    break;
+                case RAPPORT_FINAL:
+                    chipFileType.setText("Final");
+                    break;
+            }
+        }
+
         private void setFileIcon(String fileUri) {
             if (fileUri == null) {
                 ivFileIcon.setImageResource(R.drawable.ic_document);
@@ -120,9 +169,7 @@ public class DeliverableAdapter extends ListAdapter<DeliverableWithStudent, Deli
             String lowerUri = fileUri.toLowerCase();
             if (lowerUri.endsWith(".pdf")) {
                 ivFileIcon.setImageResource(R.drawable.ic_document);
-            } else if (lowerUri.endsWith(".doc") || lowerUri.endsWith(".docx")) {
-                ivFileIcon.setImageResource(R.drawable.ic_document);
-            } else if (lowerUri.endsWith(".jpg") || lowerUri.endsWith(".png") || lowerUri.endsWith(".jpeg")) {
+            } else if (lowerUri.endsWith(".ppt") || lowerUri.endsWith(".pptx")) {
                 ivFileIcon.setImageResource(R.drawable.ic_document);
             } else {
                 ivFileIcon.setImageResource(R.drawable.ic_document);

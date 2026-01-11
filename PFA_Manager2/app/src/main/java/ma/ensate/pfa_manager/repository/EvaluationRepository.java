@@ -123,6 +123,7 @@ public class EvaluationRepository {
         result.setValue(combined);
     }
 
+
     public LiveData<Integer> getEvaluatedCount(Long supervisorId) {
         return evaluationDao.countBySupervisor(supervisorId);
     }
@@ -184,6 +185,20 @@ public class EvaluationRepository {
         });
     }
 
+    public void getByPfaId(Long pfaId, OnEvaluationsFetchedListener listener) {
+        executor.execute(() -> {
+            if (pfaId != null) {
+                // On utilise la méthode qui existe déjà dans ton DAO
+                List<Evaluation> results = evaluationDao.getByPfaId(pfaId);
+                if (listener != null) {
+                    listener.onEvaluationsFetched(results);
+                }
+            }
+        });
+    }
+    public interface OnEvaluationsFetchedListener {
+        void onEvaluationsFetched(List<Evaluation> evaluations);
+    }
     public interface OnEvaluationListener {
         void onSuccess(String message);
         void onError(String message);

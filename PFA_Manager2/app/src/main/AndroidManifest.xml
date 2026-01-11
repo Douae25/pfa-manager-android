@@ -55,6 +55,8 @@
             android:exported="false"
             android:parentActivityName=".view.EncadrantDashboardActivity" />
 
+        <activity android:name=".view.etudiant.StudentSpaceActivity" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

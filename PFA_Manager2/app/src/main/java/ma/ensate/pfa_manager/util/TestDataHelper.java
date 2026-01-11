@@ -20,10 +20,12 @@ public class TestDataHelper {
         Executors.newSingleThreadExecutor().execute(() -> {
             AppDatabase db = AppDatabase.getInstance(context);
 
+            // Si des données existent déjà, on n'ajoute rien pour éviter les doublons
             if (db.userDao().getAllUsers().size() > 0) {
                 return;
             }
 
+            // Création des fichiers physiques
             String testFilesDir = createTestFiles(context);
 
             // --- 1. Création des Utilisateurs ---
@@ -85,7 +87,7 @@ public class TestDataHelper {
             student3.setCreated_at(System.currentTimeMillis());
             long student3Id = db.userDao().insert(student3);
 
-            // --- 2. Ajout des Critères d'Évaluation (CODE AJOUTÉ) ---
+            // --- 2. Ajout des Critères d'Évaluation ---
             if (db.evaluationCriteriaDao().count() == 0) {
                 EvaluationCriteria c1 = new EvaluationCriteria();
                 c1.setLabel("Qualité technique");
@@ -151,46 +153,62 @@ public class TestDataHelper {
             pfa3.setUpdated_at(System.currentTimeMillis());
             long pfa3Id = db.pfaDossierDao().insert(pfa3);
 
-            // --- 4. Création des Livrables ---
+            // --- 4. Création des Livrables (CODE MIS À JOUR) ---
+
+            // PFA 1 : Livrables mixtes
             Deliverable del1 = new Deliverable();
             del1.setPfa_id(pfa1Id);
-            del1.setFile_title("Rapport d'avancement - Janvier 2025");
+            del1.setFile_title("Rapport d'avancement - Janvier");
             del1.setFile_uri(testFilesDir + "/rapport_test.pdf");
+            del1.setDeliverable_type(DeliverableType.BEFORE_DEFENSE);
+            del1.setDeliverable_file_type(DeliverableFileType.RAPPORT_AVANCEMENT);
             del1.setUploaded_at(System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000L);
             db.deliverableDao().insert(del1);
 
             Deliverable del2 = new Deliverable();
             del2.setPfa_id(pfa1Id);
-            del2.setFile_title("Cahier des charges");
-            del2.setFile_uri(testFilesDir + "/cahier_charges.pdf");
-            del2.setUploaded_at(System.currentTimeMillis() - 10 * 24 * 60 * 60 * 1000L);
+            del2.setFile_title("Présentation PFA");
+            del2.setFile_uri(testFilesDir + "/presentation.pdf");
+            del2.setDeliverable_type(DeliverableType.BEFORE_DEFENSE);
+            del2.setDeliverable_file_type(DeliverableFileType.PRESENTATION);
+            del2.setUploaded_at(System.currentTimeMillis() - 5 * 24 * 60 * 60 * 1000L);
             db.deliverableDao().insert(del2);
 
             Deliverable del3 = new Deliverable();
             del3.setPfa_id(pfa1Id);
-            del3.setFile_title("Maquettes UI/UX");
-            del3.setFile_uri(testFilesDir + "/maquettes.pdf");
-            del3.setUploaded_at(System.currentTimeMillis() - 5 * 24 * 60 * 60 * 1000L);
+            del3.setFile_title("Rapport Final");
+            del3.setFile_uri(testFilesDir + "/rapport_final.pdf");
+            del3.setDeliverable_type(DeliverableType.AFTER_DEFENSE);
+            del3.setDeliverable_file_type(DeliverableFileType.RAPPORT_FINAL);
+            del3.setUploaded_at(System.currentTimeMillis() - 1 * 24 * 60 * 60 * 1000L);
             db.deliverableDao().insert(del3);
 
+            // PFA 2 : Juste un état de l'art
             Deliverable del4 = new Deliverable();
             del4.setPfa_id(pfa2Id);
             del4.setFile_title("État de l'art - ML");
             del4.setFile_uri(testFilesDir + "/etat_art.pdf");
+            del4.setDeliverable_type(DeliverableType.BEFORE_DEFENSE);
+            del4.setDeliverable_file_type(DeliverableFileType.RAPPORT_AVANCEMENT);
             del4.setUploaded_at(System.currentTimeMillis() - 3 * 24 * 60 * 60 * 1000L);
             db.deliverableDao().insert(del4);
 
+            // PFA 3 : Spécifications et Présentation
             Deliverable del5 = new Deliverable();
             del5.setPfa_id(pfa3Id);
             del5.setFile_title("Spécifications techniques");
             del5.setFile_uri(testFilesDir + "/specs_techniques.pdf");
+            del5.setDeliverable_type(DeliverableType.BEFORE_DEFENSE);
+            del5.setDeliverable_file_type(DeliverableFileType.RAPPORT_AVANCEMENT);
             del5.setUploaded_at(System.currentTimeMillis() - 1 * 24 * 60 * 60 * 1000L);
             db.deliverableDao().insert(del5);
 
             Deliverable del6 = new Deliverable();
             del6.setPfa_id(pfa3Id);
-            del6.setFile_title("Diagrammes UML");
-            del6.setFile_uri(testFilesDir + "/diagrammes_uml.pdf");
+            del6.setFile_title("Présentation Soutenance");
+            del6.setFile_uri(testFilesDir + "/presentation_soutenance.pdf");
+            del6.setDeliverable_type(DeliverableType.BEFORE_DEFENSE);
+            del6.setDeliverable_file_type(DeliverableFileType.PRESENTATION);
             del6.setUploaded_at(System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L);
             db.deliverableDao().insert(del6);
 
@@ -225,7 +243,7 @@ public class TestDataHelper {
             sout2.setCreated_at(System.currentTimeMillis());
             db.soutenanceDao().insert(sout2);
 
-            System.out.println("✅ Données de test insérées avec succès!");
+            System.out.println("✅ Données de test (et fichiers) insérées avec succès!");
         });
     }
 
@@ -235,48 +253,57 @@ public class TestDataHelper {
             testDir.mkdirs();
         }
 
-        // Création des fichiers avec contenu réel
-        createSimplePdf(testDir, "rapport_test.pdf", "RAPPORT D'AVANCEMENT", "Application mobile de gestion universitaire\n\nCe rapport présente l'état d'avancement du projet.\n\nDate: Janvier 2025\nAuteur: Ahmed Alami");
-        createSimplePdf(testDir, "cahier_charges.pdf", "CAHIER DES CHARGES", "1. Introduction\n2. Objectifs\n3. Fonctionnalités\n4. Contraintes techniques\n\nCe document définit le périmètre du projet.");
-        createSimplePdf(testDir, "maquettes.pdf", "MAQUETTES UI/UX", "Contenu:\n- Écran de connexion\n- Tableau de bord\n- Liste des projets\n\n(Simulation visuelle des interfaces)");
-        createSimplePdf(testDir, "etat_art.pdf", "ÉTAT DE L'ART", "Étude des systèmes de recommandation existants:\n- Filtrage collaboratif\n- Filtrage basé sur le contenu\n- Approches hybrides");
-        createSimplePdf(testDir, "specs_techniques.pdf", "SPÉCIFICATIONS TECHNIQUES", "Architecture technique de la plateforme e-learning:\n- Backend: Spring Boot\n- Frontend: React\n- Base de données: PostgreSQL");
-        createSimplePdf(testDir, "diagrammes_uml.pdf", "DIAGRAMMES UML", "Diagrammes inclus:\n- Diagramme de cas d'utilisation\n- Diagramme de classes\n- Diagramme de séquence");
-        createSimplePdf(testDir, "convention_test.pdf", "CONVENTION DE STAGE", "ENTRE: L'École Nationale des Sciences Appliquées\nET: TechCorp Morocco\n\nPOUR: Stage de fin d'études\nDurée: 4 mois");
+        // --- GÉNÉRATION DES VRAIS PDFs (avec le contenu lisible) ---
+        // Les fichiers mentionnés dans insertTestData doivent être créés ici
+
+        createSimplePdf(testDir, "rapport_test.pdf", "RAPPORT D'AVANCEMENT", "Application mobile de gestion universitaire.\nAvancement : 50%\nModules terminés : Authentification, Gestion des profils.");
+
+        // AJOUT : Fichier Presentation.pdf
+        createSimplePdf(testDir, "presentation.pdf", "PRÉSENTATION PFA", "SLIDES DE PRÉSENTATION\n\n1. Contexte du projet\n2. Problématique\n3. Solution proposée\n4. Démo");
+
+        // AJOUT : Fichier Rapport Final
+        createSimplePdf(testDir, "rapport_final.pdf", "RAPPORT DE PFA FINAL", "MÉMOIRE DE FIN D'ANNÉE\n\nRemerciements\nRésumé\nTable des matières\n...\nConclusion");
+
+        createSimplePdf(testDir, "etat_art.pdf", "ÉTAT DE L'ART", "Comparaison des algorithmes de Machine Learning :\n- Random Forest\n- Neural Networks\n- SVM\nChoix technologique : Python + TensorFlow.");
+
+        createSimplePdf(testDir, "specs_techniques.pdf", "SPÉCIFICATIONS TECHNIQUES", "Architecture Microservices.\nBase de données : PostgreSQL\nBackend : Spring Boot\nFrontend : React Native");
+
+        // AJOUT : Fichier Presentation Soutenance
+        createSimplePdf(testDir, "presentation_soutenance.pdf", "SUPPORT SOUTENANCE", "Diapositives finales pour le jury.\nFocus sur les résultats techniques et les perspectives.");
+
+        // Autres fichiers utiles
+        createSimplePdf(testDir, "cahier_charges.pdf", "CAHIER DES CHARGES", "1. Introduction\n2. Besoins fonctionnels\n3. Besoins non-fonctionnels");
+        createSimplePdf(testDir, "maquettes.pdf", "MAQUETTES UI/UX", "Wireframes des écrans principaux.");
+        createSimplePdf(testDir, "diagrammes_uml.pdf", "DIAGRAMMES UML", "Diagrammes de classes et séquences.");
+        createSimplePdf(testDir, "convention_test.pdf", "CONVENTION DE STAGE", "Convention signée entre l'école et l'entreprise.");
 
         return testDir.getAbsolutePath();
     }
 
-    // ✅ MÉTHODE CORRIGÉE POUR GÉNÉRER UN VRAI PDF LISIBLE
     private static void createSimplePdf(File dir, String fileName, String title, String content) {
         File file = new File(dir, fileName);
         if (file.exists()) {
-            // Optionnel : on peut supprimer return ici si on veut forcer la régénération
             return;
         }
 
-        // 1. Création du document PDF
         PdfDocument document = new PdfDocument();
-
-        // 2. Définition de la page A4
         PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create();
         PdfDocument.Page page = document.startPage(pageInfo);
 
-        // 3. Préparation du dessin
         Canvas canvas = page.getCanvas();
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
 
-        // 4. Dessin du TITRE
+        // Titre
         paint.setTextSize(24);
         paint.setFakeBoldText(true);
         canvas.drawText(title, 50, 60, paint);
 
-        // Ligne de séparation sous le titre
+        // Ligne
         paint.setStrokeWidth(2);
         canvas.drawLine(50, 70, 545, 70, paint);
 
-        // 5. Dessin du CONTENU (Ligne par ligne)
+        // Contenu
         paint.setTextSize(14);
         paint.setFakeBoldText(false);
         paint.setStrokeWidth(0);
@@ -284,14 +311,12 @@ public class TestDataHelper {
         int x = 50;
         int y = 110;
 
-        // Découpage du texte pour gérer les sauts de ligne
         String[] lines = content.split("\n");
         for (String line : lines) {
             canvas.drawText(line, x, y, paint);
-            y += 25; // Espace entre les lignes
+            y += 25;
         }
 
-        // 6. Fin de la page et sauvegarde
         document.finishPage(page);
 
         try {

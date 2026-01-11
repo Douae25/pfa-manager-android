@@ -1,6 +1,8 @@
 package ma.ensate.pfa_manager.model.dto;
 
 import ma.ensate.pfa_manager.model.Deliverable;
+import ma.ensate.pfa_manager.model.DeliverableFileType;
+import ma.ensate.pfa_manager.model.DeliverableType;
 import ma.ensate.pfa_manager.model.PFADossier;
 import ma.ensate.pfa_manager.model.User;
 
@@ -49,5 +51,21 @@ public class DeliverableWithStudent {
 
     public Long getUploadedAt() {
         return deliverable != null ? deliverable.getUploaded_at() : null;
+    }
+
+    public DeliverableType getDeliverableType() {
+        return deliverable != null ? deliverable.getDeliverable_type() : null;
+    }
+
+    public DeliverableFileType getDeliverableFileType() {
+        return deliverable != null ? deliverable.getDeliverable_file_type() : null;
+    }
+
+    public boolean isBeforeDefense() {
+        return getDeliverableType() == DeliverableType.BEFORE_DEFENSE;
+    }
+
+    public boolean isAfterDefense() {
+        return getDeliverableType() == DeliverableType.AFTER_DEFENSE;
     }
 }

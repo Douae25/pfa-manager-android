@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // 3. Fonction de redirection centralisée (C'est ici qu'on fusionne la logique)
     private void redirectUser(User user) {
         Intent intent = null;
 

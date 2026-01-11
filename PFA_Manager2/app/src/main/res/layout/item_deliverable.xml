@@ -70,6 +70,15 @@
 
             </LinearLayout>
 
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipType"
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:text="Avant"
+                android:textSize="10sp"
+                app:chipMinHeight="24dp"
+                app:chipCornerRadius="12dp"/>
+
         </LinearLayout>
 
         <View
@@ -99,12 +108,24 @@
 
             <TextView
                 android:id="@+id/tvStudentName"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="Ahmed Alami"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFileType"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:text="Rapport"
+                android:textSize="10sp"
+                app:chipMinHeight="20dp"
+                app:chipCornerRadius="10dp"
+                app:chipBackgroundColor="@color/background_light"
+                android:visibility="gone"/>
 
         </LinearLayout>
 

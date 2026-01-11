@@ -345,7 +345,7 @@ public class UploadDeliverablesActivity extends AppCompatActivity {
             deliverable.setDeliverable_file_type(fileType);
             deliverable.setUploaded_at(System.currentTimeMillis());
             
-            deliverableRepository.insert(deliverable, null);
+            deliverableRepository.insert(deliverable);
             return 1;
         } catch (Exception e) {
             e.printStackTrace();
