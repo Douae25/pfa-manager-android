@@ -28,4 +28,15 @@
         android:textSize="12sp"
         android:textColor="#999" />
 
+    <TextView
+        android:id="@+id/tvUserDepartment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Filière"
+        android:textSize="13sp"
+        android:textColor="#1976D2"
+        android:textStyle="bold"
+        android:paddingTop="2dp"
+        android:visibility="gone" />
+
 </LinearLayout>

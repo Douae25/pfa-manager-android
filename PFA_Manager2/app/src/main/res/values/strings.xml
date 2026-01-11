@@ -58,4 +58,5 @@
     <string name="btn_reject">Reject</string>
     <string name="btn_validate">Validate</string>
     <string name="btn_reject_uploaded">Reject</string>
+    <string name="label_department">Filière</string>
 </resources>

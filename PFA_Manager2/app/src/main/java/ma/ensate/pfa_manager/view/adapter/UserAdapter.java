@@ -70,12 +70,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     }
 
     static class UserViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvEmail, tvRole;
+        TextView tvName, tvEmail, tvRole, tvDepartment;
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             tvName = itemView.findViewById(R.id.tvUserName);
             tvEmail = itemView.findViewById(R.id.tvUserEmail);
             tvRole = itemView.findViewById(R.id.tvUserRole);
+            tvDepartment = itemView.findViewById(R.id.tvUserDepartment);
         }
 
         void bind(User u) {
@@ -83,6 +84,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             tvName.setText(name.trim());
             tvEmail.setText(u.getEmail() == null ? "" : u.getEmail());
             tvRole.setText(u.getRole() == null ? "" : u.getRole().name());
+            if (u.getDepartment() != null && u.getDepartment().getName() != null) {
+                tvDepartment.setText(u.getDepartment().getName());
+                tvDepartment.setVisibility(View.VISIBLE);
+            } else {
+                tvDepartment.setText("");
+                tvDepartment.setVisibility(View.GONE);
+            }
         }
     }
 }

@@ -65,6 +65,15 @@ public class UserRepository {
         });
     }
     
+    public void getUserById(long userId, OnUserFetchedListener listener) {
+        executorService.execute(() -> {
+            User user = userDao.getUserById(userId);
+            if (listener != null) {
+                listener.onUserFetched(user);
+            }
+        });
+    }
+    
     public interface OnUserInsertedListener {
         void onUserInserted(User user);
     }

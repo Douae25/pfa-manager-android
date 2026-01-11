@@ -12,9 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import ma.ensate.pfa_manager.R;
 import ma.ensate.pfa_manager.model.Convention;
+import ma.ensate.pfa_manager.model.PFADossier;
+import ma.ensate.pfa_manager.model.User;
 import ma.ensate.pfa_manager.repository.ConventionRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
+import ma.ensate.pfa_manager.repository.PFADossierRepository;
 import ma.ensate.pfa_manager.viewmodel.AdminViewModel;
 import ma.ensate.pfa_manager.viewmodel.AdminViewModelFactory;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
@@ -24,8 +27,9 @@ public class ConventionDetailActivity extends AppCompatActivity {
 
     private AdminViewModel adminViewModel;
     private SettingsViewModel settingsViewModel;
-    private TextView tvCompanyName, tvSupervisor, tvDates, tvState, tvAdminComment;
+    private TextView tvCompanyName, tvSupervisor, tvDates, tvState, tvAdminComment, tvStudentDepartment;
     private Button btnViewPdf;
+    private UserRepository userRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +49,11 @@ public class ConventionDetailActivity extends AppCompatActivity {
         tvDates = findViewById(R.id.tvDates);
         tvState = findViewById(R.id.tvState);
         tvAdminComment = findViewById(R.id.tvAdminComment);
+        tvStudentDepartment = findViewById(R.id.tvStudentDepartment);
         btnViewPdf = findViewById(R.id.btnViewPdf);
+        userRepository = new UserRepository(getApplication());
 
         ConventionRepository conventionRepository = new ConventionRepository(getApplication());
-        UserRepository userRepository = new UserRepository(getApplication());
         AdminViewModelFactory factory = new AdminViewModelFactory(conventionRepository, userRepository);
         adminViewModel = new ViewModelProvider(this, factory).get(AdminViewModel.class);
 
@@ -96,9 +101,27 @@ public class ConventionDetailActivity extends AppCompatActivity {
         String dates = getString(R.string.label_period) + ": " + (c.getStart_date() == null ? getString(R.string.value_na) : new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date(c.getStart_date())))
                 + " " + getString(R.string.label_to) + " " + (c.getEnd_date() == null ? getString(R.string.value_na) : new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date(c.getEnd_date())));
         tvDates.setText(dates);
-        tvState.setText(getString(R.string.label_state) + ": " + (c.getState() == null ? getString(R.string.value_na) : c.getState().name()));
-        String comment = c.getAdmin_comment() == null || c.getAdmin_comment().isEmpty() ? getString(R.string.value_no_comment) : c.getAdmin_comment();
-        tvAdminComment.setText(getString(R.string.label_admin_comment) + ": " + comment);
+
+        // Suppression de l'affichage du state et du commentaire admin
+        tvState.setVisibility(View.GONE);
+        tvAdminComment.setVisibility(View.GONE);
+        // Récupérer le PFADossier via le repository
+        PFADossierRepository pfaDossierRepository = new PFADossierRepository(getApplication());
+        pfaDossierRepository.getPFADossierById(c.getPfa_id(), pfaDossier -> runOnUiThread(() -> {
+            if (pfaDossier != null) {
+                userRepository.getUserById(pfaDossier.getStudent_id(), user -> runOnUiThread(() -> {
+                    if (user != null && user.getDepartment() != null && user.getDepartment().getName() != null) {
+                        tvStudentDepartment.setText(getString(R.string.label_department) + ": " + user.getDepartment().getName());
+                    } else {
+                        tvStudentDepartment.setText(getString(R.string.label_department) + ": N/A");
+                    }
+                    tvStudentDepartment.setVisibility(View.VISIBLE);
+                }));
+            } else {
+                tvStudentDepartment.setText(getString(R.string.label_department) + ": N/A");
+                tvStudentDepartment.setVisibility(View.VISIBLE);
+            }
+        }));
 
         // Show PDF button ONLY for UPLOADED (signed) conventions
         String uri = c.getScanned_file_uri();

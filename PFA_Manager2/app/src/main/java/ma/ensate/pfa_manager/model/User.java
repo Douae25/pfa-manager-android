@@ -3,6 +3,9 @@ package ma.ensate.pfa_manager.model;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.ColumnInfo;
+import androidx.room.TypeConverters;
+import ma.ensate.pfa_manager.model.Department;
+import ma.ensate.pfa_manager.model.DepartmentConverter;
 
 @Entity(tableName = "users")
 public class User {
@@ -31,6 +34,10 @@ public class User {
     @ColumnInfo(name = "created_at")
     private Long created_at;
 
+    @TypeConverters(DepartmentConverter.class)
+    @ColumnInfo(name = "department_code")
+    private Department department;
+
     // Constructeur vide (requis pour Firebase/Room)
     public User() {}
 
@@ -58,4 +65,7 @@ public class User {
     
     public Long getCreated_at() { return created_at; }
     public void setCreated_at(Long created_at) { this.created_at = created_at; }
+
+    public Department getDepartment() { return department; }
+    public void setDepartment(Department department) { this.department = department; }
 }
