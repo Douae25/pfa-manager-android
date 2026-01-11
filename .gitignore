@@ -1,0 +1,7 @@
+.git
+.vscode/
+.specify/
+.github/
+Backend_Backup/
+.DS_Store
+**/target/
