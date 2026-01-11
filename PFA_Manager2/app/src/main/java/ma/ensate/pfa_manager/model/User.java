@@ -3,9 +3,10 @@ package ma.ensate.pfa_manager.model;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.ColumnInfo;
+import java.io.Serializable;
 
 @Entity(tableName = "users")
-public class User {
+public class User implements Serializable {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "user_id")
     private Long user_id;

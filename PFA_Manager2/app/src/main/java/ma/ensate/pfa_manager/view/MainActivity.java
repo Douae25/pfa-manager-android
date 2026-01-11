@@ -1,5 +1,6 @@
 package ma.ensate.pfa_manager.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,8 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.textfield.TextInputEditText;
 import ma.ensate.pfa_manager.R;
+import ma.ensate.pfa_manager.model.PFADossier;
+import ma.ensate.pfa_manager.model.PFAStatus;
+import ma.ensate.pfa_manager.model.Role;
+import ma.ensate.pfa_manager.model.User;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
+import ma.ensate.pfa_manager.repository.PFADossierRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
+import ma.ensate.pfa_manager.view.etudiant.StudentSpaceActivity;
 import ma.ensate.pfa_manager.viewmodel.LoginViewModel;
 import ma.ensate.pfa_manager.viewmodel.LoginViewModelFactory;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
@@ -33,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Insérer un utilisateur de test au démarrage
+        insertTestUserIfNeeded();
 
         setupLanguageToggle();
         setupBackNavigation();
@@ -70,16 +80,71 @@ public class MainActivity extends AppCompatActivity {
         Button loginBtn = findViewById(R.id.loginBtn);
 
         loginBtn.setOnClickListener(v -> {
-            String email = emailInput.getText().toString();
-            String password = passwordInput.getText().toString();
+            String email = emailInput.getText().toString().trim();
+            String password = passwordInput.getText().toString().trim();
+            
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
             loginViewModel.login(email, password);
         });
 
+        // Observer unique pour éviter les doublons
         loginViewModel.getLoginResult().observe(this, result -> {
             if ("Success".equals(result)) {
                 Toast.makeText(this, "Bienvenue !", Toast.LENGTH_SHORT).show();
+                // Observer du user connecté
+                loginViewModel.getLoggedInUser().observe(this, user -> {
+                    if (user != null) {
+                        if (user.getRole() == Role.STUDENT) {
+                            Intent intent = new Intent(MainActivity.this, StudentSpaceActivity.class);
+                            intent.putExtra("user", user);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+                });
             } else {
                 Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    
+    private void insertTestUserIfNeeded() {
+        UserRepository userRepository = new UserRepository(getApplication());
+        PFADossierRepository pfaDossierRepository = new PFADossierRepository(getApplication());
+        
+        // Vérifier si l'utilisateur existe déjà
+        userRepository.getUserByEmail("student@ensa.ma", user -> {
+            if (user == null) {
+                // Créer un utilisateur de test
+                User testUser = new User();
+                testUser.setEmail("student@ensa.ma");
+                testUser.setPassword("student123");
+                testUser.setFirst_name("Ahmed");
+                testUser.setLast_name("Alami");
+                testUser.setRole(Role.STUDENT);
+                testUser.setPhone_number("0612345678");
+                testUser.setCreated_at(System.currentTimeMillis());
+                
+                // Insérer dans la base de données
+                userRepository.insert(testUser, insertedUser -> {
+                    // Créer un PFADossier pour l'utilisateur
+                    PFADossier pfaDossier = new PFADossier();
+                    pfaDossier.setStudent_id(insertedUser.getUser_id());
+                    pfaDossier.setTitle("Test PFA Project");
+                    pfaDossier.setDescription("Test project for student");
+                    pfaDossier.setCurrent_status(PFAStatus.ASSIGNED);
+                    pfaDossier.setUpdated_at(System.currentTimeMillis());
+                    
+                    pfaDossierRepository.insert(pfaDossier, createdDossier -> {
+                        runOnUiThread(() -> 
+                            Toast.makeText(this, "Utilisateur de test créé: student@ensa.ma / student123", Toast.LENGTH_LONG).show()
+                        );
+                    });
+                });
             }
         });
     }

@@ -23,6 +23,12 @@ public class Deliverable {
     @ColumnInfo(name = "file_uri")
     private String file_uri;
     
+    @ColumnInfo(name = "deliverable_type")
+    private DeliverableType deliverable_type;
+    
+    @ColumnInfo(name = "deliverable_file_type")
+    private DeliverableFileType deliverable_file_type = null;
+    
     @ColumnInfo(name = "uploaded_at")
     private Long uploaded_at;
     
@@ -39,6 +45,12 @@ public class Deliverable {
     
     public String getFile_uri() { return file_uri; }
     public void setFile_uri(String file_uri) { this.file_uri = file_uri; }
+    
+    public DeliverableType getDeliverable_type() { return deliverable_type; }
+    public void setDeliverable_type(DeliverableType deliverable_type) { this.deliverable_type = deliverable_type; }
+    
+    public DeliverableFileType getDeliverable_file_type() { return deliverable_file_type; }
+    public void setDeliverable_file_type(DeliverableFileType deliverable_file_type) { this.deliverable_file_type = deliverable_file_type; }
     
     public Long getUploaded_at() { return uploaded_at; }
     public void setUploaded_at(Long uploaded_at) { this.uploaded_at = uploaded_at; }

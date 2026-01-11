@@ -17,7 +17,7 @@ import ma.ensate.pfa_manager.model.*;
     Evaluation.class,
     EvaluationCriteria.class,
     EvaluationDetail.class
-}, version = 1, exportSchema = false)
+}, version = 3, exportSchema = false)
 @TypeConverters({RoleConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
     

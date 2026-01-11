@@ -25,6 +25,32 @@
         android:name=".view.MainActivity"
         android:exported="false" />
 
+    <activity
+        android:name=".view.etudiant.StudentSpaceActivity"
+        android:exported="false" />
+
+    <activity
+        android:name=".view.etudiant.ConventionRequestActivity"
+        android:exported="false" />
+
+    <activity
+        android:name=".view.etudiant.UploadSignedConventionActivity"
+        android:exported="false" />
+
+    <activity
+        android:name=".view.etudiant.UploadDeliverablesActivity"
+        android:exported="false" />
+
+    <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="ma.ensate.pfa_manager.fileprovider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_paths" />
+    </provider>
+
 </application>
 
 </manifest>
