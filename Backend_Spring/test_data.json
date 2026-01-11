@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "description": "API Request payloads for PFA Management System testing",
+    "note": "Contains the data needed for API requests"
+  },
+
+  "apiRequests": {
+    "pfaDossierCreateOrGet": {
+      "method": "POST",
+      "url": "/api/pfa-dossiers/create-or-get",
+      "body": {
+        "studentId": 123,
+        "title": "E-Commerce Platform",
+        "description": "Development of a modern e-commerce platform",
+        "supervisorId": 201
+      }
+    },
+
+    "conventionRequest": {
+      "method": "POST",
+      "url": "/api/conventions",
+      "body": {
+        "studentId": 123,
+        "pfaId": 4,
+        "companyName": "TechCorp Morocco",
+        "companyAddress": "123 Boulevard Mohammed V, Casablanca",
+        "companySupervisorName": "Mr. Company Supervisor",
+        "companySupervisorEmail": "supervisor@techcorp.ma",
+        "startDate": 1704067200000,
+        "endDate": 1735689600000
+      }
+    },
+
+    "deliverableDeposit": {
+      "method": "POST",
+      "url": "/api/deliverables",
+      "body": {
+        "pfaId": 4,
+        "fileTitle": "Progress Report - Week 1",
+        "fileUri": "https://storage.example.com/progress_report.pdf",
+        "deliverableType": "BEFORE_DEFENSE",
+        "fileType": "PROGRESS_REPORT"
+      }
+    },
+
+    "conventionUploadSigned": {
+      "method": "POST",
+      "url": "/api/conventions/{id}/upload-signed?scannedFileUri=https://storage.example.com/signed_convention.pdf",
+      "body": {}
+    }
+  }
+}
