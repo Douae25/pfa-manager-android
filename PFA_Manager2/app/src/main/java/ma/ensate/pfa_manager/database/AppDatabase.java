@@ -7,22 +7,23 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import ma.ensate.pfa_manager.model.*;
 
+// ATTENTION : J'ai passé la version à 2 ici 👇
 @Database(entities = {
-    User.class,
-    Department.class,
-    PFADossier.class,
-    Convention.class,
-    Deliverable.class,
-    Soutenance.class,
-    Evaluation.class,
-    EvaluationCriteria.class,
-    EvaluationDetail.class
-}, version = 1, exportSchema = false)
+        User.class,
+        Department.class,
+        PFADossier.class,
+        Convention.class,
+        Deliverable.class,
+        Soutenance.class,
+        Evaluation.class,
+        EvaluationCriteria.class,
+        EvaluationDetail.class
+}, version = 2, exportSchema = false) // <--- ICI C'EST 2 MAINTENANT
 @TypeConverters({RoleConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
-    
+
     private static AppDatabase instance;
-    
+
     public abstract UserDao userDao();
     public abstract DepartmentDao departmentDao();
     public abstract PFADossierDao pfaDossierDao();
@@ -32,16 +33,16 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract EvaluationDao evaluationDao();
     public abstract EvaluationCriteriaDao evaluationCriteriaDao();
     public abstract EvaluationDetailDao evaluationDetailDao();
-    
+
     public static synchronized AppDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(
-                context.getApplicationContext(),
-                AppDatabase.class,
-                "pfa_manager_database"
-            )
-            .fallbackToDestructiveMigration()
-            .build();
+                            context.getApplicationContext(),
+                            AppDatabase.class,
+                            "pfa_manager_database"
+                    )
+                    .fallbackToDestructiveMigration() // Ceci permet de recreer la base si la version change
+                    .build();
         }
         return instance;
     }

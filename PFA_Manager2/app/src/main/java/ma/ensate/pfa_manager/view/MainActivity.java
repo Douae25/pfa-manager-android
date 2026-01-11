@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.textfield.TextInputEditText;
 import ma.ensate.pfa_manager.R;
+import ma.ensate.pfa_manager.model.User;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
 import ma.ensate.pfa_manager.util.TestDataHelper;
@@ -29,16 +30,10 @@ public class MainActivity extends AppCompatActivity {
         LanguageRepository languageRepository = new LanguageRepository(this);
         SettingsViewModelFactory factory = new SettingsViewModelFactory(languageRepository);
         settingsViewModel = new ViewModelProvider(this, factory).get(SettingsViewModel.class);
-
         settingsViewModel.applySavedLanguage();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // ⚠️ IMPORTANT : Insérer les données de test UNE SEULE FOIS
-        // Décommenter cette ligne UNIQUEMENT lors du premier lancement
         TestDataHelper.insertTestData(this);
-
         setupLanguageToggle();
         setupBackNavigation();
         setupLoginForm();
@@ -86,16 +81,42 @@ public class MainActivity extends AppCompatActivity {
             loginViewModel.login(email, password);
         });
 
-        loginViewModel.getLoginResult().observe(this, result -> {
-            if ("Success".equals(result)) {
-                Toast.makeText(this, "Bienvenue !", Toast.LENGTH_SHORT).show();
-                // TODO: Naviguer vers le Dashboard
-                Intent intent = new Intent(this, EncadrantDashboardActivity.class);
-                startActivity(intent);
-                finish();
-            } else {
-                Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+        loginViewModel.getUserLoginStatus().observe(this, user -> {
+            if (user != null) {
+                Toast.makeText(this, "Bienvenue " + user.getFirst_name(), Toast.LENGTH_SHORT).show();
+                redirectUser(user);
             }
         });
+
+        loginViewModel.getErrorMessage().observe(this, error -> {
+            Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void redirectUser(User user) {
+        Intent intent = null;
+
+        switch (user.getRole()) {
+            case PROFESSOR:
+                intent = new Intent(this, EncadrantDashboardActivity.class);
+                break;
+            case STUDENT:
+                // intent = new Intent(this, StudentDashboardActivity.class);
+                break;
+            case ADMIN:
+                // intent = new Intent(this, AdminDashboardActivity.class);
+                break;
+            case COORDINATOR:
+                // intent = new Intent(this, CoordinatorDashboardActivity.class);
+                break;
+        }
+
+        if (intent != null) {
+            intent.putExtra("USER_ID", user.getUser_id());
+            startActivity(intent);
+            finish();
+        } else {
+            Toast.makeText(this, "Interface non disponible pour ce rôle", Toast.LENGTH_SHORT).show();
+        }
     }
 }

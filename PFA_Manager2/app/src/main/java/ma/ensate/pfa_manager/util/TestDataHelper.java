@@ -16,24 +16,47 @@ public class TestDataHelper {
         Executors.newSingleThreadExecutor().execute(() -> {
             AppDatabase db = AppDatabase.getInstance(context);
 
-            // Vérifier si les données existent déjà
+            if (db.userDao().getAllUsers().size() > 0) {
+                return;
+            }
 
+            // === 1. CRÉER UN ADMIN (Pour tester le rôle ADMIN) ===
+            User admin = new User();
+            admin.setFirst_name("Super");
+            admin.setLast_name("Admin");
+            admin.setEmail("admin@ensate.ma");
+            admin.setPassword("123456");
+            admin.setRole(Role.ADMIN);
+            admin.setCreated_at(System.currentTimeMillis());
+            db.userDao().insert(admin);
 
-            // === CRÉER UN ENCADRANT ===
+            // === 2. CRÉER UN COORDINATEUR (Pour tester le rôle COORDINATOR) ===
+            User coord = new User();
+            coord.setFirst_name("Hassan");
+            coord.setLast_name("Amrani");
+            coord.setEmail("coord@ensate.ma");
+            coord.setPassword("123456");
+            coord.setRole(Role.COORDINATOR);
+            coord.setCreated_at(System.currentTimeMillis());
+            db.userDao().insert(coord);
+
+            // === 3. CRÉER UN ENCADRANT (PROFESSOR) ===
             User supervisor = new User();
             supervisor.setFirst_name("Abdeljebar");
             supervisor.setLast_name("Mansour");
             supervisor.setEmail("mansour@ensate.ma");
+            supervisor.setPassword("123456");
             supervisor.setRole(Role.PROFESSOR);
             supervisor.setPhone_number("0612345678");
             supervisor.setCreated_at(System.currentTimeMillis());
             long supervisorId = db.userDao().insert(supervisor);
 
-            // === CRÉER DES ÉTUDIANTS ===
+            // === 4. CRÉER DES ÉTUDIANTS (STUDENT) ===
             User student1 = new User();
             student1.setFirst_name("Ahmed");
             student1.setLast_name("Alami");
             student1.setEmail("ahmed.alami@ensate.ma");
+            student1.setPassword("123456");
             student1.setRole(Role.STUDENT);
             student1.setCreated_at(System.currentTimeMillis());
             long student1Id = db.userDao().insert(student1);
@@ -42,6 +65,7 @@ public class TestDataHelper {
             student2.setFirst_name("Fatima");
             student2.setLast_name("Zahra");
             student2.setEmail("fatima.zahra@ensate.ma");
+            student2.setPassword("123456");
             student2.setRole(Role.STUDENT);
             student2.setCreated_at(System.currentTimeMillis());
             long student2Id = db.userDao().insert(student2);
@@ -50,6 +74,7 @@ public class TestDataHelper {
             student3.setFirst_name("Youssef");
             student3.setLast_name("Benkirane");
             student3.setEmail("youssef.benkirane@ensate.ma");
+            student3.setPassword("123456");
             student3.setRole(Role.STUDENT);
             student3.setCreated_at(System.currentTimeMillis());
             long student3Id = db.userDao().insert(student3);
@@ -87,21 +112,21 @@ public class TestDataHelper {
             del1.setPfa_id(pfa1Id);
             del1.setFile_title("Rapport d'avancement - Janvier");
             del1.setFile_uri("content://documents/rapport_janvier.pdf");
-            del1.setUploaded_at(System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000L); // Il y a 2 jours
+            del1.setUploaded_at(System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000L);
             db.deliverableDao().insert(del1);
 
             Deliverable del2 = new Deliverable();
             del2.setPfa_id(pfa1Id);
             del2.setFile_title("Maquettes UI/UX");
             del2.setFile_uri("content://documents/maquettes.pdf");
-            del2.setUploaded_at(System.currentTimeMillis() - 5 * 24 * 60 * 60 * 1000L); // Il y a 5 jours
+            del2.setUploaded_at(System.currentTimeMillis() - 5 * 24 * 60 * 60 * 1000L);
             db.deliverableDao().insert(del2);
 
             Deliverable del3 = new Deliverable();
             del3.setPfa_id(pfa3Id);
             del3.setFile_title("Code source - Sprint 1");
             del3.setFile_uri("content://documents/code_sprint1.zip");
-            del3.setUploaded_at(System.currentTimeMillis() - 1 * 24 * 60 * 60 * 1000L); // Il y a 1 jour
+            del3.setUploaded_at(System.currentTimeMillis() - 1 * 24 * 60 * 60 * 1000L);
             db.deliverableDao().insert(del3);
 
             // === CRÉER DES CONVENTIONS ===
@@ -112,7 +137,7 @@ public class TestDataHelper {
             conv1.setCompany_supervisor_name("M. Hassan Bennani");
             conv1.setCompany_supervisor_email("h.bennani@techcorp.ma");
             conv1.setStart_date(System.currentTimeMillis());
-            conv1.setEnd_date(System.currentTimeMillis() + 120L * 24 * 60 * 60 * 1000); // +4 mois
+            conv1.setEnd_date(System.currentTimeMillis() + 120L * 24 * 60 * 60 * 1000);
             conv1.setScanned_file_uri("content://documents/convention_techcorp.pdf");
             conv1.setIs_validated(false);
             conv1.setState(ConventionState.UPLOADED);
@@ -122,7 +147,7 @@ public class TestDataHelper {
             Soutenance sout1 = new Soutenance();
             sout1.setPfa_id(pfa1Id);
             sout1.setLocation("Salle A101");
-            sout1.setDate_soutenance(System.currentTimeMillis() + 30L * 24 * 60 * 60 * 1000); // Dans 30 jours
+            sout1.setDate_soutenance(System.currentTimeMillis() + 30L * 24 * 60 * 60 * 1000);
             sout1.setStatus(SoutenanceStatus.PLANNED);
             sout1.setCreated_at(System.currentTimeMillis());
             db.soutenanceDao().insert(sout1);
@@ -130,12 +155,12 @@ public class TestDataHelper {
             Soutenance sout2 = new Soutenance();
             sout2.setPfa_id(pfa3Id);
             sout2.setLocation("Amphithéâtre B");
-            sout2.setDate_soutenance(System.currentTimeMillis() + 45L * 24 * 60 * 60 * 1000); // Dans 45 jours
+            sout2.setDate_soutenance(System.currentTimeMillis() + 45L * 24 * 60 * 60 * 1000);
             sout2.setStatus(SoutenanceStatus.PLANNED);
             sout2.setCreated_at(System.currentTimeMillis());
             db.soutenanceDao().insert(sout2);
 
-            System.out.println("✅ Données de test insérées avec succès!");
+            System.out.println("✅ Données de test (Admin, Prof, Etudiants) insérées avec succès!");
         });
     }
 }

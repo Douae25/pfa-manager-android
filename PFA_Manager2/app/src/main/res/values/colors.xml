@@ -1,5 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primary">#1976D2</color>
+    <color name="primary_dark">#1565C0</color>
+    <color name="primary_light">#E3F2FD</color>
+
+    <color name="background_light">#F5F7FA</color>
+    <color name="white">#FFFFFF</color>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_dark">#424242</color>
+
+    <color name="status_planned">#4CAF50</color>
+    <color name="status_pending">#FFF3E0</color>
+    <color name="status_done">#2196F3</color>
+
+    <color name="error">#E53935</color>
+    <color name="success">#43A047</color>
+
+    <color name="white_70">#B3FFFFFF</color>
+
+    <!-- Divider -->
+    <color name="divider">#E0E0E0</color>
+
+    <!-- Stats Blue -->
+    <color name="stat_blue">#1976D2</color>
+    <color name="stat_blue_bg">#FFFFFF</color>
+    <color name="stat_blue_light">#BBDEFB</color>
+
+    <!-- Stats Green -->
+    <color name="stat_green">#388E3C</color>
+    <color name="stat_green_bg">#FFFFFF</color>
+    <color name="stat_green_light">#C8E6C9</color>
+
+    <!-- Stats Orange -->
+    <color name="stat_orange">#F57C00</color>
+    <color name="stat_orange_bg">#FFFFFF</color>
+    <color name="stat_orange_light">#FFE0B2</color>
+
+    <!-- Stats Purple -->
+    <color name="stat_purple">#7B1FA2</color>
+    <color name="stat_purple_light">#E1BEE7</color>
+
+    <!-- Info -->
+    <color name="info_bg">#E8EAF6</color>
 </resources>

@@ -15,7 +15,7 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".view.EncadrantDashboardActivity"
+            android:name=".view.HomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,14 +23,28 @@
             </intent-filter>
         </activity>
 
-
-        <activity
-            android:name=".view.HomeActivity"
-            android:exported="false" />
-
         <activity
             android:name=".view.MainActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".view.EncadrantDashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.StudentListActivity"
+            android:exported="false"
+            android:parentActivityName=".view.EncadrantDashboardActivity" />
+
+        <activity
+            android:name=".view.StudentDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.PlanningSoutenanceActivity"
+            android:exported="false"
+            android:label="Planifier une soutenance"
+            android:parentActivityName=".view.EncadrantDashboardActivity" />
 
     </application>
 
