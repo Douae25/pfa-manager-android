@@ -97,7 +97,7 @@ public class PFASoutenanceAdapter extends ListAdapter<PFAWithSoutenance, PFASout
 
         void bind(PFAWithSoutenance item) {
             tvTitle.setText(item.pfa.getTitle());
-            tvStudent.setText("Étudiant: " + item.pfa.getStudent_id()); // Remplacer par nom réel
+            tvStudent.setText("Étudiant: " + item.pfa.getStudent_id());
 
             if (item.isPlanned()) {
                 chipStatus.setText("Planifié");
@@ -115,7 +115,6 @@ public class PFASoutenanceAdapter extends ListAdapter<PFAWithSoutenance, PFASout
 
                 cardView.setStrokeColor(itemView.getContext().getColor(R.color.status_planned));
             } else {
-                // Non planifié
                 chipStatus.setText("Non planifié");
                 chipStatus.setChipBackgroundColorResource(R.color.status_pending);
                 chipStatus.setTextColor(itemView.getContext().getColor(R.color.text_dark));

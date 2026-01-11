@@ -188,7 +188,6 @@ public class EvaluationRepository {
     public void getByPfaId(Long pfaId, OnEvaluationsFetchedListener listener) {
         executor.execute(() -> {
             if (pfaId != null) {
-                // On utilise la méthode qui existe déjà dans ton DAO
                 List<Evaluation> results = evaluationDao.getByPfaId(pfaId);
                 if (listener != null) {
                     listener.onEvaluationsFetched(results);

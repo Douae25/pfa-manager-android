@@ -186,7 +186,6 @@ public class SoutenanceRepository {
         void onError(String message);
     }
 
-    // Interfaces standards de la branche Main
     public interface OnSoutenanceInsertedListener {
         void onSoutenanceInserted(Soutenance soutenance);
     }

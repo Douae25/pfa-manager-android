@@ -12,7 +12,6 @@
         android:background="@color/white"
         app:elevation="2dp">
 
-        <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -67,7 +66,6 @@
                     android:padding="16dp"
                     android:gravity="center_vertical">
 
-                    <!-- Avatar avec initiales -->
                     <TextView
                         android:id="@+id/tvAvatar"
                         android:layout_width="56dp"
@@ -96,7 +94,6 @@
                             android:textSize="18sp"
                             android:textStyle="bold"/>
 
-                        <!-- Email -->
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -121,8 +118,8 @@
 
                         </LinearLayout>
 
-                        <!-- Phone -->
                         <LinearLayout
+                            android:id="@+id/layoutPhone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
@@ -168,7 +165,6 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Header Section -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -247,7 +243,6 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Header Section -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -336,15 +331,36 @@
 
                         </LinearLayout>
 
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/tvConventionStatus"
-                            android:layout_width="wrap_content"
-                            android:layout_height="32dp"
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
-                            android:text="Validée"
-                            android:textSize="11sp"
-                            app:chipMinHeight="28dp"
-                            app:chipCornerRadius="14dp"/>
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/tvConventionStatus"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:text="Validée"
+                                android:textSize="11sp"
+                                app:chipMinHeight="28dp"
+                                app:chipCornerRadius="14dp"/>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnOpenConvention"
+                                style="@style/Widget.MaterialComponents.Button.TextButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="36dp"
+                                android:layout_marginStart="8dp"
+                                android:text="Voir PDF"
+                                android:textSize="12sp"
+                                app:icon="@drawable/ic_document"
+                                app:iconSize="16dp"
+                                app:iconPadding="4dp"
+                                android:visibility="gone"/>
+
+                        </LinearLayout>
 
                     </LinearLayout>
 
@@ -368,7 +384,6 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Header Section -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -404,7 +419,7 @@
                                 android:layout_height="match_parent"
                                 android:gravity="center"
                                 android:paddingHorizontal="10dp"
-                                android:text="3"
+                                android:text="0"
                                 android:textColor="@color/white"
                                 android:textSize="12sp"
                                 android:textStyle="bold"/>
@@ -456,7 +471,6 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Header Section -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -512,7 +526,6 @@
                         android:orientation="vertical"
                         android:visibility="gone">
 
-                        <!-- Date -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -537,7 +550,6 @@
 
                         </LinearLayout>
 
-                        <!-- Location -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -572,6 +584,100 @@
                             app:chipCornerRadius="14dp"/>
 
                     </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section Évaluation -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardEvaluation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/divider"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_evaluation"
+                            app:tint="@color/primary"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="Évaluation"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="@color/divider"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="12dp"
+                        android:background="@drawable/bg_score">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_evaluation"
+                            app:tint="@color/status_planned"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="Note finale:"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"/>
+
+                        <TextView
+                            android:id="@+id/tvEvaluationScore"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="16.5/20"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/status_planned"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvEvaluationDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Évalué le 15 Février 2025"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"/>
 
                 </LinearLayout>
 

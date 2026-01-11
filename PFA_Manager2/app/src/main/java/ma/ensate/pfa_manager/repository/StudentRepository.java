@@ -6,9 +6,7 @@ import java.util.List;
 
 import ma.ensate.pfa_manager.database.AppDatabase;
 import ma.ensate.pfa_manager.database.UserDao;
-import ma.ensate.pfa_manager.model.User;
 import ma.ensate.pfa_manager.model.dto.StudentWithPFA;
-
 
 public class StudentRepository {
 
@@ -21,15 +19,5 @@ public class StudentRepository {
 
     public LiveData<List<StudentWithPFA>> getStudentsWithPFABySupervisor(Long supervisorId) {
         return userDao.getStudentsWithPFABySupervisor(supervisorId);
-    }
-
-
-    public LiveData<List<User>> getStudentsBySupervisor(Long supervisorId) {
-        return userDao.getStudentsBySupervisor(supervisorId);
-    }
-
-
-    public LiveData<User> getStudentById(Long userId) {
-        return userDao.getUserById(userId);
     }
 }

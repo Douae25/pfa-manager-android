@@ -1,5 +1,8 @@
 package ma.ensate.pfa_manager.view;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -8,13 +11,16 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -23,7 +29,8 @@ import ma.ensate.pfa_manager.R;
 import ma.ensate.pfa_manager.model.*;
 import ma.ensate.pfa_manager.viewmodel.StudentDetailViewModel;
 
-public class StudentDetailActivity extends AppCompatActivity {
+public class StudentDetailActivity extends AppCompatActivity
+        implements SimpleDeliverableAdapter.OnDeliverableClickListener {
 
     private TextView tvAvatar;
     private TextView tvStudentName;
@@ -40,6 +47,7 @@ public class StudentDetailActivity extends AppCompatActivity {
     private TextView tvCompanyName;
     private TextView tvCompanyAddress;
     private Chip chipConventionStatus;
+    private MaterialButton btnOpenConvention;
 
     private TextView tvDeliverablesCount;
     private RecyclerView recyclerDeliverables;
@@ -53,9 +61,11 @@ public class StudentDetailActivity extends AppCompatActivity {
     private Chip chipSoutenanceStatus;
 
     private StudentDetailViewModel viewModel;
+    private SimpleDeliverableAdapter deliverableAdapter;
 
     private Long studentId;
     private Long pfaId;
+    private Convention currentConvention;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +81,7 @@ public class StudentDetailActivity extends AppCompatActivity {
 
         initViews();
         setupToolbar();
+        setupDeliverableAdapter();
         initViewModel();
         observeData();
     }
@@ -91,12 +102,11 @@ public class StudentDetailActivity extends AppCompatActivity {
         tvCompanyName = findViewById(R.id.tvCompanyName);
         tvCompanyAddress = findViewById(R.id.tvCompanyAddress);
         chipConventionStatus = findViewById(R.id.tvConventionStatus);
+        btnOpenConvention = findViewById(R.id.btnOpenConvention);
 
         tvDeliverablesCount = findViewById(R.id.tvDeliverablesCount);
         recyclerDeliverables = findViewById(R.id.recyclerDeliverables);
         tvDeliverablesEmpty = findViewById(R.id.tvDeliverablesEmpty);
-
-        recyclerDeliverables.setLayoutManager(new LinearLayoutManager(this));
 
         cardSoutenance = findViewById(R.id.cardSoutenance);
         layoutSoutenanceEmpty = findViewById(R.id.layoutSoutenanceEmpty);
@@ -114,6 +124,13 @@ public class StudentDetailActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
         toolbar.setNavigationOnClickListener(v -> finish());
+    }
+
+    private void setupDeliverableAdapter() {
+        deliverableAdapter = new SimpleDeliverableAdapter();
+        deliverableAdapter.setOnDeliverableClickListener(this);
+        recyclerDeliverables.setLayoutManager(new LinearLayoutManager(this));
+        recyclerDeliverables.setAdapter(deliverableAdapter);
     }
 
     private void initViewModel() {
@@ -137,7 +154,8 @@ public class StudentDetailActivity extends AppCompatActivity {
 
         viewModel.getDeliverables().observe(this, deliverables -> {
             if (deliverables != null && !deliverables.isEmpty()) {
-                updateDeliverablesInfo(deliverables.size());
+                tvDeliverablesCount.setText(String.valueOf(deliverables.size()));
+                deliverableAdapter.setDeliverables(deliverables);
                 tvDeliverablesEmpty.setVisibility(View.GONE);
                 recyclerDeliverables.setVisibility(View.VISIBLE);
             } else {
@@ -148,6 +166,8 @@ public class StudentDetailActivity extends AppCompatActivity {
         });
 
         viewModel.getSoutenance().observe(this, this::updateSoutenanceInfo);
+
+        viewModel.getEvaluation().observe(this, this::updateEvaluationInfo);
     }
 
     private void updateStudentInfo(User student) {
@@ -198,7 +218,7 @@ public class StudentDetailActivity extends AppCompatActivity {
                 chip.setTextColor(getColor(R.color.white));
                 break;
             case CLOSED:
-                chip.setText("Clôturé");
+                chip.setText("Terminé");
                 chip.setChipBackgroundColorResource(R.color.status_planned);
                 chip.setTextColor(getColor(R.color.white));
                 break;
@@ -206,6 +226,8 @@ public class StudentDetailActivity extends AppCompatActivity {
     }
 
     private void updateConventionInfo(Convention convention) {
+        this.currentConvention = convention;
+
         if (convention != null) {
             layoutConventionEmpty.setVisibility(View.GONE);
             layoutConventionDetails.setVisibility(View.VISIBLE);
@@ -236,14 +258,26 @@ public class StudentDetailActivity extends AppCompatActivity {
                     chipConventionStatus.setTextColor(getColor(R.color.white));
                     break;
             }
+
+            if (convention.getScanned_file_uri() != null && !convention.getScanned_file_uri().isEmpty()) {
+                btnOpenConvention.setVisibility(View.VISIBLE);
+                btnOpenConvention.setOnClickListener(v -> openConventionPdf());
+            } else {
+                btnOpenConvention.setVisibility(View.GONE);
+            }
         } else {
             layoutConventionEmpty.setVisibility(View.VISIBLE);
             layoutConventionDetails.setVisibility(View.GONE);
         }
     }
 
-    private void updateDeliverablesInfo(int count) {
-        tvDeliverablesCount.setText(String.valueOf(count));
+    private void openConventionPdf() {
+        if (currentConvention == null || currentConvention.getScanned_file_uri() == null) {
+            Toast.makeText(this, "Aucun fichier de convention", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        openFile(currentConvention.getScanned_file_uri(), "Convention");
     }
 
     private void updateSoutenanceInfo(Soutenance soutenance) {
@@ -270,5 +304,64 @@ public class StudentDetailActivity extends AppCompatActivity {
             layoutSoutenanceEmpty.setVisibility(View.VISIBLE);
             layoutSoutenanceDetails.setVisibility(View.GONE);
         }
+    }
+
+    private void updateEvaluationInfo(Evaluation evaluation) {
+        if (evaluation != null && evaluation.getTotal_score() != null) {
+            chipPfaStatus.setText(String.format(Locale.FRENCH, "Note: %.1f/20", evaluation.getTotal_score()));
+            chipPfaStatus.setChipBackgroundColorResource(R.color.status_planned);
+            chipPfaStatus.setTextColor(getColor(R.color.white));
+        }
+    }
+
+    @Override
+    public void onDeliverableClick(Deliverable deliverable) {
+        if (deliverable == null || deliverable.getFile_uri() == null) {
+            Toast.makeText(this, "Fichier non disponible", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        openFile(deliverable.getFile_uri(), deliverable.getFile_title());
+    }
+
+    private void openFile(String fileUri, String title) {
+        try {
+            File file = new File(fileUri);
+
+            if (!file.exists()) {
+                Toast.makeText(this, "Fichier introuvable: " + fileUri, Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            Uri uri = FileProvider.getUriForFile(this,
+                    getPackageName() + ".fileprovider", file);
+
+            String mimeType = getMimeType(fileUri);
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(uri, mimeType);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            startActivity(Intent.createChooser(intent, "Ouvrir " + title));
+
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "Aucune application pour ouvrir ce fichier", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Erreur: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private String getMimeType(String fileUri) {
+        String lowerUri = fileUri.toLowerCase();
+        if (lowerUri.endsWith(".pdf")) {
+            return "application/pdf";
+        } else if (lowerUri.endsWith(".doc") || lowerUri.endsWith(".docx")) {
+            return "application/msword";
+        } else if (lowerUri.endsWith(".jpg") || lowerUri.endsWith(".jpeg")) {
+            return "image/jpeg";
+        } else if (lowerUri.endsWith(".png")) {
+            return "image/png";
+        }
+        return "*/*";
     }
 }
