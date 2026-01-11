@@ -1,5 +1,6 @@
 package ma.ensate.pfa_manager.database;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -32,4 +33,11 @@ public interface ConventionDao {
     
     @Query("SELECT * FROM conventions")
     List<Convention> getAll();
+
+    @Query("SELECT COUNT(*) FROM conventions c " +
+            "INNER JOIN pfa_dossiers p ON c.pfa_id = p.pfa_id " +
+            "WHERE p.supervisor_id = :supervisorId AND c.state = 'UPLOADED'")
+    LiveData<Integer> countConventionsToValidate(Long supervisorId);
+    @Query("SELECT * FROM conventions WHERE pfa_id = :pfaId LIMIT 1")
+    LiveData<Convention> getConventionByPFA(Long pfaId);
 }

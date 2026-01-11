@@ -1,5 +1,6 @@
 package ma.ensate.pfa_manager.database;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -11,28 +12,37 @@ import ma.ensate.pfa_manager.model.PFAStatus;
 
 @Dao
 public interface PFADossierDao {
-    
+
     @Insert
     long insert(PFADossier dossier);
-    
+
     @Update
     void update(PFADossier dossier);
-    
+
     @Delete
     void delete(PFADossier dossier);
-    
+
     @Query("SELECT * FROM pfa_dossiers WHERE pfa_id = :id")
     PFADossier getById(long id);
-    
+
     @Query("SELECT * FROM pfa_dossiers")
     List<PFADossier> getAll();
-    
+
     @Query("SELECT * FROM pfa_dossiers WHERE student_id = :studentId")
     List<PFADossier> getByStudent(long studentId);
-    
+
+    @Query("SELECT * FROM pfa_dossiers WHERE student_id = :studentId")
+    LiveData<List<PFADossier>> getPFAsByStudent(Long studentId);
+
     @Query("SELECT * FROM pfa_dossiers WHERE supervisor_id = :supervisorId")
     List<PFADossier> getBySupervisor(long supervisorId);
-    
+
     @Query("SELECT * FROM pfa_dossiers WHERE current_status = :status")
     List<PFADossier> getByStatus(PFAStatus status);
+
+    @Query("SELECT COUNT(*) FROM pfa_dossiers WHERE supervisor_id = :supervisorId")
+    LiveData<Integer> countPFAsBySupervisor(Long supervisorId);
+
+    @Query("SELECT * FROM pfa_dossiers WHERE supervisor_id = :supervisorId")
+    LiveData<List<PFADossier>> getPFAsBySupervisor(Long supervisorId);
 }

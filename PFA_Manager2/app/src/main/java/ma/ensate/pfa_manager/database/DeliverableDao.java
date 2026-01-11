@@ -1,5 +1,6 @@
 package ma.ensate.pfa_manager.database;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -28,4 +29,16 @@ public interface DeliverableDao {
     
     @Query("SELECT * FROM deliverables")
     List<Deliverable> getAll();
+
+
+    @Query("SELECT COUNT(*) FROM deliverables d " +
+            "INNER JOIN pfa_dossiers p ON d.pfa_id = p.pfa_id " +
+            "WHERE p.supervisor_id = :supervisorId")
+    LiveData<Integer> countDeliverablesBySupervisor(Long supervisorId);
+
+    @Query("SELECT * FROM deliverables WHERE pfa_id = :pfaId")
+    LiveData<List<Deliverable>> getDeliverablesByPFA(Long pfaId);
+
+    @Query("SELECT COUNT(*) FROM deliverables WHERE pfa_id = :pfaId")
+    LiveData<Integer> countDeliverablesByPFA(Long pfaId);
 }

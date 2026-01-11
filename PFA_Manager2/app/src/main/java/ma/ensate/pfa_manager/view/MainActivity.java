@@ -10,7 +10,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.textfield.TextInputEditText;
+
 import ma.ensate.pfa_manager.R;
+// Imports combinés
 import ma.ensate.pfa_manager.model.PFADossier;
 import ma.ensate.pfa_manager.model.PFAStatus;
 import ma.ensate.pfa_manager.model.Role;
@@ -18,12 +20,12 @@ import ma.ensate.pfa_manager.model.User;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
 import ma.ensate.pfa_manager.repository.PFADossierRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
+import ma.ensate.pfa_manager.util.TestDataHelper;
 import ma.ensate.pfa_manager.view.etudiant.StudentSpaceActivity;
 import ma.ensate.pfa_manager.viewmodel.LoginViewModel;
 import ma.ensate.pfa_manager.viewmodel.LoginViewModelFactory;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModelFactory;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,20 +37,19 @@ public class MainActivity extends AppCompatActivity {
         LanguageRepository languageRepository = new LanguageRepository(this);
         SettingsViewModelFactory factory = new SettingsViewModelFactory(languageRepository);
         settingsViewModel = new ViewModelProvider(this, factory).get(SettingsViewModel.class);
-        
         settingsViewModel.applySavedLanguage();
-
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Insérer un utilisateur de test au démarrage
+        TestDataHelper.insertTestData(this); 
         insertTestUserIfNeeded();
 
         setupLanguageToggle();
         setupBackNavigation();
         setupLoginForm();
     }
-    
+
     private void setupLanguageToggle() {
         TextView langFr = findViewById(R.id.langFr);
         TextView langEn = findViewById(R.id.langEn);
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             recreate();
         });
     }
-    
+
     private void setupBackNavigation() {
         ImageView backArrow = findViewById(R.id.backArrow);
         if (backArrow != null) {
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             backArrow.setOnClickListener(v -> finish());
         }
     }
-    
+
     private void setupLoginForm() {
         UserRepository userRepository = new UserRepository(getApplication());
         LoginViewModelFactory loginFactory = new LoginViewModelFactory(userRepository);
@@ -82,44 +83,65 @@ public class MainActivity extends AppCompatActivity {
         loginBtn.setOnClickListener(v -> {
             String email = emailInput.getText().toString().trim();
             String password = passwordInput.getText().toString().trim();
-            
+
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
                 return;
             }
-            
+
             loginViewModel.login(email, password);
         });
 
-        // Observer unique pour éviter les doublons
-        loginViewModel.getLoginResult().observe(this, result -> {
-            if ("Success".equals(result)) {
-                Toast.makeText(this, "Bienvenue !", Toast.LENGTH_SHORT).show();
-                // Observer du user connecté
-                loginViewModel.getLoggedInUser().observe(this, user -> {
-                    if (user != null) {
-                        if (user.getRole() == Role.STUDENT) {
-                            Intent intent = new Intent(MainActivity.this, StudentSpaceActivity.class);
-                            intent.putExtra("user", user);
-                            startActivity(intent);
-                            finish();
-                        }
-                    }
-                });
-            } else {
-                Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+        loginViewModel.getUserLoginStatus().observe(this, user -> {
+            if (user != null) {
+                Toast.makeText(this, "Bienvenue " + user.getFirst_name(), Toast.LENGTH_SHORT).show();
+                redirectUser(user);
             }
         });
+        
+        
+        loginViewModel.getErrorMessage().observe(this, error -> {
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // 3. Fonction de redirection centralisée (C'est ici qu'on fusionne la logique)
+    private void redirectUser(User user) {
+        Intent intent = null;
+
+        switch (user.getRole()) {
+            case PROFESSOR:
+                intent = new Intent(this, EncadrantDashboardActivity.class);
+                break;
+            case STUDENT:
+                intent = new Intent(this, StudentSpaceActivity.class);
+                intent.putExtra("user", user);
+                break;
+            case ADMIN:
+                // intent = new Intent(this, AdminDashboardActivity.class);
+                break;
+            case COORDINATOR:
+                // intent = new Intent(this, CoordinatorDashboardActivity.class);
+                break;
+        }
+
+        if (intent != null) {
+            intent.putExtra("USER_ID", user.getUser_id());
+            startActivity(intent);
+            finish();
+        } else {
+            Toast.makeText(this, "Interface non disponible pour ce rôle", Toast.LENGTH_SHORT).show();
+        }
     }
     
     private void insertTestUserIfNeeded() {
         UserRepository userRepository = new UserRepository(getApplication());
         PFADossierRepository pfaDossierRepository = new PFADossierRepository(getApplication());
         
-        // Vérifier si l'utilisateur existe déjà
         userRepository.getUserByEmail("student@ensa.ma", user -> {
             if (user == null) {
-                // Créer un utilisateur de test
                 User testUser = new User();
                 testUser.setEmail("student@ensa.ma");
                 testUser.setPassword("student123");
@@ -129,9 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 testUser.setPhone_number("0612345678");
                 testUser.setCreated_at(System.currentTimeMillis());
                 
-                // Insérer dans la base de données
                 userRepository.insert(testUser, insertedUser -> {
-                    // Créer un PFADossier pour l'utilisateur
                     PFADossier pfaDossier = new PFADossier();
                     pfaDossier.setStudent_id(insertedUser.getUser_id());
                     pfaDossier.setTitle("Test PFA Project");
@@ -141,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                     
                     pfaDossierRepository.insert(pfaDossier, createdDossier -> {
                         runOnUiThread(() -> 
-                            Toast.makeText(this, "Utilisateur de test créé: student@ensa.ma / student123", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this, "Compte Étudiant de test créé", Toast.LENGTH_SHORT).show()
                         );
                     });
                 });
