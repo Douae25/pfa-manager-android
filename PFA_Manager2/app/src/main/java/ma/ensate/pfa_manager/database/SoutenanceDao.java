@@ -70,4 +70,6 @@ public interface SoutenanceDao {
 
     @Query("DELETE FROM soutenances WHERE soutenance_id = :id")
     void deleteById(long id);
+    @Query("SELECT * FROM soutenances WHERE pfa_id = :pfaId LIMIT 1")
+    Soutenance getByPfaIdSync(Long pfaId);
 }

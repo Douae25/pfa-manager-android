@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.chip.Chip;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,30 +61,26 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     }
 
     class StudentViewHolder extends RecyclerView.ViewHolder {
-        TextView tvStudentInitials, tvStudentName, tvStudentEmail, tvPFATitle, tvPFAStatus;
+        TextView tvStudentInitials, tvStudentName, tvStudentEmail, tvPFATitle;
+        Chip chipPFAStatus;
 
         public StudentViewHolder(@NonNull View itemView) {
             super(itemView);
-            // ✅ CORRIGÉ : IDs correspondant au XML item_student.xml
             tvStudentInitials = itemView.findViewById(R.id.tvStudentInitials);
             tvStudentName = itemView.findViewById(R.id.tvStudentName);
             tvStudentEmail = itemView.findViewById(R.id.tvStudentEmail);
             tvPFATitle = itemView.findViewById(R.id.tvPFATitle);
-            tvPFAStatus = itemView.findViewById(R.id.tvPFAStatus);
+            chipPFAStatus = itemView.findViewById(R.id.tvPFAStatus);
         }
 
         void bind(StudentWithPFA studentWithPFA) {
-            // Initiales pour avatar
             String initials = getInitials(studentWithPFA);
             tvStudentInitials.setText(initials);
 
-            // Nom complet
             tvStudentName.setText(studentWithPFA.getFullName());
 
-            // Email
             tvStudentEmail.setText(studentWithPFA.getEmail());
 
-            // Titre PFA
             if (studentWithPFA.hasPFA()) {
                 tvPFATitle.setText(studentWithPFA.getPFATitle());
                 tvPFATitle.setVisibility(View.VISIBLE);
@@ -91,20 +89,17 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
                 tvPFATitle.setVisibility(View.VISIBLE);
             }
 
-            // Status
             if (studentWithPFA.hasPFA() && studentWithPFA.pfaDossier.getCurrent_status() != null) {
-                setStatusBadge(tvPFAStatus, studentWithPFA.pfaDossier.getCurrent_status());
-                tvPFAStatus.setVisibility(View.VISIBLE);
+                setStatusChip(chipPFAStatus, studentWithPFA.pfaDossier.getCurrent_status());
+                chipPFAStatus.setVisibility(View.VISIBLE);
             } else {
-                tvPFAStatus.setVisibility(View.GONE);
+                chipPFAStatus.setVisibility(View.GONE);
             }
 
-            // Gestion du clic
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onStudentClick(studentWithPFA);
                 } else {
-                    // Fallback : Navigation directe
                     Intent intent = new Intent(context, StudentDetailActivity.class);
                     intent.putExtra("STUDENT_ID", getStudentId(studentWithPFA));
                     context.startActivity(intent);
@@ -112,7 +107,6 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             });
         }
 
-        // ✅ Méthode helper pour obtenir les initiales
         private String getInitials(StudentWithPFA studentWithPFA) {
             if (studentWithPFA.student == null) return "??";
             String firstName = studentWithPFA.student.getFirst_name();
@@ -122,28 +116,31 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             return (first + last).toUpperCase();
         }
 
-        // ✅ Méthode helper pour obtenir l'ID étudiant
         private Long getStudentId(StudentWithPFA studentWithPFA) {
             return studentWithPFA.student != null ? studentWithPFA.student.getUser_id() : -1L;
         }
 
-        private void setStatusBadge(TextView tvStatus, PFAStatus status) {
+        private void setStatusChip(Chip chip, PFAStatus status) {
             switch (status) {
                 case ASSIGNED:
-                    tvStatus.setText("📋 Assigné");
-                    tvStatus.setBackgroundResource(R.drawable.badge_status_assigned);
+                    chip.setText("Assigné");
+                    chip.setChipBackgroundColorResource(R.color.primary_light);
+                    chip.setTextColor(context.getColor(R.color.primary));
                     break;
                 case CONVENTION_PENDING:
-                    tvStatus.setText("⏳ Convention");
-                    tvStatus.setBackgroundResource(R.drawable.badge_status_pending);
+                    chip.setText("Convention");
+                    chip.setChipBackgroundColorResource(R.color.status_pending);
+                    chip.setTextColor(context.getColor(R.color.text_primary));
                     break;
                 case IN_PROGRESS:
-                    tvStatus.setText("🔄 En cours");
-                    tvStatus.setBackgroundResource(R.drawable.badge_status_in_progress);
+                    chip.setText("En cours");
+                    chip.setChipBackgroundColorResource(R.color.status_planned);
+                    chip.setTextColor(context.getColor(R.color.white));
                     break;
                 case CLOSED:
-                    tvStatus.setText("✅ Clôturé");
-                    tvStatus.setBackgroundResource(R.drawable.badge_status_closed);
+                    chip.setText("Clôturé");
+                    chip.setChipBackgroundColorResource(R.color.status_planned);
+                    chip.setTextColor(context.getColor(R.color.white));
                     break;
             }
         }

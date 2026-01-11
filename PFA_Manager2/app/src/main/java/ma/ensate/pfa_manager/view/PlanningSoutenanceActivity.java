@@ -3,7 +3,6 @@ package ma.ensate.pfa_manager.view;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -19,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import ma.ensate.pfa_manager.R;
-import ma.ensate.pfa_manager.model.PFAWithSoutenance;
+import ma.ensate.pfa_manager.model.dto.PFAWithSoutenance;
 import ma.ensate.pfa_manager.viewmodel.PlanningViewModel;
 
 public class PlanningSoutenanceActivity extends AppCompatActivity
@@ -34,7 +32,7 @@ public class PlanningSoutenanceActivity extends AppCompatActivity
 
     private Long currentSupervisorId;
     private List<PFAWithSoutenance> allItems = new ArrayList<>();
-    private int currentFilter = 0; // 0: All, 1: Non planifié, 2: Planifié
+    private int currentFilter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

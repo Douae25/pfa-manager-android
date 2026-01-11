@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import ma.ensate.pfa_manager.R;
 import ma.ensate.pfa_manager.model.User;
+import ma.ensate.pfa_manager.util.TestDataHelper;
 import ma.ensate.pfa_manager.viewmodel.EncadrantDashboardViewModel;
 
 public class EncadrantDashboardActivity extends AppCompatActivity {
@@ -54,6 +55,7 @@ public class EncadrantDashboardActivity extends AppCompatActivity {
         initViewModel();
         observeData();
         setupClickListeners();
+
     }
 
     private void initViews() {
@@ -138,11 +140,15 @@ public class EncadrantDashboardActivity extends AppCompatActivity {
         });
 
         cardValidations.setOnClickListener(v -> {
-            showToast("Validations de livrables");
+            Intent intent = new Intent(this, DeliverableListActivity.class);
+            intent.putExtra("USER_ID", currentSupervisorId);
+            startActivity(intent);
         });
 
         cardEvaluations.setOnClickListener(v -> {
-            showToast("Module d'évaluation");
+            Intent intent = new Intent(this, EvaluationListActivity.class);
+            intent.putExtra("USER_ID", currentSupervisorId);
+            startActivity(intent);
         });
 
         cardPlanning.setOnClickListener(v -> {

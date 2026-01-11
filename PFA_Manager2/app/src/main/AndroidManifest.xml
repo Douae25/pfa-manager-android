@@ -43,8 +43,27 @@
         <activity
             android:name=".view.PlanningSoutenanceActivity"
             android:exported="false"
-            android:label="Planifier une soutenance"
             android:parentActivityName=".view.EncadrantDashboardActivity" />
+
+        <activity
+            android:name=".view.EvaluationListActivity"
+            android:exported="false"
+            android:parentActivityName=".view.EncadrantDashboardActivity" />
+
+        <activity
+            android:name=".view.DeliverableListActivity"
+            android:exported="false"
+            android:parentActivityName=".view.EncadrantDashboardActivity" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
     </application>
 
