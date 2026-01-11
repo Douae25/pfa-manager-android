@@ -41,4 +41,23 @@ public interface DeliverableDao {
 
     @Query("SELECT COUNT(*) FROM deliverables WHERE pfa_id = :pfaId")
     LiveData<Integer> countDeliverablesByPFA(Long pfaId);
+
+
+    @Query("SELECT * FROM deliverables WHERE deliverable_id = :id")
+    LiveData<Deliverable> getById(Long id);
+
+    @Query("SELECT * FROM deliverables WHERE pfa_id = :pfaId ORDER BY uploaded_at DESC")
+    LiveData<List<Deliverable>> getByPfaId(Long pfaId);
+
+    @Query("SELECT * FROM deliverables WHERE pfa_id IN " +
+            "(SELECT pfa_id FROM pfa_dossiers WHERE supervisor_id = :supervisorId) " +
+            "ORDER BY uploaded_at DESC")
+    LiveData<List<Deliverable>> getBySupervisorId(Long supervisorId);
+
+    @Query("SELECT COUNT(*) FROM deliverables WHERE pfa_id IN " +
+            "(SELECT pfa_id FROM pfa_dossiers WHERE supervisor_id = :supervisorId)")
+    LiveData<Integer> getCountBySupervisor(Long supervisorId);
+
+    @Query("SELECT COUNT(*) FROM deliverables WHERE pfa_id = :pfaId")
+    LiveData<Integer> getCountByPfaId(Long pfaId);
 }

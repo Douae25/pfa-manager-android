@@ -83,7 +83,6 @@ public class ConventionFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Recharger les données lors du retour au fragment
         loadConventionData();
     }
     
@@ -92,7 +91,6 @@ public class ConventionFragment extends Fragment {
             return;
         }
         
-        // Charger le dossier PFA pour cet étudiant
         pfaDossierRepository.getByStudentId(currentUser.getUser_id(), pfaDossier -> {
             currentPfaDossier = pfaDossier;
             
@@ -103,7 +101,6 @@ public class ConventionFragment extends Fragment {
                     updateConventionStatus();
                 });
             } else {
-                // Aucun dossier PFA
                 currentConvention = null;
                 updateConventionStatus();
             }

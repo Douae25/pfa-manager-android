@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import java.util.List;
 
 import ma.ensate.pfa_manager.model.PFADossier;
-import ma.ensate.pfa_manager.model.PFAWithSoutenance;
+import ma.ensate.pfa_manager.model.dto.PFAWithSoutenance;
 import ma.ensate.pfa_manager.model.Soutenance;
 import ma.ensate.pfa_manager.model.SoutenanceStatus;
 import ma.ensate.pfa_manager.repository.SoutenanceRepository;

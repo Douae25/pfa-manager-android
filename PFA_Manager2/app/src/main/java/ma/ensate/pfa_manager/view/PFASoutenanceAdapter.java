@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import ma.ensate.pfa_manager.R;
-import ma.ensate.pfa_manager.model.PFAWithSoutenance;
+import ma.ensate.pfa_manager.model.dto.PFAWithSoutenance;
 
 public class PFASoutenanceAdapter extends ListAdapter<PFAWithSoutenance, PFASoutenanceAdapter.ViewHolder> {
 
@@ -100,7 +100,6 @@ public class PFASoutenanceAdapter extends ListAdapter<PFAWithSoutenance, PFASout
             tvStudent.setText("Étudiant: " + item.pfa.getStudent_id()); // Remplacer par nom réel
 
             if (item.isPlanned()) {
-                // Soutenance planifiée
                 chipStatus.setText("Planifié");
                 chipStatus.setChipBackgroundColorResource(R.color.status_planned);
                 chipStatus.setTextColor(itemView.getContext().getColor(R.color.white));

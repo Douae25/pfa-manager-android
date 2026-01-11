@@ -13,7 +13,7 @@ import ma.ensate.pfa_manager.database.AppDatabase;
 import ma.ensate.pfa_manager.database.SoutenanceDao;
 import ma.ensate.pfa_manager.database.PFADossierDao;
 import ma.ensate.pfa_manager.model.PFADossier;
-import ma.ensate.pfa_manager.model.PFAWithSoutenance;
+import ma.ensate.pfa_manager.model.dto.PFAWithSoutenance;
 import ma.ensate.pfa_manager.model.Soutenance;
 import ma.ensate.pfa_manager.model.SoutenanceStatus;
 

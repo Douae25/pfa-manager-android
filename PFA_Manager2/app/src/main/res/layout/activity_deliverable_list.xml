@@ -12,7 +12,6 @@
         android:background="@color/white"
         app:elevation="2dp">
 
-        <!-- Toolbar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -42,7 +41,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Mes Étudiants"
+                    android:text="Livrables"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"/>
@@ -50,13 +49,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Suivez vos étudiants et leurs projets"
+                    android:text="Consultez les documents soumis"
                     android:textSize="12sp"
                     android:textColor="@color/text_secondary"/>
 
             </LinearLayout>
 
-            <!-- Badge compteur -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
@@ -65,7 +63,7 @@
                 app:cardElevation="0dp">
 
                 <TextView
-                    android:id="@+id/tvStudentCount"
+                    android:id="@+id/tvDeliverableCount"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
@@ -79,22 +77,48 @@
 
         </LinearLayout>
 
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            app:tabMode="fixed"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="@color/primary"
+            app:tabSelectedTextColor="@color/primary"
+            app:tabTextColor="@color/text_secondary"
+            app:tabRippleColor="@color/primary_light">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tous"/>
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Avant soutenance"/>
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Après soutenance"/>
+
+        </com.google.android.material.tabs.TabLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Content -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewStudents"
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="16dp"
             android:clipToPadding="false"/>
 
-        <!-- Empty State -->
         <LinearLayout
             android:id="@+id/emptyStateLayout"
             android:layout_width="match_parent"
@@ -107,24 +131,26 @@
             <ImageView
                 android:layout_width="120dp"
                 android:layout_height="120dp"
-                android:src="@drawable/ic_students"
+                android:src="@drawable/ic_document"
                 app:tint="@color/text_secondary"
                 android:alpha="0.5"
                 android:layout_marginBottom="16dp"/>
 
             <TextView
+                android:id="@+id/tvEmptyTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Aucun étudiant"
+                android:text="Aucun livrable"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
                 android:gravity="center"/>
 
             <TextView
+                android:id="@+id/tvEmptySubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Vous n'avez pas encore d'étudiants affectés"
+                android:text="Vos étudiants n'ont pas encore soumis de documents"
                 android:textSize="14sp"
                 android:textColor="@color/text_secondary"
                 android:gravity="center"
@@ -132,7 +158,6 @@
 
         </LinearLayout>
 
-        <!-- Loading Overlay -->
         <FrameLayout
             android:id="@+id/loadingOverlay"
             android:layout_width="match_parent"
@@ -141,7 +166,6 @@
             android:visibility="gone">
 
             <ProgressBar
-                android:id="@+id/progressBar"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center"/>

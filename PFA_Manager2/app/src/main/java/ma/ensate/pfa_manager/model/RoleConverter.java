@@ -67,7 +67,6 @@ public class RoleConverter {
         try {
             return DeliverableFileType.valueOf(fileTypeString);
         } catch (IllegalArgumentException e) {
-            // Handle invalid enum values gracefully
             return null;
         }
     }

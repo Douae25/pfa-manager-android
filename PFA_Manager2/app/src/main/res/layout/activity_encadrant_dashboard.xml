@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_light">
 
+    <!-- AppBar -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,18 +21,10 @@
             android:paddingHorizontal="16dp"
             android:orientation="horizontal">
 
-            <!-- Logo/Icon -->
-            <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/ic_dashboard_header"
-                android:padding="4dp"/>
-
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -45,7 +38,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Gestion des PFAs"
+                    android:text="Tableau de bord"
                     android:textSize="12sp"
                     android:textColor="@color/text_secondary"/>
 
@@ -56,7 +49,7 @@
                 android:id="@+id/notificationContainer"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
-                android:background="@drawable/bg_circle_ripple"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true">
 
@@ -72,8 +65,8 @@
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_gravity="top|end"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginEnd="6dp"
                     android:background="@drawable/bg_badge"
                     android:gravity="center"
                     android:text="0"
@@ -88,10 +81,10 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- Content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -100,87 +93,50 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Welcome Card avec Gradient -->
+            <!-- Welcome Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="4dp"
-                app:strokeWidth="0dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/divider">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_gradient_primary"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:padding="20dp">
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:text="Bonjour,"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"/>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Bienvenue 👋"
-                            android:textColor="@color/white_70"
-                            android:textSize="14sp"/>
+                    <TextView
+                        android:id="@+id/tvProfName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Chargement..."
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"/>
 
-                        <TextView
-                            android:id="@+id/tvProfName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Chargement..."
-                            android:textColor="@color/white"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:maxLines="1"
-                            android:ellipsize="end"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Année universitaire 2024-2025"
-                            android:textColor="@color/white_70"
-                            android:textSize="12sp"/>
-
-                    </LinearLayout>
-
-                    <!-- Avatar/Icon -->
-                    <FrameLayout
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:layout_gravity="center_vertical"
-                        android:background="@drawable/bg_circle_white_20">
-
-                        <ImageView
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_professor"
-                            app:tint="@color/white"/>
-
-                    </FrameLayout>
+                    <View
+                        android:layout_width="50dp"
+                        android:layout_height="3dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@color/primary"/>
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Statistiques Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="📊 Aperçu rapide"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"/>
-
+            <!-- Statistiques Cards (Style différent) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -193,47 +149,35 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="6dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/primary_light"
                     app:strokeWidth="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_stat_blue"
                         android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <FrameLayout
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/bg_icon_blue">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="center"
-                                android:src="@drawable/ic_students"
-                                app:tint="@color/stat_blue"/>
-
-                        </FrameLayout>
+                        android:padding="16dp"
+                        android:gravity="center">
 
                         <TextView
                             android:id="@+id/tvStudentCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
                             android:text="0"
-                            android:textColor="@color/stat_blue"
-                            android:textSize="28sp"
+                            android:textColor="@color/primary"
+                            android:textSize="36sp"
                             android:textStyle="bold"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
                             android:text="Étudiants"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp"/>
+                            android:textColor="@color/primary"
+                            android:textSize="13sp"
+                            android:textStyle="bold"/>
 
                     </LinearLayout>
 
@@ -245,47 +189,35 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="6dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/primary_light"
                     app:strokeWidth="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_stat_green"
                         android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <FrameLayout
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/bg_icon_green">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="center"
-                                android:src="@drawable/ic_document"
-                                app:tint="@color/stat_green"/>
-
-                        </FrameLayout>
+                        android:padding="16dp"
+                        android:gravity="center">
 
                         <TextView
                             android:id="@+id/tvPfaCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
                             android:text="0"
-                            android:textColor="@color/stat_green"
-                            android:textSize="28sp"
+                            android:textColor="@color/primary"
+                            android:textSize="36sp"
                             android:textStyle="bold"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
                             android:text="Projets"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp"/>
+                            android:textColor="@color/primary"
+                            android:textSize="13sp"
+                            android:textStyle="bold"/>
 
                     </LinearLayout>
 
@@ -297,63 +229,41 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/primary_light"
                     app:strokeWidth="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_stat_orange"
                         android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <FrameLayout
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/bg_icon_orange">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="center"
-                                android:src="@drawable/ic_pending"
-                                app:tint="@color/stat_orange"/>
-
-                        </FrameLayout>
+                        android:padding="16dp"
+                        android:gravity="center">
 
                         <TextView
                             android:id="@+id/tvTotalNotifications"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
                             android:text="0"
-                            android:textColor="@color/stat_orange"
-                            android:textSize="28sp"
+                            android:textColor="@color/error"
+                            android:textSize="36sp"
                             android:textStyle="bold"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="En attente"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp"/>
+                            android:layout_marginTop="4dp"
+                            android:text="À traiter"
+                            android:textColor="@color/error"
+                            android:textSize="13sp"
+                            android:textStyle="bold"/>
 
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
-
-            <!-- Actions Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="⚡ Actions rapides"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"/>
 
             <!-- Grid Fonctionnalités -->
             <LinearLayout
@@ -373,45 +283,37 @@
                         android:id="@+id/cardStudents"
                         android:layout_width="0dp"
                         android:layout_weight="1"
-                        android:layout_height="wrap_content"
+                        android:layout_height="140dp"
                         android:layout_marginEnd="6dp"
                         android:clickable="true"
                         android:focusable="true"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="2dp"
-                        app:rippleColor="@color/primary_light"
-                        app:strokeColor="@color/divider"
-                        app:strokeWidth="1dp">
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/divider">
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="20dp">
+                            android:padding="16dp">
 
-                            <FrameLayout
-                                android:layout_width="56dp"
-                                android:layout_height="56dp"
-                                android:background="@drawable/bg_icon_card_blue">
-
-                                <ImageView
-                                    android:layout_width="28dp"
-                                    android:layout_height="28dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_students"
-                                    app:tint="@color/stat_blue"/>
-
-                            </FrameLayout>
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/ic_students"
+                                app:tint="@color/primary"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="14dp"
+                                android:layout_marginTop="12dp"
                                 android:text="Mes Étudiants"
                                 android:textColor="@color/text_primary"
-                                android:textSize="14sp"
-                                android:textStyle="bold"/>
+                                android:textSize="15sp"
+                                android:textStyle="bold"
+                                android:textAlignment="center"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -419,7 +321,8 @@
                                 android:layout_marginTop="4dp"
                                 android:text="Suivi des projets"
                                 android:textColor="@color/text_secondary"
-                                android:textSize="11sp"/>
+                                android:textSize="12sp"
+                                android:textAlignment="center"/>
 
                         </LinearLayout>
 
@@ -430,57 +333,50 @@
                         android:id="@+id/cardValidations"
                         android:layout_width="0dp"
                         android:layout_weight="1"
-                        android:layout_height="wrap_content"
+                        android:layout_height="140dp"
                         android:layout_marginStart="6dp"
                         android:clickable="true"
                         android:focusable="true"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="2dp"
-                        app:rippleColor="@color/primary_light"
-                        app:strokeColor="@color/divider"
-                        app:strokeWidth="1dp">
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/divider">
 
                         <FrameLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="match_parent">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:gravity="center"
                                 android:orientation="vertical"
-                                android:padding="20dp">
+                                android:padding="16dp">
 
-                                <FrameLayout
-                                    android:layout_width="56dp"
-                                    android:layout_height="56dp"
-                                    android:background="@drawable/bg_icon_card_green">
-
-                                    <ImageView
-                                        android:layout_width="28dp"
-                                        android:layout_height="28dp"
-                                        android:layout_gravity="center"
-                                        android:src="@drawable/ic_validation"
-                                        app:tint="@color/stat_green"/>
-
-                                </FrameLayout>
+                                <ImageView
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:src="@drawable/ic_validation"
+                                    app:tint="@color/primary"/>
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="14dp"
+                                    android:layout_marginTop="12dp"
                                     android:text="Validations"
                                     android:textColor="@color/text_primary"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold"/>
+                                    android:textSize="15sp"
+                                    android:textStyle="bold"
+                                    android:textAlignment="center"/>
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:text="Livrables en attente"
+                                    android:text="Livrables . Docs"
                                     android:textColor="@color/text_secondary"
-                                    android:textSize="11sp"/>
+                                    android:textSize="12sp"
+                                    android:textAlignment="center"/>
 
                             </LinearLayout>
 
@@ -490,7 +386,7 @@
                                 android:layout_width="22dp"
                                 android:layout_height="22dp"
                                 android:layout_gravity="top|end"
-                                android:layout_margin="10dp"
+                                android:layout_margin="12dp"
                                 android:background="@drawable/bg_badge"
                                 android:gravity="center"
                                 android:text="0"
@@ -516,53 +412,46 @@
                         android:id="@+id/cardEvaluations"
                         android:layout_width="0dp"
                         android:layout_weight="1"
-                        android:layout_height="wrap_content"
+                        android:layout_height="140dp"
                         android:layout_marginEnd="6dp"
                         android:clickable="true"
                         android:focusable="true"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="2dp"
-                        app:rippleColor="@color/primary_light"
-                        app:strokeColor="@color/divider"
-                        app:strokeWidth="1dp">
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/divider">
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="20dp">
+                            android:padding="16dp">
 
-                            <FrameLayout
-                                android:layout_width="56dp"
-                                android:layout_height="56dp"
-                                android:background="@drawable/bg_icon_card_orange">
-
-                                <ImageView
-                                    android:layout_width="28dp"
-                                    android:layout_height="28dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_evaluation"
-                                    app:tint="@color/stat_orange"/>
-
-                            </FrameLayout>
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/ic_evaluation"
+                                app:tint="@color/primary"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="14dp"
+                                android:layout_marginTop="12dp"
                                 android:text="Évaluations"
                                 android:textColor="@color/text_primary"
-                                android:textSize="14sp"
-                                android:textStyle="bold"/>
+                                android:textSize="15sp"
+                                android:textStyle="bold"
+                                android:textAlignment="center"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Notes / Appréciations"
+                                android:text="Noter les soutenances"
                                 android:textColor="@color/text_secondary"
-                                android:textSize="11sp"/>
+                                android:textSize="12sp"
+                                android:textAlignment="center"/>
 
                         </LinearLayout>
 
@@ -573,49 +462,41 @@
                         android:id="@+id/cardPlanning"
                         android:layout_width="0dp"
                         android:layout_weight="1"
-                        android:layout_height="wrap_content"
+                        android:layout_height="140dp"
                         android:layout_marginStart="6dp"
                         android:clickable="true"
                         android:focusable="true"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="2dp"
-                        app:rippleColor="@color/primary_light"
-                        app:strokeColor="@color/divider"
-                        app:strokeWidth="1dp">
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/divider">
 
                         <FrameLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="match_parent">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:gravity="center"
                                 android:orientation="vertical"
-                                android:padding="20dp">
+                                android:padding="16dp">
 
-                                <FrameLayout
-                                    android:layout_width="56dp"
-                                    android:layout_height="56dp"
-                                    android:background="@drawable/bg_icon_card_purple">
-
-                                    <ImageView
-                                        android:layout_width="28dp"
-                                        android:layout_height="28dp"
-                                        android:layout_gravity="center"
-                                        android:src="@drawable/ic_calendar"
-                                        app:tint="@color/stat_purple"/>
-
-                                </FrameLayout>
+                                <ImageView
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:src="@drawable/ic_calendar"
+                                    app:tint="@color/primary"/>
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="14dp"
+                                    android:layout_marginTop="12dp"
                                     android:text="Planification"
                                     android:textColor="@color/text_primary"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold"/>
+                                    android:textSize="15sp"
+                                    android:textStyle="bold"
+                                    android:textAlignment="center"/>
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -623,7 +504,8 @@
                                     android:layout_marginTop="4dp"
                                     android:text="Soutenances"
                                     android:textColor="@color/text_secondary"
-                                    android:textSize="11sp"/>
+                                    android:textSize="12sp"
+                                    android:textAlignment="center"/>
 
                             </LinearLayout>
 
@@ -633,7 +515,7 @@
                                 android:layout_width="22dp"
                                 android:layout_height="22dp"
                                 android:layout_gravity="top|end"
-                                android:layout_margin="10dp"
+                                android:layout_margin="12dp"
                                 android:background="@drawable/bg_badge"
                                 android:gravity="center"
                                 android:text="0"
@@ -649,43 +531,6 @@
                 </LinearLayout>
 
             </LinearLayout>
-
-            <!-- Quick Tips Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/info_bg"
-                app:strokeWidth="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_info"
-                        app:tint="@color/primary"/>
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:text="Conseil : Consultez régulièrement les livrables en attente pour un suivi optimal."
-                        android:textSize="12sp"
-                        android:textColor="@color/primary"
-                        android:lineSpacingExtra="2dp"/>
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 

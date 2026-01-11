@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import ma.ensate.pfa_manager.R;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
+import ma.ensate.pfa_manager.util.TestDataHelper;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModelFactory;
 
@@ -29,6 +30,8 @@ public class HomeActivity extends AppCompatActivity {
 
         setupNavigation();
         setupLanguageToggle();
+        TestDataHelper.resetAndReload(this);
+
     }
     
     private void setupNavigation() {

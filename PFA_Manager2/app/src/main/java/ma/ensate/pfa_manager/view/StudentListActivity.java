@@ -3,9 +3,9 @@ package ma.ensate.pfa_manager.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +21,7 @@ public class StudentListActivity extends AppCompatActivity
         implements StudentAdapter.OnStudentClickListener {
 
     private RecyclerView recyclerView;
-    private ProgressBar progressBar;
+    private FrameLayout loadingOverlay;
     private LinearLayout emptyStateLayout;
     private TextView tvStudentCount;
     private ImageView btnBack;
@@ -53,7 +53,7 @@ public class StudentListActivity extends AppCompatActivity
 
     private void initViews() {
         recyclerView = findViewById(R.id.recyclerViewStudents);
-        progressBar = findViewById(R.id.progressBar);
+        loadingOverlay = findViewById(R.id.loadingOverlay);
         emptyStateLayout = findViewById(R.id.emptyStateLayout);
         tvStudentCount = findViewById(R.id.tvStudentCount);
         btnBack = findViewById(R.id.btnBack);
@@ -70,12 +70,12 @@ public class StudentListActivity extends AppCompatActivity
 
     private void initViewModel() {
         viewModel = new ViewModelProvider(this).get(StudentListViewModel.class);
-        // 2. UTILISATION DU VRAI ID (probablement 3L pour Mansour)
         viewModel.setSupervisorId(currentSupervisorId);
     }
 
     private void observeData() {
         viewModel.getStudentsWithPFA().observe(this, students -> {
+            hideLoading();
             if (students != null && !students.isEmpty()) {
                 adapter.setStudents(students);
                 showStudentsList();
@@ -104,13 +104,13 @@ public class StudentListActivity extends AppCompatActivity
     }
 
     private void showLoading() {
-        progressBar.setVisibility(View.VISIBLE);
+        loadingOverlay.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
         emptyStateLayout.setVisibility(View.GONE);
     }
 
     private void hideLoading() {
-        progressBar.setVisibility(View.GONE);
+        loadingOverlay.setVisibility(View.GONE);
     }
 
     private void showStudentsList() {
@@ -127,7 +127,6 @@ public class StudentListActivity extends AppCompatActivity
     public void onStudentClick(StudentWithPFA student) {
         Intent intent = new Intent(this, StudentDetailActivity.class);
         intent.putExtra("STUDENT_ID", student.getStudentId());
-        // Optionnel : passer aussi l'ID du prof si besoin dans le détail
         intent.putExtra("USER_ID", currentSupervisorId);
         startActivity(intent);
     }
