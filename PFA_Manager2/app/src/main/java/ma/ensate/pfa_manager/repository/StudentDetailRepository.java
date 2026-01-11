@@ -1,12 +1,24 @@
 package ma.ensate.pfa_manager.repository;
 
 import android.app.Application;
+
 import androidx.lifecycle.LiveData;
+
 import java.util.List;
 
 import ma.ensate.pfa_manager.database.AppDatabase;
-import ma.ensate.pfa_manager.database.*;
-import ma.ensate.pfa_manager.model.*;
+import ma.ensate.pfa_manager.database.ConventionDao;
+import ma.ensate.pfa_manager.database.DeliverableDao;
+import ma.ensate.pfa_manager.database.EvaluationDao;
+import ma.ensate.pfa_manager.database.PFADossierDao;
+import ma.ensate.pfa_manager.database.SoutenanceDao;
+import ma.ensate.pfa_manager.database.UserDao;
+import ma.ensate.pfa_manager.model.Convention;
+import ma.ensate.pfa_manager.model.Deliverable;
+import ma.ensate.pfa_manager.model.Evaluation;
+import ma.ensate.pfa_manager.model.PFADossier;
+import ma.ensate.pfa_manager.model.Soutenance;
+import ma.ensate.pfa_manager.model.User;
 
 public class StudentDetailRepository {
 
@@ -15,6 +27,7 @@ public class StudentDetailRepository {
     private final DeliverableDao deliverableDao;
     private final SoutenanceDao soutenanceDao;
     private final ConventionDao conventionDao;
+    private final EvaluationDao evaluationDao;
 
     public StudentDetailRepository(Application application) {
         AppDatabase db = AppDatabase.getInstance(application);
@@ -23,35 +36,36 @@ public class StudentDetailRepository {
         deliverableDao = db.deliverableDao();
         soutenanceDao = db.soutenanceDao();
         conventionDao = db.conventionDao();
+        evaluationDao = db.evaluationDao();
     }
 
-    // Récupérer l'étudiant
     public LiveData<User> getStudent(Long studentId) {
         return userDao.getUserById(studentId);
     }
 
-    // Récupérer le PFA de l'étudiant
     public LiveData<List<PFADossier>> getStudentPFAs(Long studentId) {
         return pfaDao.getPFAsByStudent(studentId);
     }
 
-    // Récupérer les livrables du PFA
     public LiveData<List<Deliverable>> getPFADeliverables(Long pfaId) {
-        return deliverableDao.getDeliverablesByPFA(pfaId);
+        return deliverableDao.getByPfaId(pfaId);
     }
 
-    // Récupérer la soutenance du PFA
     public LiveData<Soutenance> getPFASoutenance(Long pfaId) {
         return soutenanceDao.getSoutenanceByPFA(pfaId);
     }
 
-    // Récupérer la convention du PFA
     public LiveData<Convention> getPFAConvention(Long pfaId) {
         return conventionDao.getConventionByPFA(pfaId);
     }
 
-    // Compter les livrables
     public LiveData<Integer> countDeliverables(Long pfaId) {
-        return deliverableDao.countDeliverablesByPFA(pfaId);
+        return deliverableDao.getCountByPfaId(pfaId);
     }
+
+    public LiveData<Evaluation> getPFAEvaluation(Long pfaId) {
+        return evaluationDao.getByPfaIdLive(pfaId);
+    }
+
+
 }

@@ -29,7 +29,6 @@ public class EncadrantDashboardViewModel extends AndroidViewModel {
         super(application);
         repository = new DashboardRepository(application);
 
-        // Initialiser les LiveData avec transformations
         currentUser = Transformations.switchMap(supervisorIdLiveData,
                 id -> repository.getCurrentUser(id));
 
@@ -57,7 +56,6 @@ public class EncadrantDashboardViewModel extends AndroidViewModel {
         supervisorIdLiveData.setValue(supervisorId);
     }
 
-    // Getters pour les LiveData
     public LiveData<User> getCurrentUser() {
         return currentUser;
     }
@@ -86,16 +84,13 @@ public class EncadrantDashboardViewModel extends AndroidViewModel {
         return upcomingSoutenances;
     }
 
-    // Calculer le nombre total de notifications
     public LiveData<Integer> getTotalNotifications() {
         return Transformations.switchMap(supervisorIdLiveData, id -> {
             MutableLiveData<Integer> totalNotifs = new MutableLiveData<>();
 
-            // Combiner les compteurs
             LiveData<Integer> conventions = repository.getConventionsToValidateCount(id);
             LiveData<Integer> deliverables = repository.getDeliverablesCount(id);
 
-            // Observer et sommer
             conventions.observeForever(conv -> {
                 Integer del = deliverables.getValue();
                 totalNotifs.setValue((conv != null ? conv : 0) + (del != null ? del : 0));

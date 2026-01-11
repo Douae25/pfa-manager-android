@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import com.google.android.material.chip.Chip;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import ma.ensate.pfa_manager.R;
 import ma.ensate.pfa_manager.model.PFAStatus;
@@ -61,8 +63,9 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     }
 
     class StudentViewHolder extends RecyclerView.ViewHolder {
-        TextView tvStudentInitials, tvStudentName, tvStudentEmail, tvPFATitle;
+        TextView tvStudentInitials, tvStudentName, tvStudentEmail, tvPFATitle, tvScore;
         Chip chipPFAStatus;
+        LinearLayout layoutScore;
 
         public StudentViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -71,6 +74,8 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             tvStudentEmail = itemView.findViewById(R.id.tvStudentEmail);
             tvPFATitle = itemView.findViewById(R.id.tvPFATitle);
             chipPFAStatus = itemView.findViewById(R.id.tvPFAStatus);
+            layoutScore = itemView.findViewById(R.id.layoutScore);
+            tvScore = itemView.findViewById(R.id.tvScore);
         }
 
         void bind(StudentWithPFA studentWithPFA) {
@@ -78,22 +83,33 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             tvStudentInitials.setText(initials);
 
             tvStudentName.setText(studentWithPFA.getFullName());
-
             tvStudentEmail.setText(studentWithPFA.getEmail());
 
+            // Utilisation de la méthode helper hasPFA()
             if (studentWithPFA.hasPFA()) {
                 tvPFATitle.setText(studentWithPFA.getPFATitle());
                 tvPFATitle.setVisibility(View.VISIBLE);
+
+                // CORRECTION ICI : On accède au statut via pfaDetails.pfaDossier
+                PFAStatus status = studentWithPFA.pfaDetails.pfaDossier.getCurrent_status();
+
+                if (status != null) {
+                    setStatusChip(chipPFAStatus, status);
+                    chipPFAStatus.setVisibility(View.VISIBLE);
+                } else {
+                    chipPFAStatus.setVisibility(View.GONE);
+                }
             } else {
                 tvPFATitle.setText("Aucun projet assigné");
                 tvPFATitle.setVisibility(View.VISIBLE);
+                chipPFAStatus.setVisibility(View.GONE);
             }
 
-            if (studentWithPFA.hasPFA() && studentWithPFA.pfaDossier.getCurrent_status() != null) {
-                setStatusChip(chipPFAStatus, studentWithPFA.pfaDossier.getCurrent_status());
-                chipPFAStatus.setVisibility(View.VISIBLE);
+            if (studentWithPFA.isEvaluated()) {
+                layoutScore.setVisibility(View.VISIBLE);
+                tvScore.setText(String.format(Locale.FRENCH, "%.1f/20", studentWithPFA.getScore()));
             } else {
-                chipPFAStatus.setVisibility(View.GONE);
+                layoutScore.setVisibility(View.GONE);
             }
 
             itemView.setOnClickListener(v -> {
@@ -138,7 +154,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
                     chip.setTextColor(context.getColor(R.color.white));
                     break;
                 case CLOSED:
-                    chip.setText("Clôturé");
+                    chip.setText("Terminé");
                     chip.setChipBackgroundColorResource(R.color.status_planned);
                     chip.setTextColor(context.getColor(R.color.white));
                     break;

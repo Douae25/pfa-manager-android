@@ -17,44 +17,41 @@ public class StudentDetailViewModel extends AndroidViewModel {
     private final MutableLiveData<Long> studentIdLiveData = new MutableLiveData<>();
     private final MutableLiveData<Long> pfaIdLiveData = new MutableLiveData<>();
 
-    // Données observables
     private final LiveData<User> student;
     private final LiveData<List<PFADossier>> studentPFAs;
     private final LiveData<List<Deliverable>> deliverables;
     private final LiveData<Soutenance> soutenance;
     private final LiveData<Convention> convention;
+    private final LiveData<Evaluation> evaluation; // <--- AJOUTÉ
     private final LiveData<Integer> deliverablesCount;
 
     public StudentDetailViewModel(@NonNull Application application) {
         super(application);
         repository = new StudentDetailRepository(application);
 
-        // Observer l'étudiant
         student = Transformations.switchMap(studentIdLiveData,
                 id -> repository.getStudent(id));
 
-        // Observer les PFAs de l'étudiant
         studentPFAs = Transformations.switchMap(studentIdLiveData,
                 id -> repository.getStudentPFAs(id));
 
-        // Observer les livrables du PFA
         deliverables = Transformations.switchMap(pfaIdLiveData,
                 id -> repository.getPFADeliverables(id));
 
-        // Observer la soutenance
         soutenance = Transformations.switchMap(pfaIdLiveData,
                 id -> repository.getPFASoutenance(id));
 
-        // Observer la convention
         convention = Transformations.switchMap(pfaIdLiveData,
                 id -> repository.getPFAConvention(id));
 
-        // Observer le nombre de livrables
+        // <--- AJOUTÉ : Initialisation de l'évaluation via le repository
+        evaluation = Transformations.switchMap(pfaIdLiveData,
+                id -> repository.getPFAEvaluation(id));
+
         deliverablesCount = Transformations.switchMap(pfaIdLiveData,
                 id -> repository.countDeliverables(id));
     }
 
-    // Setters
     public void setStudentId(Long studentId) {
         studentIdLiveData.setValue(studentId);
     }
@@ -63,28 +60,12 @@ public class StudentDetailViewModel extends AndroidViewModel {
         pfaIdLiveData.setValue(pfaId);
     }
 
-    // Getters
-    public LiveData<User> getStudent() {
-        return student;
-    }
+    public LiveData<User> getStudent() { return student; }
+    public LiveData<List<PFADossier>> getStudentPFAs() { return studentPFAs; }
+    public LiveData<List<Deliverable>> getDeliverables() { return deliverables; }
+    public LiveData<Soutenance> getSoutenance() { return soutenance; }
+    public LiveData<Convention> getConvention() { return convention; }
+    public LiveData<Integer> getDeliverablesCount() { return deliverablesCount; }
 
-    public LiveData<List<PFADossier>> getStudentPFAs() {
-        return studentPFAs;
-    }
-
-    public LiveData<List<Deliverable>> getDeliverables() {
-        return deliverables;
-    }
-
-    public LiveData<Soutenance> getSoutenance() {
-        return soutenance;
-    }
-
-    public LiveData<Convention> getConvention() {
-        return convention;
-    }
-
-    public LiveData<Integer> getDeliverablesCount() {
-        return deliverablesCount;
-    }
+    public LiveData<Evaluation> getEvaluation() { return evaluation; }
 }

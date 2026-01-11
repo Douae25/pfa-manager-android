@@ -24,7 +24,6 @@ public class ConventionPdfGenerator {
         try {
             String fileName = "Convention_" + convention.getPfa_id() + "_" + System.currentTimeMillis() + ".pdf";
 
-            // Stocker dans le dossier d'app (pas de permission requise)
             File downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
             if (downloadsDir != null && !downloadsDir.exists()) {
                 downloadsDir.mkdirs();
@@ -35,7 +34,6 @@ public class ConventionPdfGenerator {
 
             Toast.makeText(context, "Convention générée: " + pdfFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
 
-            // Ouvrir automatiquement le fichier généré
             openFile(context, pdfFile);
         } catch (Exception e) {
             Toast.makeText(context, "Erreur: " + e.getMessage(), Toast.LENGTH_SHORT).show();

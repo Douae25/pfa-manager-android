@@ -30,7 +30,6 @@ public interface SoutenanceDao {
     @Query("SELECT * FROM soutenances WHERE pfa_id = :pfaId LIMIT 1")
     Soutenance getByPfaId(long pfaId);
 
-    // CORRECTION ICI : Renommé de 'getSoutenanceByPfaIdLive' vers 'getSoutenanceByPFA'
     @Query("SELECT * FROM soutenances WHERE pfa_id = :pfaId LIMIT 1")
     LiveData<Soutenance> getSoutenanceByPFA(long pfaId);
 

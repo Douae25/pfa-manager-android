@@ -51,4 +51,11 @@ public interface EvaluationDao {
             "INNER JOIN pfa_dossiers p ON e.pfa_id = p.pfa_id " +
             "WHERE p.supervisor_id = :supervisorId")
     LiveData<Integer> countBySupervisor(Long supervisorId);
+
+    @Query("SELECT * FROM evaluations WHERE pfa_id = :pfaId LIMIT 1")
+    Evaluation getByPfaIdSync(Long pfaId);
+
+    @Query("SELECT * FROM evaluations WHERE pfa_id IN " +
+            "(SELECT pfa_id FROM pfa_dossiers WHERE supervisor_id = :supervisorId)")
+    List<Evaluation> getBySupervisorIdSync(Long supervisorId);
 }

@@ -56,10 +56,7 @@ public interface UserDao {
 
     // ========== MÉTHODES AVEC DTO (Relations complexes) ==========
 
-    /**
-     * Récupère tous les étudiants d'un superviseur avec leurs PFAs
-     * Utilise @Transaction pour garantir la cohérence des données
-     */
+
     @Transaction
     @Query("SELECT u.* FROM users u " +
             "INNER JOIN pfa_dossiers p ON u.user_id = p.student_id " +
@@ -67,13 +64,15 @@ public interface UserDao {
             "ORDER BY u.last_name ASC, u.first_name ASC")
     LiveData<List<StudentWithPFA>> getStudentsWithPFABySupervisor(Long supervisorId);
 
-    /**
-     * Version synchrone pour background operations
-     */
+
     @Transaction
     @Query("SELECT u.* FROM users u " +
             "INNER JOIN pfa_dossiers p ON u.user_id = p.student_id " +
             "WHERE p.supervisor_id = :supervisorId " +
             "ORDER BY u.last_name ASC, u.first_name ASC")
     List<StudentWithPFA> getStudentsWithPFABySupervisorSync(Long supervisorId);
+
+    @Transaction
+    @Query("SELECT * FROM users WHERE user_id = :studentId")
+    LiveData<StudentWithPFA> getStudentWithPFAById(Long studentId);
 }
