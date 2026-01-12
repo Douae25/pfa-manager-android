@@ -350,4 +350,17 @@ public class SoutenanceRepository {
     public interface OnSoutenancesListFetchedListener {
         void onSoutenancesListFetched(List<Soutenance> soutenances);
     }
+
+    public interface SoutenanceCallback {
+        void onSoutenanceLoaded(Soutenance soutenance);
+    }
+
+    public void getByPfaId(Long pfaId, SoutenanceCallback callback) {
+        executor.execute(() -> {
+            Soutenance soutenance = soutenanceDao.getByPfaIdSync(pfaId);
+            if (callback != null) {
+                callback.onSoutenanceLoaded(soutenance);
+            }
+        });
+    }
 }
