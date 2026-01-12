@@ -353,4 +353,27 @@ public class EvaluationRepository {
         void onSuccess(String message);
         void onError(String message);
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // PARTIE COMPATIBILITÉ POUR NOTEFRAGMENT (Code de ton camarade)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /**
+     * Interface de callback pour renvoyer une liste d'évaluations
+     * Nécessaire car NoteFragment utilise une lambda expression
+     */
+    public interface EvaluationListCallback {
+        void onEvaluationsLoaded(List<Evaluation> evaluations);
+    }
+
+
+    public void getByPfaId(Long pfaId, EvaluationListCallback callback) {
+        executor.execute(() -> {
+            List<Evaluation> evaluations = evaluationDao.getByPfaId(pfaId);
+
+            if (callback != null) {
+                callback.onEvaluationsLoaded(evaluations);
+            }
+        });
+    }
 }
