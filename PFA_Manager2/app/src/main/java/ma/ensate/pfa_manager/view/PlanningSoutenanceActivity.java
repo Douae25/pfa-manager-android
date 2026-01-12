@@ -83,6 +83,9 @@ public class PlanningSoutenanceActivity extends AppCompatActivity
     private void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(PlanningViewModel.class);
 
+        // AJOUT : Passer le supervisorId au ViewModel
+        viewModel.setSupervisorId(currentSupervisorId);
+
         viewModel.getPFAsWithSoutenances(currentSupervisorId).observe(this, items -> {
             loadingOverlay.setVisibility(View.GONE);
             allItems = items != null ? items : new ArrayList<>();
