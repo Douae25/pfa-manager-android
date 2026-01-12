@@ -1,6 +1,7 @@
 package com.ensate.pfa.dto.response;
 
 import lombok.*;
+import java.util.List;
 
 @Data
 @Builder
@@ -8,6 +9,11 @@ import lombok.*;
 @AllArgsConstructor
 public class EvaluationDTO {
   private Long evaluationId;
+  private Long pfaId;
+  private Long evaluatorId;
+  private Long dateEvaluation;
   private Double totalScore;
-  private String comments;
+
+  // Détails des critères
+  private List<EvaluationDetailDTO> details;
 }

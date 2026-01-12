@@ -13,4 +13,10 @@ public class SoutenanceDTO {
   private Long dateSoutenance;
   private String status; 
   private Long createdAt;
+
+  private String pfaTitle;
+  private Long studentId;
+  private String studentFirstName;
+  private String studentLastName;
+
 }
