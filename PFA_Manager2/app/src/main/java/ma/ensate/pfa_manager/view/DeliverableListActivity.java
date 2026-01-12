@@ -272,27 +272,51 @@ public class DeliverableListActivity extends AppCompatActivity
     }
 
     private void openFile(String fileUri, String title) {
+        if (fileUri == null || fileUri.isEmpty()) {
+            Toast.makeText(this, "Fichier non disponible", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         try {
-            File file = new File(fileUri);
-
-            if (!file.exists()) {
-                Toast.makeText(this, "Fichier introuvable", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            Uri uri = FileProvider.getUriForFile(this,
-                    getPackageName() + ".fileprovider", file);
-
+            Uri uri;
             String mimeType = getMimeType(fileUri);
 
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(uri, mimeType);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            if (fileUri.startsWith("http://") || fileUri.startsWith("https://")) {
+                // URL DISTANTE
+                uri = Uri.parse(fileUri);
 
-            startActivity(Intent.createChooser(intent, "Ouvrir " + title));
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(uri, mimeType);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                startActivity(Intent.createChooser(intent, "Ouvrir " + title));
+
+            } else {
+                // FICHIER LOCAL
+                File file = new File(fileUri);
+
+                if (!file.exists()) {
+                    Toast.makeText(this, "Fichier introuvable", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                uri = FileProvider.getUriForFile(this,
+                        getPackageName() + ".fileprovider", file);
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(uri, mimeType);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                startActivity(Intent.createChooser(intent, "Ouvrir " + title));
+            }
 
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "Aucune application pour ouvrir ce type de fichier", Toast.LENGTH_SHORT).show();
+            try {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUri));
+                startActivity(browserIntent);
+            } catch (Exception ex) {
+                Toast.makeText(this, "Aucune application pour ouvrir ce fichier", Toast.LENGTH_SHORT).show();
+            }
         } catch (Exception e) {
             Toast.makeText(this, "Erreur: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }

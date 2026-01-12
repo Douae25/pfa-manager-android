@@ -60,4 +60,7 @@ public interface DeliverableDao {
 
     @Query("SELECT COUNT(*) FROM deliverables WHERE pfa_id = :pfaId")
     LiveData<Integer> getCountByPfaId(Long pfaId);
+    @Query("SELECT * FROM deliverables WHERE deliverable_id = :id")
+    Deliverable getByIdSync(Long id);
+
 }

@@ -1,6 +1,6 @@
+// dto/response/DeliverableDTO.java
 package com.ensate.pfa.dto.response;
 
-import com.ensate.pfa.entity.enums.DeliverableType;
 import lombok.*;
 
 @Data
@@ -9,8 +9,17 @@ import lombok.*;
 @AllArgsConstructor
 public class DeliverableDTO {
   private Long deliverableId;
+  private Long pfaId;
   private String fileTitle;
   private String fileUri;
+  private String deliverableType;
+  private String deliverableFileType; 
   private Long uploadedAt;
-  private DeliverableType deliverableType;
+  private Boolean isValidated;
+
+  // Infos étudiant (pour la liste)
+  private Long studentId;
+  private String studentFirstName;
+  private String studentLastName;
+  private String pfaTitle;
 }

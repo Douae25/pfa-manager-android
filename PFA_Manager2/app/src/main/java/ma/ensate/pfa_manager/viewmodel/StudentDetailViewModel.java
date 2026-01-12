@@ -1,3 +1,4 @@
+// viewmodel/StudentDetailViewModel.java
 package ma.ensate.pfa_manager.viewmodel;
 
 import android.app.Application;
@@ -16,13 +17,14 @@ public class StudentDetailViewModel extends AndroidViewModel {
     private final StudentDetailRepository repository;
     private final MutableLiveData<Long> studentIdLiveData = new MutableLiveData<>();
     private final MutableLiveData<Long> pfaIdLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Long> supervisorIdLiveData = new MutableLiveData<>();
 
     private final LiveData<User> student;
     private final LiveData<List<PFADossier>> studentPFAs;
     private final LiveData<List<Deliverable>> deliverables;
     private final LiveData<Soutenance> soutenance;
     private final LiveData<Convention> convention;
-    private final LiveData<Evaluation> evaluation; // <--- AJOUTÉ
+    private final LiveData<Evaluation> evaluation;
     private final LiveData<Integer> deliverablesCount;
 
     public StudentDetailViewModel(@NonNull Application application) {
@@ -44,7 +46,6 @@ public class StudentDetailViewModel extends AndroidViewModel {
         convention = Transformations.switchMap(pfaIdLiveData,
                 id -> repository.getPFAConvention(id));
 
-        // <--- AJOUTÉ : Initialisation de l'évaluation via le repository
         evaluation = Transformations.switchMap(pfaIdLiveData,
                 id -> repository.getPFAEvaluation(id));
 
@@ -60,12 +61,35 @@ public class StudentDetailViewModel extends AndroidViewModel {
         pfaIdLiveData.setValue(pfaId);
     }
 
+    /**
+     * NOUVELLE MÉTHODE : Définir le supervisorId et lancer la sync
+     */
+    public void setSupervisorId(Long supervisorId) {
+        supervisorIdLiveData.setValue(supervisorId);
+    }
+
+    /**
+     * NOUVELLE MÉTHODE : Synchroniser les données depuis l'API
+     */
+    public void syncFromApi() {
+        Long supervisorId = supervisorIdLiveData.getValue();
+        Long studentId = studentIdLiveData.getValue();
+
+        if (supervisorId != null && studentId != null) {
+            repository.syncStudentDetail(supervisorId, studentId);
+        }
+    }
+
+    // Getters existants (inchangés)
     public LiveData<User> getStudent() { return student; }
     public LiveData<List<PFADossier>> getStudentPFAs() { return studentPFAs; }
     public LiveData<List<Deliverable>> getDeliverables() { return deliverables; }
     public LiveData<Soutenance> getSoutenance() { return soutenance; }
     public LiveData<Convention> getConvention() { return convention; }
     public LiveData<Integer> getDeliverablesCount() { return deliverablesCount; }
-
     public LiveData<Evaluation> getEvaluation() { return evaluation; }
+
+    public LiveData<Boolean> getIsSyncing() {
+        return repository.getIsSyncing();
+    }
 }

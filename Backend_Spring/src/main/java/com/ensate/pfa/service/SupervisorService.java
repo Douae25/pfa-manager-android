@@ -1,9 +1,7 @@
-// service/SupervisorService.java
 package com.ensate.pfa.service;
 
 import com.ensate.pfa.dto.response.*;
 import com.ensate.pfa.entity.*;
-import com.ensate.pfa.entity.enums.PFAStatus;
 import com.ensate.pfa.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,10 +16,10 @@ import java.util.stream.Collectors;
 public class SupervisorService {
 
   private final PFADossierRepository pfaDossierRepository;
-  private final EvaluationRepository evaluationRepository;
-  private final ConventionRepository conventionRepository;
   private final DeliverableRepository deliverableRepository;
+  private final ConventionRepository conventionRepository;
   private final SoutenanceRepository soutenanceRepository;
+  private final EvaluationRepository evaluationRepository;
 
   /**
    * Récupère tous les étudiants d'un encadrant avec leurs PFA
@@ -33,7 +31,6 @@ public class SupervisorService {
         .map(pfa -> {
           User student = pfa.getStudent();
 
-          // Chercher l'évaluation
           Double score = null;
           boolean evaluated = false;
 
@@ -64,88 +61,141 @@ public class SupervisorService {
   }
 
   /**
-   * Récupère le détail d'un étudiant spécifique
+   * Récupère le détail complet d'un étudiant (PFA, Convention, Livrables,
+   * Soutenance)
    */
   public StudentDetailDTO getStudentDetail(Long supervisorId, Long studentId) {
-    List<PFADossier> pfas = pfaDossierRepository.findBySupervisorUserId(supervisorId);
-
-    PFADossier pfa = pfas.stream()
+    PFADossier pfa = pfaDossierRepository.findBySupervisorUserId(supervisorId)
+        .stream()
         .filter(p -> p.getStudent().getUserId().equals(studentId))
         .findFirst()
         .orElseThrow(() -> new RuntimeException("Étudiant non trouvé"));
 
     User student = pfa.getStudent();
 
-    // Construire le DTO
+    // Convention
+    ConventionDTO conventionDTO = null;
+    if (pfa.getConvention() != null) {
+      conventionDTO = toConventionDTO(pfa.getConvention());
+    }
+
+    // Livrables
+    List<DeliverableDTO> deliverableDTOs = pfa.getDeliverables() != null ? pfa.getDeliverables().stream()
+        .map(d -> toDeliverableDTO(d, student, pfa))
+        .collect(Collectors.toList()) : List.of();
+
+    // Soutenance
+    SoutenanceDTO soutenanceDTO = null;
+    if (pfa.getSoutenance() != null) {
+      soutenanceDTO = toSoutenanceDTO(pfa.getSoutenance());
+    }
+
+    // Évaluation
+    Double totalScore = null;
+    boolean isEvaluated = false;
+    if (pfa.getEvaluations() != null && !pfa.getEvaluations().isEmpty()) {
+      Evaluation eval = pfa.getEvaluations().get(0);
+      if (eval.getTotalScore() != null) {
+        totalScore = eval.getTotalScore();
+        isEvaluated = true;
+      }
+    }
+
     return StudentDetailDTO.builder()
         .studentId(student.getUserId())
         .firstName(student.getFirstName())
         .lastName(student.getLastName())
         .email(student.getEmail())
         .phoneNumber(student.getPhoneNumber())
-        .pfa(buildPFAInfo(pfa))
-        .convention(buildConvention(pfa.getConvention()))
-        .deliverables(buildDeliverables(pfa.getDeliverables()))
-        .soutenance(buildSoutenance(pfa.getSoutenance()))
-        .evaluation(buildEvaluation(pfa.getEvaluations()))
-        .build();
-  }
-
-  private PFAInfoDTO buildPFAInfo(PFADossier pfa) {
-    return PFAInfoDTO.builder()
         .pfaId(pfa.getPfaId())
-        .title(pfa.getTitle())
-        .description(pfa.getDescription())
-        .currentStatus(pfa.getCurrentStatus())
-        .updatedAt(pfa.getUpdatedAt())
+        .pfaTitle(pfa.getTitle())
+        .pfaDescription(pfa.getDescription())
+        .pfaStatus(pfa.getCurrentStatus() != null ? pfa.getCurrentStatus().name() : null)
+        .pfaUpdatedAt(pfa.getUpdatedAt())
+        .convention(conventionDTO)
+        .deliverables(deliverableDTOs)
+        .soutenance(soutenanceDTO)
+        .totalScore(totalScore)
+        .isEvaluated(isEvaluated)
         .build();
   }
 
-  private ConventionDTO buildConvention(Convention convention) {
-    if (convention == null)
-      return null;
-    return ConventionDTO.builder()
-        .conventionId(convention.getConventionId())
-        .companyName(convention.getCompanyName())
-        .companyAddress(convention.getCompanyAddress())
-        .state(convention.getState())
-        .scannedFileUri(convention.getScannedFileUri())
-        .build();
-  }
+  /**
+   * Récupère tous les livrables des étudiants d'un superviseur
+   */
+  public List<DeliverableDTO> getAllDeliverables(Long supervisorId) {
+    List<Deliverable> deliverables = deliverableRepository.findBySupervisorId(supervisorId);
 
-  private List<DeliverableDTO> buildDeliverables(List<Deliverable> deliverables) {
-    if (deliverables == null)
-      return List.of();
     return deliverables.stream()
-        .map(d -> DeliverableDTO.builder()
-            .deliverableId(d.getDeliverableId())
-            .fileTitle(d.getFileTitle())
-            .fileUri(d.getFileUri())
-            .uploadedAt(d.getUploadedAt())
-            .deliverableType(d.getDeliverableType())
-            .build())
+        .map(d -> {
+          PFADossier pfa = d.getPfaDossier();
+          User student = pfa.getStudent();
+          return toDeliverableDTO(d, student, pfa);
+        })
         .collect(Collectors.toList());
   }
 
-  private SoutenanceDTO buildSoutenance(Soutenance soutenance) {
-    if (soutenance == null)
-      return null;
-    return SoutenanceDTO.builder()
-        .soutenanceId(soutenance.getSoutenanceId())
-        .dateSoutenance(soutenance.getDateSoutenance())
-        .location(soutenance.getLocation())
-        .status(soutenance.getStatus())
+  /**
+   * Récupère les livrables d'un PFA spécifique
+   */
+  public List<DeliverableDTO> getDeliverablesByPfa(Long pfaId) {
+    List<Deliverable> deliverables = deliverableRepository.findByPfaDossierPfaId(pfaId);
+
+    return deliverables.stream()
+        .map(d -> {
+          PFADossier pfa = d.getPfaDossier();
+          User student = pfa.getStudent();
+          return toDeliverableDTO(d, student, pfa);
+        })
+        .collect(Collectors.toList());
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // MAPPERS
+  // ═══════════════════════════════════════════════════════════════════
+
+  private ConventionDTO toConventionDTO(Convention c) {
+    return ConventionDTO.builder()
+        .conventionId(c.getConventionId())
+        .pfaId(c.getPfaDossier().getPfaId())
+        .companyName(c.getCompanyName())
+        .companyAddress(c.getCompanyAddress())
+        .companySupervisorName(c.getCompanySupervisorName())
+        .companySupervisorEmail(c.getCompanySupervisorEmail())
+        .startDate(c.getStartDate())
+        .endDate(c.getEndDate())
+        .scannedFileUri(c.getScannedFileUri())
+        .isValidated(c.getIsValidated())
+        .state(c.getState() != null ? c.getState().name() : null)
+        .adminComment(c.getAdminComment())
         .build();
   }
 
-  private EvaluationDTO buildEvaluation(List<Evaluation> evaluations) {
-    if (evaluations == null || evaluations.isEmpty())
-      return null;
-    Evaluation eval = evaluations.get(0);
-    return EvaluationDTO.builder()
-        .evaluationId(eval.getEvaluationId())
-        .totalScore(eval.getTotalScore())
-        // .comments(eval.getComments())
+  private DeliverableDTO toDeliverableDTO(Deliverable d, User student, PFADossier pfa) {
+    return DeliverableDTO.builder()
+        .deliverableId(d.getDeliverableId())
+        .pfaId(pfa.getPfaId())
+        .fileTitle(d.getFileTitle())
+        .fileUri(d.getFileUri())
+        .deliverableType(d.getDeliverableType() != null ? d.getDeliverableType().name() : null)
+        .deliverableFileType(d.getFileType() != null ? d.getFileType().name() : null)
+        .uploadedAt(d.getUploadedAt())
+        .isValidated(d.getIsValidated())
+        .studentId(student.getUserId())
+        .studentFirstName(student.getFirstName())
+        .studentLastName(student.getLastName())
+        .pfaTitle(pfa.getTitle())
+        .build();
+  }
+
+  private SoutenanceDTO toSoutenanceDTO(Soutenance s) {
+    return SoutenanceDTO.builder()
+        .soutenanceId(s.getSoutenanceId())
+        .pfaId(s.getPfaDossier().getPfaId())
+        .location(s.getLocation())
+        .dateSoutenance(s.getDateSoutenance())
+        .status(s.getStatus() != null ? s.getStatus().name() : null)
+        .createdAt(s.getCreatedAt())
         .build();
   }
 }
