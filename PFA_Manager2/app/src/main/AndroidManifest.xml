@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="ma.ensate.pfa_manager">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,16 +14,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PFA_Manager"
-        tools:targetApi="31">
-
-        <activity
-            android:name=".view.HomeActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        tools:targetApi="31"
+        android:usesCleartextTraffic="true"> <activity
+        android:name=".view.HomeActivity"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+    </activity>
 
         <activity
             android:name=".view.MainActivity"
