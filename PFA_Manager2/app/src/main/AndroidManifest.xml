@@ -58,6 +58,18 @@
 
         <activity android:name=".view.etudiant.StudentSpaceActivity" />
 
+        <activity
+            android:name=".view.etudiant.ConventionRequestActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.etudiant.UploadSignedConventionActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.etudiant.UploadDeliverablesActivity"
+            android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

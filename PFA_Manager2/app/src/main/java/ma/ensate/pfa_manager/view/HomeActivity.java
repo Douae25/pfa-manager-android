@@ -11,6 +11,7 @@ import ma.ensate.pfa_manager.repository.LanguageRepository;
 import ma.ensate.pfa_manager.util.TestDataHelper;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModelFactory;
+import java.util.concurrent.Executors;
 
 
 public class HomeActivity extends AppCompatActivity {
@@ -30,7 +31,11 @@ public class HomeActivity extends AppCompatActivity {
 
         setupNavigation();
         setupLanguageToggle();
-        TestDataHelper.resetAndReload(this);
+        
+        // Load test data in background to avoid blocking UI
+        Executors.newSingleThreadExecutor().execute(() -> {
+            TestDataHelper.resetAndReload(this);
+        });
 
     }
     

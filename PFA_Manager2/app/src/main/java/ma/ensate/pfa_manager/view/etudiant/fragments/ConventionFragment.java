@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,10 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import ma.ensate.pfa_manager.R;
+import ma.ensate.pfa_manager.database.AppDatabase;
 import ma.ensate.pfa_manager.model.Convention;
 import ma.ensate.pfa_manager.model.ConventionState;
 import ma.ensate.pfa_manager.model.PFADossier;
@@ -42,6 +46,11 @@ public class ConventionFragment extends Fragment {
     private CardView cardViewConvention;
     private CardView cardUploadSigned;
     private TextView tvConventionStatus;
+    private TextView tvConventionReason;
+    private SwipeRefreshLayout swipeRefresh;
+    
+    private LiveData<Convention> conventionLiveData;
+    private LiveData<PFADossier> pfaDossierLiveData;
     
     public static ConventionFragment newInstance(User user) {
         ConventionFragment fragment = new ConventionFragment();
@@ -71,8 +80,17 @@ public class ConventionFragment extends Fragment {
         cardViewConvention = view.findViewById(R.id.cardViewConvention);
         cardUploadSigned = view.findViewById(R.id.cardUploadSigned);
         tvConventionStatus = view.findViewById(R.id.tvConventionStatus);
+        tvConventionReason = view.findViewById(R.id.tvConventionReason);
+        swipeRefresh = view.findViewById(R.id.swipeRefresh);
         
-        // Charger les données du dossier PFA et de la convention
+        // Setup SwipeRefreshLayout
+        swipeRefresh.setOnRefreshListener(() -> {
+            loadConventionData();
+            swipeRefresh.setRefreshing(false);
+        });
+        
+        // Charger les données avec LiveData
+        setupLiveDataObservers();
         loadConventionData();
         
         setupCardClickListeners();
@@ -86,17 +104,27 @@ public class ConventionFragment extends Fragment {
         loadConventionData();
     }
     
-    private void loadConventionData() {
+    private void setupLiveDataObservers() {
         if (currentUser == null) {
             return;
         }
         
-        pfaDossierRepository.getByStudentId(currentUser.getUser_id(), pfaDossier -> {
+        // Observer pour le PFADossier
+        AppDatabase db = AppDatabase.getInstance(requireActivity().getApplication());
+        pfaDossierLiveData = db.pfaDossierDao().getPFAByStudentLive(currentUser.getUser_id());
+        
+        pfaDossierLiveData.observe(getViewLifecycleOwner(), pfaDossier -> {
             currentPfaDossier = pfaDossier;
             
+            // Supprimer l'ancien observer de convention si existe
+            if (conventionLiveData != null) {
+                conventionLiveData.removeObservers(getViewLifecycleOwner());
+            }
+            
             if (pfaDossier != null) {
-                // Charger la convention pour ce dossier
-                conventionRepository.getByPfaId(pfaDossier.getPfa_id(), convention -> {
+                // Observer pour la convention
+                conventionLiveData = db.conventionDao().getConventionByPFA(pfaDossier.getPfa_id());
+                conventionLiveData.observe(getViewLifecycleOwner(), convention -> {
                     currentConvention = convention;
                     updateConventionStatus();
                 });
@@ -106,55 +134,95 @@ public class ConventionFragment extends Fragment {
             }
         });
     }
-    
+    private void loadConventionData() {
+        // Cette méthode force un refresh si nécessaire
+        // Les observers LiveData se chargeront automatiquement du reste
+        if (swipeRefresh != null) {
+            swipeRefresh.setRefreshing(true);
+            swipeRefresh.postDelayed(() -> {
+                if (swipeRefresh != null) {
+                    swipeRefresh.setRefreshing(false);
+                }
+            }, 500);
+        }
+    }
+
     private void updateConventionStatus() {
         if (currentPfaDossier == null) {
             // Aucune demande de convention
             tvConventionStatus.setVisibility(View.VISIBLE);
             tvConventionStatus.setText(R.string.convention_not_requested);
-            tvConventionStatus.setTextColor(ContextCompat.getColor(requireActivity(), 
+            tvConventionStatus.setTextColor(ContextCompat.getColor(requireActivity(),
                 android.R.color.holo_orange_dark));
             cardViewConvention.setEnabled(false);
             cardUploadSigned.setEnabled(false);
-        } else {
-            // Vérifier le status du PFADossier
-            PFAStatus pfaStatus = currentPfaDossier.getCurrent_status();
-            
-            if (pfaStatus == PFAStatus.CONVENTION_PENDING ||
-                (currentConvention != null && currentConvention.getState() == ConventionState.PENDING)) {
-                // Demande de convention en cours de traitement
-                tvConventionStatus.setVisibility(View.VISIBLE);
-                tvConventionStatus.setText(R.string.convention_pending);
-                tvConventionStatus.setTextColor(ContextCompat.getColor(requireActivity(), 
-                    android.R.color.holo_orange_dark));
-                cardViewConvention.setEnabled(false);
-                cardUploadSigned.setEnabled(false);
-            } else if (currentConvention != null && (currentConvention.getState() == ConventionState.VALIDATED
-                    || currentConvention.getState() == ConventionState.GENERATED
-                    || currentConvention.getState() == ConventionState.UPLOADED)) {
-                // Convention générée / uploadée / validée : téléchargement permis (upload signé seulement si validée)
-                tvConventionStatus.setVisibility(View.VISIBLE);
-                tvConventionStatus.setText(R.string.convention_validated);
-                tvConventionStatus.setTextColor(ContextCompat.getColor(requireActivity(), 
-                    android.R.color.holo_green_dark));
-                cardViewConvention.setEnabled(true);
-                // Upload signé actif pour générée/uploadée/validée
-                cardUploadSigned.setEnabled(true);
-            } else if (currentConvention != null && currentConvention.getState() == ConventionState.REJECTED) {
-                // Demande refusée mais téléchargement et upload autorisés
-                tvConventionStatus.setVisibility(View.VISIBLE);
-                tvConventionStatus.setText(R.string.convention_rejected);
-                tvConventionStatus.setTextColor(ContextCompat.getColor(requireActivity(), 
-                    android.R.color.holo_red_dark));
-                cardViewConvention.setEnabled(true);
-                cardUploadSigned.setEnabled(true);
-            } else {
-                // Pas de message d'indisponibilité en statut; cacher le label
-                tvConventionStatus.setVisibility(View.GONE);
-                cardViewConvention.setEnabled(false);
-                cardUploadSigned.setEnabled(false);
-            }
+            tvConventionReason.setVisibility(View.GONE);
+            return;
         }
+
+        // Pas de convention enregistrée
+        if (currentConvention == null) {
+            tvConventionStatus.setVisibility(View.GONE);
+            cardViewConvention.setEnabled(false);
+            cardUploadSigned.setEnabled(false);
+            tvConventionReason.setVisibility(View.GONE);
+            return;
+        }
+
+        ConventionState state = currentConvention.getState();
+
+        if (state == ConventionState.PENDING) {
+            // Demande en cours
+            tvConventionStatus.setVisibility(View.VISIBLE);
+            tvConventionStatus.setText(R.string.convention_pending);
+            tvConventionStatus.setTextColor(ContextCompat.getColor(requireActivity(),
+                android.R.color.holo_orange_dark));
+            cardViewConvention.setEnabled(false);
+            cardUploadSigned.setEnabled(false);
+            tvConventionReason.setVisibility(View.GONE);
+            return;
+        }
+
+        if (state == ConventionState.VALIDATED || state == ConventionState.GENERATED || state == ConventionState.UPLOADED) {
+            // Convention disponible / validée
+            tvConventionStatus.setVisibility(View.VISIBLE);
+            tvConventionStatus.setText(R.string.convention_validated);
+            tvConventionStatus.setTextColor(ContextCompat.getColor(requireActivity(),
+                android.R.color.holo_green_dark));
+            cardViewConvention.setEnabled(true);
+            cardUploadSigned.setEnabled(true);
+            tvConventionReason.setVisibility(View.GONE);
+            return;
+        }
+
+        if (state == ConventionState.REFUSED || state == ConventionState.REJECTED) {
+            // Convention refusée (demande) ou rejetée (signée)
+            tvConventionStatus.setVisibility(View.VISIBLE);
+            if (state == ConventionState.REFUSED) {
+                tvConventionStatus.setText(R.string.convention_rejected_request);
+            } else {
+                tvConventionStatus.setText(R.string.convention_rejected);
+            }
+            tvConventionStatus.setTextColor(ContextCompat.getColor(requireActivity(),
+                android.R.color.holo_red_dark));
+            cardViewConvention.setEnabled(true);
+            // Upload only allowed when signed version was rejected, not when request was refused
+            cardUploadSigned.setEnabled(state == ConventionState.REJECTED);
+
+            String reason = currentConvention.getAdmin_comment();
+            if (TextUtils.isEmpty(reason)) {
+                reason = getString(R.string.convention_reason_default);
+            }
+            tvConventionReason.setText(getString(R.string.convention_reason_prefix, reason));
+            tvConventionReason.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        // État indéterminé
+        tvConventionStatus.setVisibility(View.GONE);
+        cardViewConvention.setEnabled(false);
+        cardUploadSigned.setEnabled(false);
+        tvConventionReason.setVisibility(View.GONE);
     }
     
     private void setupCardClickListeners() {
@@ -188,8 +256,9 @@ public class ConventionFragment extends Fragment {
         
         // Télécharger la convention signée
         cardUploadSigned.setOnClickListener(v -> {
-            // Empêcher l'accès seulement si la convention est en état PENDING
-            if (currentConvention == null || currentConvention.getState() == ConventionState.PENDING) {
+            // Empêcher l'accès si la convention n'existe pas, est en cours, ou si la demande a été refusée
+            if (currentConvention == null || currentConvention.getState() == ConventionState.PENDING
+                    || currentConvention.getState() == ConventionState.REFUSED) {
                 Toast.makeText(requireActivity(), R.string.cannot_upload_unsigned_convention, Toast.LENGTH_SHORT).show();
                 return;
             }

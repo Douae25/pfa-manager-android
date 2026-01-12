@@ -31,6 +31,9 @@ public interface PFADossierDao {
     @Query("SELECT * FROM pfa_dossiers WHERE student_id = :studentId")
     List<PFADossier> getByStudent(long studentId);
 
+    @Query("SELECT * FROM pfa_dossiers WHERE student_id = :studentId LIMIT 1")
+    LiveData<PFADossier> getPFAByStudentLive(Long studentId);
+
     @Query("SELECT * FROM pfa_dossiers WHERE student_id = :studentId")
     LiveData<List<PFADossier>> getPFAsByStudent(Long studentId);
 

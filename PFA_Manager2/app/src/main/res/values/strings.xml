@@ -149,6 +149,9 @@
     <string name="convention_rejected">Votre demande est refusée</string>
     <string name="convention_rejected_message">Votre demande de convention a été refusée. Veuillez contacter l\'administration</string>
     <string name="convention_not_available">La convention n\'est pas disponible</string>
+        <string name="convention_rejected_request">Demande de convention refusée</string>
+        <string name="convention_reason_prefix">Motif : %1$s</string>
+        <string name="convention_reason_default">Motif non renseigné</string>
     <string name="convention_downloading">Téléchargement de la convention...</string>
     <string name="cannot_upload_unsigned_convention">Seules les conventions validées peuvent être déposées</string>
     <string name="permission_denied">Permission refusée - Impossible de télécharger le PDF</string>
