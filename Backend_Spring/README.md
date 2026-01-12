@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-This is a **Spring Boot 3.5.9** REST API server providing Student-only access to the PFA (Projet de Fin d'Année) management system. It implements 7 student use cases extracted from the comprehensive Backend_Features project.
+This is a **Spring Boot 3.5.9** REST API server providing Student-only access to the PFA (Projet de Fin d'Année) management system.
 
 ### Build & Run
 
@@ -38,16 +38,6 @@ src/main/java/com/ensate/pfa/
 ├── repository/              # Spring Data JPA repositories
 ├── dto/                     # Request/Response DTOs
 └── exception/               # Global error handling
-```
-
----
-
-## Next Steps
-
-### 2. File Management
-```
-POST /api/deliverables/upload → File storage (AWS S3, Azure Blob)
-POST /api/conventions/{id}/upload-signed → Convention document
 ```
 
 ---
