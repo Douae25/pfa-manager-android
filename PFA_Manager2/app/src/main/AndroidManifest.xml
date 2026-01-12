@@ -25,6 +25,23 @@
         android:name=".view.MainActivity"
         android:exported="false" />
 
+    <activity
+        android:name=".view.coordinateur_filiere.CoordinatorDashboardActivity"
+        android:exported="false" />
+
+    <activity
+        android:name=".view.coordinateur_filiere.ManageStudentsActivity"
+        android:exported="false" />
+
+    <activity
+        android:name=".view.coordinateur_filiere.ManageProfessorsActivity"
+        android:exported="false" />
+
+    <activity
+        android:name=".view.coordinateur_filiere.ManageAssignmentsActivity"
+        android:exported="false" />
+
+
 </application>
 
 </manifest>

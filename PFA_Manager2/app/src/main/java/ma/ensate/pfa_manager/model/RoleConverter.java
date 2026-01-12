@@ -43,4 +43,14 @@ public class RoleConverter {
     public SoutenanceStatus toSoutenanceStatus(String statusString) {
         return statusString == null ? null : SoutenanceStatus.valueOf(statusString);
     }
+
+    @TypeConverter
+    public static String fromDepartmentId(Long departmentId) {
+        return departmentId == null ? null : String.valueOf(departmentId);
+    }
+
+    @TypeConverter
+    public static Long toDepartmentId(String departmentIdString) {
+        return departmentIdString == null ? null : Long.parseLong(departmentIdString);
+    }
 }
