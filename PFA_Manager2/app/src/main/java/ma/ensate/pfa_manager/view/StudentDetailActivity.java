@@ -136,6 +136,11 @@ public class StudentDetailActivity extends AppCompatActivity
     private void initViewModel() {
         viewModel = new ViewModelProvider(this).get(StudentDetailViewModel.class);
         viewModel.setStudentId(studentId);
+        Long supervisorId = getIntent().getLongExtra("USER_ID", -1L);
+        if (supervisorId != -1L) {
+            viewModel.setSupervisorId(supervisorId);
+            viewModel.syncFromApi();
+        }
     }
 
     private void observeData() {
@@ -325,27 +330,58 @@ public class StudentDetailActivity extends AppCompatActivity
     }
 
     private void openFile(String fileUri, String title) {
+        if (fileUri == null || fileUri.isEmpty()) {
+            Toast.makeText(this, "Fichier non disponible", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         try {
-            File file = new File(fileUri);
-
-            if (!file.exists()) {
-                Toast.makeText(this, "Fichier introuvable: " + fileUri, Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            Uri uri = FileProvider.getUriForFile(this,
-                    getPackageName() + ".fileprovider", file);
-
+            Uri uri;
             String mimeType = getMimeType(fileUri);
 
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(uri, mimeType);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            if (fileUri.startsWith("http://") || fileUri.startsWith("https://")) {
+                // ════════════════════════════════════════════════════════════
+                // URL DISTANTE : Ouvrir directement avec l'URI
+                // ════════════════════════════════════════════════════════════
+                uri = Uri.parse(fileUri);
 
-            startActivity(Intent.createChooser(intent, "Ouvrir " + title));
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(uri, mimeType);
+
+                // Pour les PDFs, certaines apps ont besoin de ça
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                startActivity(Intent.createChooser(intent, "Ouvrir " + title));
+
+            } else {
+                // ════════════════════════════════════════════════════════════
+                // FICHIER LOCAL : Utiliser FileProvider
+                // ════════════════════════════════════════════════════════════
+                File file = new File(fileUri);
+
+                if (!file.exists()) {
+                    Toast.makeText(this, "Fichier introuvable: " + fileUri, Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                uri = FileProvider.getUriForFile(this,
+                        getPackageName() + ".fileprovider", file);
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(uri, mimeType);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                startActivity(Intent.createChooser(intent, "Ouvrir " + title));
+            }
 
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "Aucune application pour ouvrir ce fichier", Toast.LENGTH_SHORT).show();
+            // Fallback : ouvrir dans le navigateur
+            try {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUri));
+                startActivity(browserIntent);
+            } catch (Exception ex) {
+                Toast.makeText(this, "Aucune application pour ouvrir ce fichier", Toast.LENGTH_SHORT).show();
+            }
         } catch (Exception e) {
             Toast.makeText(this, "Erreur: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }

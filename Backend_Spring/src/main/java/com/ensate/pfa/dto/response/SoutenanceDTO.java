@@ -1,6 +1,5 @@
 package com.ensate.pfa.dto.response;
 
-import com.ensate.pfa.entity.enums.SoutenanceStatus;
 import lombok.*;
 
 @Data
@@ -9,7 +8,9 @@ import lombok.*;
 @AllArgsConstructor
 public class SoutenanceDTO {
   private Long soutenanceId;
-  private Long dateSoutenance;
+  private Long pfaId;
   private String location;
-  private SoutenanceStatus status;
+  private Long dateSoutenance;
+  private String status; 
+  private Long createdAt;
 }

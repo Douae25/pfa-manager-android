@@ -1,6 +1,5 @@
 package com.ensate.pfa.dto.response;
 
-import com.ensate.pfa.entity.enums.ConventionState;
 import lombok.*;
 
 @Data
@@ -9,8 +8,15 @@ import lombok.*;
 @AllArgsConstructor
 public class ConventionDTO {
   private Long conventionId;
+  private Long pfaId;
   private String companyName;
   private String companyAddress;
-  private ConventionState state;
+  private String companySupervisorName;
+  private String companySupervisorEmail;
+  private Long startDate;
+  private Long endDate;
   private String scannedFileUri;
+  private Boolean isValidated;
+  private String state; 
+  private String adminComment;
 }

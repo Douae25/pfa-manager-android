@@ -20,10 +20,11 @@ public class TestDataHelper {
         Executors.newSingleThreadExecutor().execute(() -> {
             AppDatabase db = AppDatabase.getInstance(context);
 
-            // Si des données existent déjà, on n'ajoute rien pour éviter les doublons
             if (db.userDao().getAllUsers().size() > 0) {
                 return;
             }
+
+            db.getOpenHelper().getWritableDatabase().execSQL("DELETE FROM sqlite_sequence WHERE name='User'");
 
             // Création des fichiers physiques
             String testFilesDir = createTestFiles(context);
@@ -47,6 +48,19 @@ public class TestDataHelper {
             coord.setCreated_at(System.currentTimeMillis());
             db.userDao().insert(coord);
 
+            // ⭐ CRÉATION DE 7 UTILISATEURS FICTIFS POUR ATTEINDRE L'ID 9
+            for (int i = 1; i <= 7; i++) {
+                User dummyUser = new User();
+                dummyUser.setFirst_name("Dummy" + i);
+                dummyUser.setLast_name("User" + i);
+                dummyUser.setEmail("dummy" + i + "@ensate.ma");
+                dummyUser.setPassword("123456");
+                dummyUser.setRole(Role.STUDENT);
+                dummyUser.setCreated_at(System.currentTimeMillis());
+                db.userDao().insert(dummyUser);
+            }
+
+            // ⭐ MAINTENANT LE PROF MANSOUR AURA L'ID 10
             User supervisor = new User();
             supervisor.setFirst_name("Abdeljebar");
             supervisor.setLast_name("Mansour");
@@ -55,7 +69,7 @@ public class TestDataHelper {
             supervisor.setRole(Role.PROFESSOR);
             supervisor.setPhone_number("0612345678");
             supervisor.setCreated_at(System.currentTimeMillis());
-            long supervisorId = db.userDao().insert(supervisor);
+            long supervisorId = db.userDao().insert(supervisor); // ✅ supervisorId = 10
 
             User student1 = new User();
             student1.setFirst_name("Ahmed");
@@ -243,7 +257,8 @@ public class TestDataHelper {
             sout2.setCreated_at(System.currentTimeMillis());
             db.soutenanceDao().insert(sout2);
 
-            System.out.println("✅ Données de test (et fichiers) insérées avec succès!");
+            System.out.println("✅ Données de test insérées avec succès!");
+            System.out.println("✅ Prof Mansour a maintenant l'ID: " + supervisorId);
         });
     }
 
@@ -254,24 +269,12 @@ public class TestDataHelper {
         }
 
         // --- GÉNÉRATION DES VRAIS PDFs (avec le contenu lisible) ---
-        // Les fichiers mentionnés dans insertTestData doivent être créés ici
-
         createSimplePdf(testDir, "rapport_test.pdf", "RAPPORT D'AVANCEMENT", "Application mobile de gestion universitaire.\nAvancement : 50%\nModules terminés : Authentification, Gestion des profils.");
-
-        // AJOUT : Fichier Presentation.pdf
         createSimplePdf(testDir, "presentation.pdf", "PRÉSENTATION PFA", "SLIDES DE PRÉSENTATION\n\n1. Contexte du projet\n2. Problématique\n3. Solution proposée\n4. Démo");
-
-        // AJOUT : Fichier Rapport Final
         createSimplePdf(testDir, "rapport_final.pdf", "RAPPORT DE PFA FINAL", "MÉMOIRE DE FIN D'ANNÉE\n\nRemerciements\nRésumé\nTable des matières\n...\nConclusion");
-
         createSimplePdf(testDir, "etat_art.pdf", "ÉTAT DE L'ART", "Comparaison des algorithmes de Machine Learning :\n- Random Forest\n- Neural Networks\n- SVM\nChoix technologique : Python + TensorFlow.");
-
         createSimplePdf(testDir, "specs_techniques.pdf", "SPÉCIFICATIONS TECHNIQUES", "Architecture Microservices.\nBase de données : PostgreSQL\nBackend : Spring Boot\nFrontend : React Native");
-
-        // AJOUT : Fichier Presentation Soutenance
         createSimplePdf(testDir, "presentation_soutenance.pdf", "SUPPORT SOUTENANCE", "Diapositives finales pour le jury.\nFocus sur les résultats techniques et les perspectives.");
-
-        // Autres fichiers utiles
         createSimplePdf(testDir, "cahier_charges.pdf", "CAHIER DES CHARGES", "1. Introduction\n2. Besoins fonctionnels\n3. Besoins non-fonctionnels");
         createSimplePdf(testDir, "maquettes.pdf", "MAQUETTES UI/UX", "Wireframes des écrans principaux.");
         createSimplePdf(testDir, "diagrammes_uml.pdf", "DIAGRAMMES UML", "Diagrammes de classes et séquences.");
@@ -350,6 +353,9 @@ public class TestDataHelper {
         Executors.newSingleThreadExecutor().execute(() -> {
             AppDatabase db = AppDatabase.getInstance(context);
             db.clearAllTables();
+
+            // ⭐ RÉINITIALISATION DE LA SÉQUENCE AUTO-INCREMENT
+            db.getOpenHelper().getWritableDatabase().execSQL("DELETE FROM sqlite_sequence");
 
             File testDir = new File(context.getFilesDir(), "test_deliverables");
             if (testDir.exists()) {

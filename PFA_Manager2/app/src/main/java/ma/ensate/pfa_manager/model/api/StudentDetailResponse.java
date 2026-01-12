@@ -20,8 +20,20 @@ public class StudentDetailResponse {
     @SerializedName("phoneNumber")
     private String phoneNumber;
 
-    @SerializedName("pfa")
-    private PFAInfoResponse pfa;
+    @SerializedName("pfaId")
+    private Long pfaId;
+
+    @SerializedName("pfaTitle")
+    private String pfaTitle;
+
+    @SerializedName("pfaDescription")
+    private String pfaDescription;
+
+    @SerializedName("pfaStatus")
+    private String pfaStatus;
+
+    @SerializedName("pfaUpdatedAt")
+    private Long pfaUpdatedAt;
 
     @SerializedName("convention")
     private ConventionResponse convention;
@@ -32,8 +44,11 @@ public class StudentDetailResponse {
     @SerializedName("soutenance")
     private SoutenanceResponse soutenance;
 
-    @SerializedName("evaluation")
-    private EvaluationResponse evaluation;
+    @SerializedName("totalScore")
+    private Double totalScore;
+
+    @SerializedName("isEvaluated")
+    private Boolean isEvaluated;
 
     // Getters
     public Long getStudentId() { return studentId; }
@@ -41,19 +56,14 @@ public class StudentDetailResponse {
     public String getLastName() { return lastName; }
     public String getEmail() { return email; }
     public String getPhoneNumber() { return phoneNumber; }
-    public PFAInfoResponse getPfa() { return pfa; }
+    public Long getPfaId() { return pfaId; }
+    public String getPfaTitle() { return pfaTitle; }
+    public String getPfaDescription() { return pfaDescription; }
+    public String getPfaStatus() { return pfaStatus; }
+    public Long getPfaUpdatedAt() { return pfaUpdatedAt; }
     public ConventionResponse getConvention() { return convention; }
     public List<DeliverableResponse> getDeliverables() { return deliverables; }
     public SoutenanceResponse getSoutenance() { return soutenance; }
-    public EvaluationResponse getEvaluation() { return evaluation; }
-
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
-
-    public String getInitials() {
-        String first = (firstName != null && !firstName.isEmpty()) ? firstName.substring(0, 1) : "";
-        String last = (lastName != null && !lastName.isEmpty()) ? lastName.substring(0, 1) : "";
-        return (first + last).toUpperCase();
-    }
+    public Double getTotalScore() { return totalScore; }
+    public Boolean getIsEvaluated() { return isEvaluated; }
 }
