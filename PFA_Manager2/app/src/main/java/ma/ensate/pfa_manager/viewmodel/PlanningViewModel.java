@@ -1,3 +1,4 @@
+// viewmodel/PlanningViewModel.java (MISE À JOUR)
 package ma.ensate.pfa_manager.viewmodel;
 
 import android.app.Application;
@@ -20,9 +21,17 @@ public class PlanningViewModel extends AndroidViewModel {
     private final MutableLiveData<String> statusMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> operationSuccess = new MutableLiveData<>(false);
 
+    // AJOUT : Pour stocker le supervisorId
+    private Long currentSupervisorId;
+
     public PlanningViewModel(@NonNull Application application) {
         super(application);
         repository = new SoutenanceRepository(application);
+    }
+
+    // AJOUT : Setter pour le supervisorId
+    public void setSupervisorId(Long supervisorId) {
+        this.currentSupervisorId = supervisorId;
     }
 
     public LiveData<List<PFADossier>> getEligiblePFAs(Long supervisorId) {
@@ -55,18 +64,20 @@ public class PlanningViewModel extends AndroidViewModel {
         soutenance.setStatus(SoutenanceStatus.PLANNED);
         soutenance.setCreated_at(System.currentTimeMillis());
 
-        repository.planifierSoutenance(soutenance, new SoutenanceRepository.OnSoutenanceListener() {
-            @Override
-            public void onSuccess(String message) {
-                statusMessage.postValue(message);
-                operationSuccess.postValue(true);
-            }
+        // MODIFICATION : Passer le supervisorId
+        repository.planifierSoutenance(soutenance, currentSupervisorId,
+                new SoutenanceRepository.OnSoutenanceListener() {
+                    @Override
+                    public void onSuccess(String message) {
+                        statusMessage.postValue(message);
+                        operationSuccess.postValue(true);
+                    }
 
-            @Override
-            public void onError(String message) {
-                statusMessage.postValue(message);
-            }
-        });
+                    @Override
+                    public void onError(String message) {
+                        statusMessage.postValue(message);
+                    }
+                });
     }
 
     public void modifierSoutenance(Soutenance soutenance, String lieu, long dateSoutenance) {
@@ -75,33 +86,37 @@ public class PlanningViewModel extends AndroidViewModel {
         soutenance.setLocation(lieu.trim());
         soutenance.setDate_soutenance(dateSoutenance);
 
-        repository.modifierSoutenance(soutenance, new SoutenanceRepository.OnSoutenanceListener() {
-            @Override
-            public void onSuccess(String message) {
-                statusMessage.postValue(message);
-                operationSuccess.postValue(true);
-            }
+        // MODIFICATION : Passer le supervisorId
+        repository.modifierSoutenance(soutenance, currentSupervisorId,
+                new SoutenanceRepository.OnSoutenanceListener() {
+                    @Override
+                    public void onSuccess(String message) {
+                        statusMessage.postValue(message);
+                        operationSuccess.postValue(true);
+                    }
 
-            @Override
-            public void onError(String message) {
-                statusMessage.postValue(message);
-            }
-        });
+                    @Override
+                    public void onError(String message) {
+                        statusMessage.postValue(message);
+                    }
+                });
     }
 
     public void supprimerSoutenance(long soutenanceId) {
-        repository.supprimerSoutenance(soutenanceId, new SoutenanceRepository.OnSoutenanceListener() {
-            @Override
-            public void onSuccess(String message) {
-                statusMessage.postValue(message);
-                operationSuccess.postValue(true);
-            }
+        // MODIFICATION : Passer le supervisorId
+        repository.supprimerSoutenance(soutenanceId, currentSupervisorId,
+                new SoutenanceRepository.OnSoutenanceListener() {
+                    @Override
+                    public void onSuccess(String message) {
+                        statusMessage.postValue(message);
+                        operationSuccess.postValue(true);
+                    }
 
-            @Override
-            public void onError(String message) {
-                statusMessage.postValue(message);
-            }
-        });
+                    @Override
+                    public void onError(String message) {
+                        statusMessage.postValue(message);
+                    }
+                });
     }
 
     private boolean validateInput(String lieu, long dateSoutenance) {

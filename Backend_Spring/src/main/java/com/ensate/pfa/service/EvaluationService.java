@@ -1,4 +1,3 @@
-// service/EvaluationService.java
 package com.ensate.pfa.service;
 
 import com.ensate.pfa.dto.request.EvaluationRequest;
@@ -41,7 +40,7 @@ public class EvaluationService {
     return EvaluationCriteriaDTO.builder()
         .criteriaId(c.getCriteriaId())
         .label(c.getLabel())
-        .weight(c.getWeight())
+        .weight(c.getMaxPoints() != null ? c.getMaxPoints().doubleValue() : 0.0)
         .description(c.getDescription())
         .isActive(c.getIsActive())
         .build();
@@ -109,8 +108,10 @@ public class EvaluationService {
     for (EvaluationRequest.CriteriaScoreRequest score : request.getScores()) {
       EvaluationCriteria criteria = criteriaRepository.findById(score.getCriteriaId())
           .orElseThrow(() -> new RuntimeException("Critère non trouvé: " + score.getCriteriaId()));
-      totalScore += score.getScore() * criteria.getWeight();
-      totalWeight += criteria.getWeight();
+
+      double weight = criteria.getMaxPoints() != null ? criteria.getMaxPoints().doubleValue() : 0.0;
+      totalScore += score.getScore() * weight;
+      totalWeight += weight;
     }
 
     if (totalWeight > 0) {
@@ -141,11 +142,14 @@ public class EvaluationService {
 
       detailRepository.save(detail);
 
+      // ═══════════════════════════════════════════════════════════
+      // CORRECTION ICI : Convertir Integer en Double
+      // ═══════════════════════════════════════════════════════════
       detailDTOs.add(EvaluationDetailDTO.builder()
           .detailId(detail.getDetailId())
           .criteriaId(criteria.getCriteriaId())
           .criteriaLabel(criteria.getLabel())
-          .criteriaWeight(criteria.getWeight())
+          .criteriaWeight(criteria.getMaxPoints() != null ? criteria.getMaxPoints().doubleValue() : 0.0)
           .scoreGiven(score.getScore())
           .build());
     }
