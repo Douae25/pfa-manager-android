@@ -3,9 +3,10 @@ package com.ensate.pfa.controller;
 import com.ensate.pfa.dto.request.EvaluationRequest;
 import com.ensate.pfa.dto.request.SoutenanceRequest;
 import com.ensate.pfa.dto.response.*;
-import com.ensate.pfa.service.EvaluationService;
-import com.ensate.pfa.service.SoutenanceService;
-import com.ensate.pfa.service.SupervisorService;
+import com.ensate.pfa.service.supervisor.EvaluationService;
+import com.ensate.pfa.service.supervisor.SoutenanceService;
+import com.ensate.pfa.service.supervisor.SupervisorService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,5 +1,5 @@
 // service/SoutenanceService.java
-package com.ensate.pfa.service;
+package com.ensate.pfa.service.supervisor;
 
 import com.ensate.pfa.dto.request.SoutenanceRequest;
 import com.ensate.pfa.dto.response.*;
