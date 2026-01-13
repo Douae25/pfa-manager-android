@@ -898,7 +898,7 @@ public class SyncManager {
                 for (User user : remoteUsers) {
                     Log.d("SyncManager", "User reçu: id=" + user.getUser_id() + ", email=" + user.getEmail() + ", firstName=" + user.getFirst_name());
                     if (user.getUser_id() == null) continue;
-                    User local = db.userDao().getUserById(user.getUser_id());
+                    User local = db.userDao().getUserByIdSync(user.getUser_id());
                     if (local != null) {
                         // Merger: ne pas écraser avec null
                         if (user.getFirst_name() != null) local.setFirst_name(user.getFirst_name());

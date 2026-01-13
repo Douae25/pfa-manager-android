@@ -340,18 +340,18 @@ public class ConventionRepository {
                     }
                     
                     if (listener != null) {
-                        listener.onSuccess(convention);
+                        listener.onConventionFetched(convention);
                     }
                 } else {
                     if (listener != null) {
-                        listener.onError("Erreur: " + response.code());
+                        listener.onConventionFetched(null);
                     }
                 }
             } catch (Exception e) {
                 // Offline: retourner depuis Room
                 Convention convention = conventionDao.getById(conventionId);
                 if (listener != null) {
-                    listener.onSuccess(convention);
+                    listener.onConventionFetched(convention);
                 }
             }
         });
@@ -365,16 +365,14 @@ public class ConventionRepository {
         void onError(String error);
         void onOffline(String message);
     }
-
-    public interface OnConventionInsertedListener {
-        void onConventionInserted(Convention convention);
+    
+    public interface OnConventionUploadListener {
+        void onSuccess(Convention convention);
+        void onError(String error);
+        void onOffline(String message);
     }
-
-    public interface OnConventionFetchedListener {
+    
+    public interface OnGetConventionListener {
         void onConventionFetched(Convention convention);
-    }
-
-    public interface OnConventionsListFetchedListener {
-        void onConventionsListFetched(List<Convention> conventions);
     }
 }

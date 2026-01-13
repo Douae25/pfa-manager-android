@@ -14,6 +14,8 @@ import ma.ensate.pfa_manager.repository.UserRepository;
 public class LoginViewModel extends ViewModel {
 
     private MutableLiveData<User> userLoginStatus = new MutableLiveData<>();
+    private MutableLiveData<User> loggedInUser = new MutableLiveData<>();
+    private MutableLiveData<String> loginResult = new MutableLiveData<>();
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private UserRepository userRepository;
     private SharedPreferences preferences;
@@ -25,6 +27,14 @@ public class LoginViewModel extends ViewModel {
 
     public LiveData<User> getUserLoginStatus() {
         return userLoginStatus;
+    }
+
+    public LiveData<User> getLoggedInUser() {
+        return loggedInUser;
+    }
+
+    public LiveData<String> getLoginResult() {
+        return loginResult;
     }
 
     public LiveData<String> getErrorMessage() {

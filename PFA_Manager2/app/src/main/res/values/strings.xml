@@ -23,150 +23,6 @@
     <string name="lang_fr">FR</string>
     <string name="lang_en">EN</string>
 
-    <!-- Student Space -->
-    <string name="student_welcome">Bienvenue %s</string>
-    <string name="menu_convention_request">Demander une convention</string>
-    <string name="menu_convention_request_desc">Remplir le formulaire de demande</string>
-    <string name="menu_convention_view">Convention générée</string>
-    <string name="menu_convention_view_desc">Télécharger la convention</string>
-    <string name="menu_upload_signed">Déposer convention signée</string>
-    <string name="menu_upload_signed_desc">Uploader la convention signée</string>
-    <string name="menu_deliverables">Livrables</string>
-    <string name="menu_deliverables_desc">Déposer les livrables</string>
-    <string name="menu_soutenance">Soutenance</string>
-    <string name="menu_soutenance_desc">Voir date et jury</string>
-    <string name="menu_note">Note finale</string>
-    <string name="menu_note_desc">Consulter votre note</string>
-
-    <!-- Convention Request -->
-    <string name="convention_request_title">Demande de convention</string>
-    <string name="section_student_info">Informations étudiant</string>
-    <string name="section_company_info">Informations entreprise</string>
-    <string name="section_supervisor_info">Encadrant professionnel</string>
-    <string name="section_dates">Période de stage</string>
-    <string name="section_project_info">Projet</string>
-    
-    <string name="hint_first_name">Prénom</string>
-    <string name="hint_last_name">Nom</string>
-    <string name="hint_student_number">Numéro étudiant</string>
-    <string name="hint_company_name">Nom de l\'entreprise</string>
-    <string name="hint_company_address">Adresse de l\'entreprise</string>
-    <string name="hint_supervisor_name">Nom de l\'encadrant</string>
-    <string name="hint_supervisor_email">Email de l\'encadrant</string>
-    <string name="hint_start_date">Date de début (23/06 - 05/09)</string>
-    <string name="hint_end_date">Date de fin (23/06 - 05/09)</string>
-    <string name="hint_project_title">Titre du projet</string>
-    <string name="hint_project_description">Description du projet</string>
-    
-    <string name="dates_info">Les dates doivent être entre le 23 juin et le 5 septembre</string>
-    <string name="btn_submit_request">Soumettre la demande</string>
-    <string name="error_empty_fields">Veuillez remplir tous les champs</string>
-    <string name="error_date_range">La date doit être entre le 23/06 et le 05/09</string>
-    <string name="convention_request_success">Demande de convention envoyée avec succès !</string>
-
-    <!-- Bottom Navigation -->
-    <string name="nav_convention">Convention</string>
-    <string name="nav_deliverables">Livrables</string>
-    <string name="nav_soutenance">Soutenance</string>
-    <string name="nav_note">Note</string>
-
-    <!-- Fragments -->
-    <string name="fragment_convention_title">Gestion de convention</string>
-    <string name="fragment_deliverables_title">Livrables</string>
-    <string name="fragment_soutenance_title">Soutenance</string>
-    <string name="fragment_note_title">Note finale</string>
-
-    <!-- Convention Fragment -->
-    <string name="card_request_convention">Demander une convention</string>
-    <string name="card_request_convention_desc">Remplir le formulaire de demande</string>
-    <string name="card_view_convention">Télécharger la convention</string>
-    <string name="card_view_convention_desc">Convention générée par l\'administration</string>
-    <string name="card_upload_signed">Déposer convention signée</string>
-    <string name="card_upload_signed_desc">Uploader la convention scannée</string>
-
-    <!-- Deliverables Fragment -->
-    <string name="card_upload_before">Livrables avant soutenance</string>
-    <string name="card_upload_before_desc">Rapport, présentation, code source</string>
-    <string name="card_upload_after">Livrables après soutenance</string>
-    <string name="card_upload_after_desc">Rapport final corrigé</string>
-
-    <!-- Soutenance Fragment -->
-    <string name="soutenance_info_title">Informations de soutenance</string>
-    <string name="soutenance_date">Date :</string>
-    <string name="soutenance_location">Lieu :</string>
-    <string name="not_scheduled">Pas encore planifiée</string>
-    <string name="not_assigned">Non assigné</string>
-
-    <!-- Note Fragment -->
-    <string name="final_note">Note finale</string>
-    <string name="not_evaluated">Non évaluée</string>
-
-    <!-- File Upload -->
-    <string name="hint_file_name">Nom du fichier</string>
-    <string name="btn_select_file">Sélectionner un fichier</string>
-    <string name="btn_upload">Déposer</string>
-    <string name="btn_remove">Supprimer</string>
-    <string name="no_file_selected">Aucun fichier sélectionné</string>
-    <string name="file_selected">Fichier sélectionné : %s</string>
-    <string name="error_select_file">Veuillez sélectionner un fichier</string>
-    <string name="error_no_convention">Aucune convention trouvée</string>
-    <string name="error_no_pfa_dossier">Aucun dossier PFA trouvé</string>
-    <string name="error_upload_failed">Échec du téléchargement</string>
-    <string name="convention_uploaded_success">Convention signée téléchargée avec succès !</string>
-    <string name="file_already_uploaded">Fichier déjà déposé: %s</string>
-    <string name="btn_view_uploaded_file">Télécharger la convention signée</string>
-    <string name="error_file_not_found">Fichier introuvable</string>
-    <string name="deliverable_uploaded_success">Livrable téléchargé avec succès !</string>
-    
-    <!-- Upload Activity Titles -->
-    <string name="upload_signed_convention_title">Déposer convention signée</string>
-    <string name="upload_signed_convention_desc">Téléchargez votre convention scannée et signée par l\'entreprise</string>
-    <string name="upload_deliverables_before">Livrables avant soutenance</string>
-    <string name="upload_deliverables_after">Livrables après soutenance</string>
-    <string name="upload_deliverables_info">Téléchargez vos livrables (rapport, présentation, code, etc.)</string>
-    
-    <!-- Multiple File Upload -->
-    <string name="btn_add_file">+ Ajouter un fichier</string>
-    <string name="btn_upload_all">Télécharger tous les fichiers</string>
-    <string name="file_added">Fichier ajouté</string>
-    <string name="error_no_files">Veuillez ajouter au moins un fichier</string>
-    <string name="no_files_added">Aucun fichier ajouté</string>
-    <string name="deliverables_uploaded_success">Livrables téléchargés avec succès !</string>
-    
-    <!-- Logout -->
-    <string name="btn_logout">Déconnexion</string>
-    
-    <!-- Convention States -->
-    <string name="convention_not_requested">Aucune demande de convention</string>
-    <string name="convention_pending">Votre demande n\'a pas été traitée - En cours</string>
-    <string name="convention_pending_message">Votre demande est en attente de traitement par l\'administration</string>
-    <string name="convention_validated">Convention validée - Prête à télécharger</string>
-    <string name="convention_rejected">Votre demande est refusée</string>
-    <string name="convention_rejected_message">Votre demande de convention a été refusée. Veuillez contacter l\'administration</string>
-    <string name="convention_not_available">La convention n\'est pas disponible</string>
-        <string name="convention_rejected_request">Demande de convention refusée</string>
-        <string name="convention_reason_prefix">Motif : %1$s</string>
-        <string name="convention_reason_default">Motif non renseigné</string>
-    <string name="convention_downloading">Téléchargement de la convention...</string>
-    <string name="cannot_upload_unsigned_convention">Seules les conventions validées peuvent être déposées</string>
-    <string name="permission_denied">Permission refusée - Impossible de télécharger le PDF</string>
-
-    <!-- View Deliverables -->
-    <string name="view_deliverables_title">Mes Livrables Déposés</string>
-    <string name="deliverables_before_defense">📤 Livrables Avant Soutenance</string>
-    <string name="deliverables_after_defense">📥 Livrables Après Soutenance</string>
-    <string name="deliverable_rapport_avancement">📄 Rapport d\'Avancement</string>
-    <string name="deliverable_rapport_final">📘 Rapport Final</string>
-    <string name="deliverable_presentation">🎤 Présentation</string>
-    <string name="deliverable_no_file">❌ Aucun fichier déposé</string>
-    <string name="deliverable_file_deposited">✅ Fichier déposé</string>
-    <string name="deliverable_deposited_on">Déposé le: %s</string>
-    <string name="btn_download">📥 Télécharger</string>
-    <string name="error_download_url_missing">URL du fichier introuvable</string>
-    <string name="download_started">Téléchargement démarré...</string>
-    <string name="error_download">Erreur lors du téléchargement</string>
-    <string name="permission_storage_denied">Permission refusée. Impossible de télécharger.</string>
-</resources>
     <!-- Admin Panel -->
     <string name="admin_title">Admin Dashboard</string>
     <string name="admin_welcome">Welcome, Administrator</string>
@@ -202,5 +58,148 @@
     <string name="btn_reject">Reject</string>
     <string name="btn_validate">Validate</string>
     <string name="btn_reject_uploaded">Reject</string>
-    <string name="label_department">Filière</string>
+    <string name="label_department">Department</string>
+
+    <!-- Student Space -->
+    <string name="student_welcome">Welcome %s</string>
+    <string name="menu_convention_request">Request Convention</string>
+    <string name="menu_convention_request_desc">Fill the request form</string>
+    <string name="menu_convention_view">Generated Convention</string>
+    <string name="menu_convention_view_desc">Download the convention</string>
+    <string name="menu_upload_signed">Upload Signed Convention</string>
+    <string name="menu_upload_signed_desc">Upload the signed convention</string>
+    <string name="menu_deliverables">Deliverables</string>
+    <string name="menu_deliverables_desc">Submit deliverables</string>
+    <string name="menu_soutenance">Defense</string>
+    <string name="menu_soutenance_desc">View date and jury</string>
+    <string name="menu_note">Final Grade</string>
+    <string name="menu_note_desc">Check your grade</string>
+
+    <!-- Convention Request -->
+    <string name="convention_request_title">Convention Request</string>
+    <string name="section_student_info">Student Information</string>
+    <string name="section_company_info">Company Information</string>
+    <string name="section_supervisor_info">Professional Supervisor</string>
+    <string name="section_dates">Internship Period</string>
+    <string name="section_project_info">Project</string>
+    <string name="dates_info">Dates must be between June 23 and September 5</string>
+
+    <string name="hint_first_name">First Name</string>
+    <string name="hint_last_name">Last Name</string>
+    <string name="hint_student_number">Student Number</string>
+    <string name="hint_company_name">Company Name</string>
+    <string name="hint_company_address">Company Address</string>
+    <string name="hint_supervisor_name">Supervisor Name</string>
+    <string name="hint_supervisor_email">Supervisor Email</string>
+    <string name="hint_start_date">Start Date (23/06 – 05/09)</string>
+    <string name="hint_end_date">End Date (23/06 – 05/09)</string>
+    <string name="hint_project_title">Project Title</string>
+    <string name="hint_project_description">Project Description</string>
+    <string name="btn_submit_request">Submit Request</string>
+    <string name="error_empty_fields">Please fill all fields</string>
+    <string name="error_date_range">Date must be between 23/06 and 05/09</string>
+    <string name="convention_request_success">Convention request submitted successfully!</string>
+
+    <!-- File Upload -->
+    <string name="hint_file_name">File Name</string>
+    <string name="btn_select_file">Select File</string>
+    <string name="btn_upload">Upload</string>
+    <string name="btn_remove">Remove</string>
+    <string name="no_file_selected">No file selected</string>
+    <string name="file_selected">Selected file: %s</string>
+    <string name="error_select_file">Please select a file</string>
+    <string name="error_no_convention">No convention found</string>
+    <string name="error_no_pfa_dossier">No PFA dossier found</string>
+    <string name="error_upload_failed">Upload failed</string>
+    <string name="convention_uploaded_success">Signed convention uploaded successfully!</string>
+    <string name="file_already_uploaded">File already uploaded: %s</string>
+    <string name="btn_view_uploaded_file">Download Signed Convention</string>
+    <string name="error_file_not_found">File not found</string>
+    <string name="deliverable_uploaded_success">Deliverable uploaded successfully!</string>
+
+    <!-- Upload Activity Titles -->
+    <string name="upload_signed_convention_title">Upload Signed Convention</string>
+    <string name="upload_signed_convention_desc">Upload your scanned and signed convention</string>
+    <string name="upload_deliverables_before">Deliverables Before Defense</string>
+    <string name="upload_deliverables_after">Deliverables After Defense</string>
+    <string name="upload_deliverables_info">Upload your deliverables (report, presentation, code, etc.)</string>
+
+    <!-- Multiple File Upload -->
+    <string name="btn_add_file">+ Add File</string>
+    <string name="btn_upload_all">Upload All Files</string>
+    <string name="file_added">File added</string>
+    <string name="error_no_files">Please add at least one file</string>
+    <string name="no_files_added">No files added</string>
+    <string name="deliverables_uploaded_success">Deliverables uploaded successfully!</string>
+
+    <!-- Logout -->
+    <string name="btn_logout">Logout</string>
+
+    <!-- Convention States -->
+    <string name="convention_not_requested">No convention request</string>
+    <string name="convention_pending">Your request is pending - In progress</string>
+    <string name="convention_pending_message">Your request is waiting for administrative review</string>
+    <string name="convention_validated">Convention validated - Ready to download</string>
+    <string name="convention_rejected">Your request has been rejected</string>
+    <string name="convention_rejected_message">Your convention request has been rejected. Please contact administration</string>
+    <string name="convention_not_available">Convention is not available</string>
+    <string name="convention_rejected_request">Convention request rejected</string>
+    <string name="convention_reason_prefix">Reason: %1$s</string>
+    <string name="convention_reason_default">Reason not provided</string>
+    <string name="convention_downloading">Downloading convention...</string>
+    <string name="cannot_upload_unsigned_convention">Only validated conventions can be uploaded</string>
+    <string name="permission_denied">Permission denied – Unable to download PDF</string>
+
+    <!-- View Deliverables -->
+    <string name="view_deliverables_title">My Submitted Deliverables</string>
+    <string name="deliverables_before_defense">📤 Deliverables Before Defense</string>
+    <string name="deliverables_after_defense">📥 Deliverables After Defense</string>
+    <string name="deliverable_rapport_avancement">📄 Progress Report</string>
+    <string name="deliverable_rapport_final">📘 Final Report</string>
+    <string name="deliverable_presentation">🎤 Presentation</string>
+    <string name="deliverable_no_file">❌ No file submitted</string>
+    <string name="deliverable_file_deposited">✅ File submitted</string>
+    <string name="deliverable_deposited_on">Submitted on: %s</string>
+    <string name="btn_download">📥 Download</string>
+    <string name="error_download_url_missing">File URL not found</string>
+    <string name="download_started">Download started…</string>
+    <string name="error_download">Download error</string>
+    <string name="permission_storage_denied">Permission denied. Unable to download.</string>
+
+    <!-- Convention Fragment Cards -->
+    <string name="card_request_convention">Request Convention</string>
+    <string name="card_request_convention_desc">Fill the request form</string>
+    <string name="card_view_convention">Download Convention</string>
+    <string name="card_view_convention_desc">Convention generated by administration</string>
+    <string name="card_upload_signed">Upload Signed Convention</string>
+    <string name="card_upload_signed_desc">Upload the scanned convention</string>
+
+    <!-- Deliverables Fragment Cards -->
+    <string name="card_upload_before">Deliverables Before Defense</string>
+    <string name="card_upload_before_desc">Report, presentation, source code</string>
+    <string name="card_upload_after">Deliverables After Defense</string>
+    <string name="card_upload_after_desc">Corrected final report</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_convention">Convention</string>
+    <string name="nav_deliverables">Deliverables</string>
+    <string name="nav_soutenance">Defense</string>
+    <string name="nav_note">Grade</string>
+
+    <!-- Fragments -->
+    <string name="fragment_convention_title">Convention Management</string>
+    <string name="fragment_deliverables_title">Deliverables</string>
+    <string name="fragment_soutenance_title">Defense</string>
+    <string name="fragment_note_title">Final Grade</string>
+
+    <!-- Soutenance Fragment -->
+    <string name="soutenance_info_title">Defense Information</string>
+    <string name="soutenance_date">Date:</string>
+    <string name="soutenance_location">Location:</string>
+    <string name="not_scheduled">Not yet scheduled</string>
+    <string name="not_assigned">Not assigned</string>
+
+    <!-- Note Fragment -->
+    <string name="final_note">Final Grade</string>
+    <string name="not_evaluated">Not evaluated</string>
 </resources>

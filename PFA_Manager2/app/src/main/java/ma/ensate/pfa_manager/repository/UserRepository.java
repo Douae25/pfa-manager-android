@@ -93,7 +93,7 @@ public class UserRepository {
     
     public void getUserById(long userId, OnUserFetchedListener listener) {
         executorService.execute(() -> {
-            User user = userDao.getUserById(userId);
+            User user = userDao.getUserByIdSync(userId);
             if (listener != null) {
                 listener.onUserFetched(user);
             }

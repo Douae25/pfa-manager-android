@@ -66,14 +66,19 @@ public class ConventionDetailActivity extends AppCompatActivity {
         }
 
         // fetch convention
-        conventionRepository.getConventionById(conventionId, convention -> runOnUiThread(() -> {
-            if (convention == null) {
-                Toast.makeText(ConventionDetailActivity.this, "Convention introuvable", Toast.LENGTH_SHORT).show();
-                finish();
-                return;
+        conventionRepository.getConventionById(conventionId, new ConventionRepository.OnGetConventionListener() {
+            @Override
+            public void onConventionFetched(Convention convention) {
+                runOnUiThread(() -> {
+                    if (convention == null) {
+                        Toast.makeText(ConventionDetailActivity.this, "Convention introuvable", Toast.LENGTH_SHORT).show();
+                        finish();
+                        return;
+                    }
+                    populate(convention);
+                });
             }
-            populate(convention);
-        }));
+        });
     }
 
     private void setupLanguageToggle() {

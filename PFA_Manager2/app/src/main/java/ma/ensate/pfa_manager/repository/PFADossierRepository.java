@@ -219,11 +219,7 @@ public class PFADossierRepository {
     public void getPFADossierById(long pfaId, PFADossierCallback callback) {
         new Thread(() -> {
             PFADossier dossier = pfaDossierDao.getById(pfaId);
-            callback.onPFADossierLoaded(dossier);
+            callback.onResult(dossier);
         }).start();
-    }
-
-    public interface PFADossierCallback {
-        void onPFADossierLoaded(PFADossier pfaDossier);
     }
 }
