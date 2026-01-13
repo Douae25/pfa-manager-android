@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +32,8 @@ import ma.ensate.pfa_manager.repository.LanguageRepository;
 import ma.ensate.pfa_manager.repository.PFADossierRepository;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModelFactory;
+import ma.ensate.pfa_manager.database.AppDatabase;
+import android.app.DownloadManager;
 
 public class UploadDeliverablesActivity extends AppCompatActivity {
     
@@ -68,6 +71,14 @@ public class UploadDeliverablesActivity extends AppCompatActivity {
     private TextView tvRapportFinalName;
     private LinearLayout rapportFinalControls;
     private String rapportFinalPath = null;
+    
+    // Existing deliverables
+    private Deliverable existingRapportAvancement;
+    private Deliverable existingPresentation;
+    private Deliverable existingRapportFinal;
+    private ImageButton ibDownloadRapportAvancement;
+    private ImageButton ibDownloadPresentation;
+    private ImageButton ibDownloadRapportFinal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +101,7 @@ public class UploadDeliverablesActivity extends AppCompatActivity {
         initViews();
         setupTitle();
         setupSections();
+        loadExistingDeliverables();
         setupUploadButton();
     }
 
@@ -196,6 +208,67 @@ public class UploadDeliverablesActivity extends AppCompatActivity {
             rapportFinalPath = null;
             updateRapportFinalUI();
         });
+    }
+    
+    private void loadExistingDeliverables() {
+        Long pfaId = currentUser.getUser_id(); // Get the PFA ID for this student
+        AppDatabase db = AppDatabase.getInstance(getApplication());
+        
+        // Load deliverables from database on background thread
+        new Thread(() -> {
+            try {
+                List<Deliverable> deliverables = db.deliverableDao().getByPfaId(pfaId.longValue());
+                
+                runOnUiThread(() -> {
+                    for (Deliverable d : deliverables) {
+                        if (d.getDeliverable_file_type() != null) {
+                            switch (d.getDeliverable_file_type()) {
+                                case RAPPORT_AVANCEMENT:
+                                    existingRapportAvancement = d;
+                                    displayExistingDeliverable(d, "Rapport d'Avancement");
+                                    break;
+                                case PRESENTATION:
+                                    existingPresentation = d;
+                                    displayExistingDeliverable(d, "Présentation");
+                                    break;
+                                case RAPPORT_FINAL:
+                                    existingRapportFinal = d;
+                                    displayExistingDeliverable(d, "Rapport Final");
+                                    break;
+                            }
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+    
+    private void displayExistingDeliverable(Deliverable deliverable, String typeLabel) {
+        Toast.makeText(this, "Livrable existant: " + typeLabel, Toast.LENGTH_SHORT).show();
+        // Les bouttons télécharger seront ajoutés au layout si nécessaire
+    }
+    
+    private void downloadDeliverable(Deliverable deliverable) {
+        if (deliverable == null || deliverable.getFile_uri() == null || deliverable.getFile_uri().isEmpty()) {
+            Toast.makeText(this, "URI du fichier non disponible", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+            Uri uri = Uri.parse(deliverable.getFile_uri());
+            DownloadManager.Request request = new DownloadManager.Request(uri);
+            request.setTitle(deliverable.getFile_title());
+            request.setDescription("Téléchargement de " + deliverable.getFile_title());
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, deliverable.getFile_title());
+            
+            downloadManager.enqueue(request);
+            Toast.makeText(this, "Téléchargement démarré", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Erreur lors du téléchargement: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
     
     private void openFilePicker(int requestCode) {

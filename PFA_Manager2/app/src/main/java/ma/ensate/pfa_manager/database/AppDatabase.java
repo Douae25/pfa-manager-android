@@ -41,7 +41,11 @@ public abstract class AppDatabase extends RoomDatabase {
                             "pfa_manager_database"
                     )
                     .fallbackToDestructiveMigration()
+                    .enableMultiInstanceInvalidation()
                     .build();
+            
+            // Enable WAL mode for better concurrent access
+            instance.getOpenHelper().getWritableDatabase().enableWriteAheadLogging();
         }
         return instance;
     }

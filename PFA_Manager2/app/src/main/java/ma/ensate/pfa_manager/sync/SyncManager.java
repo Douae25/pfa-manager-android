@@ -643,11 +643,56 @@ public class SyncManager {
         entity.setFile_title(response.getFileTitle());
         entity.setFile_uri(response.getFileUri());
         entity.setUploaded_at(response.getUploadedAt());
-        entity.setDeliverable_file_type(response.getDeliverableFileType() != null ? 
-            DeliverableFileType.valueOf(response.getDeliverableFileType()) : null);
-        entity.setDeliverable_type(response.getDeliverableType() != null ? 
-            DeliverableType.valueOf(response.getDeliverableType()) : null);
+        
+        // Debug logging
+        String rawFileType = response.getDeliverableFileType();
+        Log.d(TAG, "📋 Deliverable: title=" + response.getFileTitle() + 
+            ", rawFileType=" + rawFileType + 
+            ", rawType=" + response.getDeliverableType());
+        
+        DeliverableFileType mappedFileType = mapDeliverableFileType(rawFileType);
+        entity.setDeliverable_file_type(mappedFileType);
+        Log.d(TAG, "   → mappedFileType=" + mappedFileType);
+        
+        entity.setDeliverable_type(mapDeliverableType(response.getDeliverableType()));
         return entity;
+    }
+    
+    private DeliverableFileType mapDeliverableFileType(String fileType) {
+        Log.d(TAG, "🔄 mapDeliverableFileType: input='" + fileType + "'");
+        if (fileType == null) {
+            Log.w(TAG, "⚠️ fileType is NULL!");
+            return null;
+        }
+        
+        switch (fileType.trim().toUpperCase()) {
+            case "PROGRESS_REPORT": 
+                Log.d(TAG, "✓ Mapped PROGRESS_REPORT → RAPPORT_AVANCEMENT");
+                return DeliverableFileType.RAPPORT_AVANCEMENT;
+            case "PRESENTATION": 
+                Log.d(TAG, "✓ Mapped PRESENTATION → PRESENTATION");
+                return DeliverableFileType.PRESENTATION;
+            case "FINAL_REPORT": 
+                Log.d(TAG, "✓ Mapped FINAL_REPORT → RAPPORT_FINAL");
+                return DeliverableFileType.RAPPORT_FINAL;
+            default:
+                Log.w(TAG, "⚠️ Unknown fileType: '" + fileType + "', trying valueOf...");
+                try {
+                    return DeliverableFileType.valueOf(fileType);
+                } catch (Exception e) {
+                    Log.e(TAG, "❌ Failed to map fileType: " + fileType + ", error: " + e.getMessage());
+                    return null;
+                }
+        }
+    }
+    
+    private DeliverableType mapDeliverableType(String type) {
+        if (type == null) return DeliverableType.BEFORE_DEFENSE;
+        try {
+            return DeliverableType.valueOf(type);
+        } catch (Exception e) {
+            return DeliverableType.BEFORE_DEFENSE;
+        }
     }
     
     private void updateSyncStatus(SyncStatus status, String message) {
