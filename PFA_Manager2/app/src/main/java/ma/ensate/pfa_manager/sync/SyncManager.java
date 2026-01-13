@@ -948,12 +948,7 @@ public class SyncManager {
                         db.pfaDossierDao().insert(dossier);
                     }
                 }
-                List<Long> remoteIds = new java.util.ArrayList<>();
-                for (PFADossier dossier : remoteDossiers) {
-                    if (dossier.getPfa_id() != null) remoteIds.add(dossier.getPfa_id());
-                }
-                Log.d("SyncManager", "PFADossier IDs conservés: " + remoteIds);
-                db.pfaDossierDao().deleteNotInIds(remoteIds);
+                // Ne pas supprimer les PFADossiers absents de la réponse (similaire à users/departments)
             } else {
                 Log.d("SyncManager", "PFADossier: rien reçu - code: " + response.code() + ", message: " + response.message());
             }
@@ -992,12 +987,7 @@ public class SyncManager {
                         db.conventionDao().insert(conv);
                     }
                 }
-                List<Long> remoteIds = new java.util.ArrayList<>();
-                for (Convention conv : remoteConventions) {
-                    if (conv.getConvention_id() != null) remoteIds.add(conv.getConvention_id());
-                }
-                Log.d("SyncManager", "Convention IDs conservés: " + remoteIds);
-                db.conventionDao().deleteNotInIds(remoteIds);
+                // Ne pas supprimer les Conventions absentes de la réponse (similaire à users/departments)
             } else {
                 Log.d("SyncManager", "⚠️ Convention: rien reçu - code: " + response.code() + ", message: " + response.message());
             }
