@@ -34,3 +34,7 @@ build/
 
 .specify/
 .github/
+
+
+Backend_Spring/src/main/resources/application.properties
+PFA_Manager2/gradle.properties
