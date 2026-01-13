@@ -37,14 +37,24 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation("com.google.code.gson:gson:2.10.1")
     
     // SwipeRefreshLayout
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     
     // Room Database
     implementation(libs.room.runtime)
+    implementation(libs.recyclerview)
+    implementation(libs.preference)
     annotationProcessor(libs.room.compiler)
     
+    // Retrofit (pour les API admin)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // WorkManager pour la synchronisation automatique
+    implementation("androidx.work:work-runtime:2.9.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

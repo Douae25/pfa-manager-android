@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PFA Manager</string>
-    <string name="login_title">Connexion</string>
+    <string name="login_title">Login</string>
     <string name="hint_email">Email</string>
-    <string name="hint_password">Mot de passe</string>
-    <string name="btn_login">Se connecter</string>
-    <string name="error_empty">Veuillez remplir tous les champs</string>
+    <string name="hint_password">Password</string>
+    <string name="btn_login">Sign In</string>
+    <string name="error_empty">Please fill all fields</string>
 
-    <string name="home_title">Gestion PFA - ENSA Tétouan</string>
-    <string name="home_subtitle">Bienvenue dans l\'application de gestion PFA</string>
-    <string name="btn_home_connect">Se connecter</string>
+    <string name="home_title">PFA Management - ENSA Tetouan</string>
+    <string name="home_subtitle">Welcome to the PFA management app</string>
+    <string name="btn_home_connect">Sign In</string>
 
     <!-- Landing texts -->
     <string name="landing_title">PFA Manager</string>
-    <string name="landing_subtitle">École Nationale des Sciences Appliquées</string>
-    <string name="landing_city">Tétouan</string>
-    <string name="landing_description">Gérez vos projets de fin d\'année efficacement</string>
-    <string name="landing_login">Se connecter</string>
-    <string name="landing_footer">© 2026 ENSA Tétouan</string>
+    <string name="landing_subtitle">National School of Applied Sciences</string>
+    <string name="landing_city">Tetouan</string>
+    <string name="landing_description">Manage your final-year projects efficiently</string>
+    <string name="landing_login">Sign In</string>
+    <string name="landing_footer">© 2026 ENSA Tetouan</string>
 
     <!-- Language toggle -->
     <string name="lang_fr">FR</string>
@@ -166,4 +166,41 @@
     <string name="download_started">Téléchargement démarré...</string>
     <string name="error_download">Erreur lors du téléchargement</string>
     <string name="permission_storage_denied">Permission refusée. Impossible de télécharger.</string>
+</resources>
+    <!-- Admin Panel -->
+    <string name="admin_title">Admin Dashboard</string>
+    <string name="admin_welcome">Welcome, Administrator</string>
+    <string name="admin_convention_requests">Convention Requests</string>
+    <string name="admin_signed_conventions">Signed Conventions</string>
+    <string name="admin_manage_users">Manage Users</string>
+    <string name="admin_no_requests">No pending requests</string>
+    <string name="admin_view_details">View Details</string>
+    <string name="admin_approve">Approve</string>
+    <string name="admin_reject">Reject</string>
+    <string name="admin_comment">Comment</string>
+    <string name="admin_logout">Logout</string>
+    <string name="convention_list_empty">No conventions available</string>
+    <string name="search_user_hint">Search by name, first name or email</string>
+
+    <!-- Dynamic Convention Labels -->
+    <string name="label_company">Company</string>
+    <string name="label_supervisor">Supervisor</string>
+    <string name="label_address">Address</string>
+    <string name="label_period">Internship Period</string>
+    <string name="label_to">to</string>
+    <string name="label_state">Status</string>
+    <string name="label_admin_comment">Admin Comment</string>
+    <string name="value_na">N/A</string>
+    <string name="value_no_comment">No comment</string>
+    <string name="label_start">Start</string>
+    <string name="label_end">End</string>
+    <string name="convention_detail_title">Convention Details</string>
+    <string name="btn_view_pdf">View PDF</string>
+
+    <!-- Convention List Buttons -->
+    <string name="btn_approve">Approve</string>
+    <string name="btn_reject">Reject</string>
+    <string name="btn_validate">Validate</string>
+    <string name="btn_reject_uploaded">Reject</string>
+    <string name="label_department">Filière</string>
 </resources>

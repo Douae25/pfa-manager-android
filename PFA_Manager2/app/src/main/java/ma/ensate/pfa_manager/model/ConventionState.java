@@ -6,5 +6,5 @@ public enum ConventionState {
     REFUSED,
     UPLOADED,
     VALIDATED,
-    REJECTED
+    REJECTED,
 }

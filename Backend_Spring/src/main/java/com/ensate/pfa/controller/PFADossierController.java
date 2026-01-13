@@ -38,4 +38,25 @@ public class PFADossierController {
         List<PFADossierResponse> responses = pfaDossierService.getDossiersByStudent(studentId);
         return ResponseEntity.ok(responses);
     }
+
+    // Get all PFA dossiers (for sync)
+    @GetMapping
+    public ResponseEntity<List<PFADossierResponse>> getAllDossiers() {
+        List<PFADossierResponse> responses = pfaDossierService.getAllDossiers();
+        return ResponseEntity.ok(responses);
+    }
+
+    // Create PFA dossier (for sync)
+    @PostMapping
+    public ResponseEntity<PFADossierResponse> createDossier(@Valid @RequestBody PFADossierRequest request) {
+        PFADossierResponse response = pfaDossierService.createDossier(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    // Update PFA dossier (for sync)
+    @PutMapping("/{id}")
+    public ResponseEntity<PFADossierResponse> updateDossier(@PathVariable Long id, @Valid @RequestBody PFADossierRequest request) {
+        PFADossierResponse response = pfaDossierService.updateDossier(id, request);
+        return ResponseEntity.ok(response);
+    }
 }

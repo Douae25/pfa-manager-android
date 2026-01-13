@@ -163,4 +163,18 @@
     <string name="download_started">Download started...</string>
     <string name="error_download">Error downloading file</string>
     <string name="permission_storage_denied">Permission denied. Unable to download.</string>
+    <!-- Admin Panel -->
+    <string name="admin_title">Admin Dashboard</string>
+    <string name="admin_welcome">Welcome, Administrator</string>
+    <string name="admin_convention_requests">Convention Requests</string>
+    <string name="admin_signed_conventions">Signed Conventions</string>
+    <string name="admin_manage_users">Manage Users</string>
+    <string name="admin_no_requests">No pending requests</string>
+    <string name="admin_view_details">View Details</string>
+    <string name="admin_approve">Approve</string>
+    <string name="admin_reject">Reject</string>
+    <string name="admin_comment">Comment</string>
+    <string name="admin_logout">Logout</string>
+    <string name="convention_list_empty">No conventions available</string>
+    <string name="search_user_hint">Search by name, first name or email</string>
 </resources>

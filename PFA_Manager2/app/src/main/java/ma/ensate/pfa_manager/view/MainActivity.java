@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,6 +20,9 @@ import ma.ensate.pfa_manager.model.PFADossier;
 import ma.ensate.pfa_manager.model.PFAStatus;
 import ma.ensate.pfa_manager.model.Role;
 import ma.ensate.pfa_manager.model.User;
+import ma.ensate.pfa_manager.model.Role;
+import ma.ensate.pfa_manager.model.User;
+import ma.ensate.pfa_manager.repository.DatabaseInitializer;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
 import ma.ensate.pfa_manager.repository.PFADossierRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
@@ -37,9 +41,19 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Initialiser la base de données avec les données par défaut
+        DatabaseInitializer.initializeDatabase(getApplication());
+
+        // Synchronisation automatique dès l'ouverture de l'app : uploadAll puis syncAll
+        new Thread(() -> {
+            ma.ensate.pfa_manager.sync.SyncManager.uploadAll(this);
+            ma.ensate.pfa_manager.sync.SyncManager.syncAll(this);
+        }).start();
+
         LanguageRepository languageRepository = new LanguageRepository(this);
         SettingsViewModelFactory factory = new SettingsViewModelFactory(languageRepository);
         settingsViewModel = new ViewModelProvider(this, factory).get(SettingsViewModel.class);
+
         settingsViewModel.applySavedLanguage();
         
         super.onCreate(savedInstanceState);
@@ -76,13 +90,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupLoginForm() {
-        UserRepository userRepository = new UserRepository(getApplication());
-        LoginViewModelFactory loginFactory = new LoginViewModelFactory(userRepository);
-        loginViewModel = new ViewModelProvider(this, loginFactory).get(LoginViewModel.class);
+        try {
+            UserRepository userRepository = new UserRepository(getApplication());
+            LoginViewModelFactory loginFactory = new LoginViewModelFactory(userRepository, getApplication());
+            loginViewModel = new ViewModelProvider(this, loginFactory).get(LoginViewModel.class);
 
-        TextInputEditText emailInput = findViewById(R.id.emailInput);
-        TextInputEditText passwordInput = findViewById(R.id.passwordInput);
-        Button loginBtn = findViewById(R.id.loginBtn);
+            TextInputEditText emailInput = findViewById(R.id.emailInput);
+            TextInputEditText passwordInput = findViewById(R.id.passwordInput);
+            Button loginBtn = findViewById(R.id.loginBtn);
 
         loginBtn.setOnClickListener(v -> {
             String email = emailInput.getText().toString().trim();
@@ -93,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
+            Log.d("LOGIN", "Attempting login with: " + email);
             loginViewModel.login(email, password);
         });
 
@@ -102,13 +118,31 @@ public class MainActivity extends AppCompatActivity {
                 redirectUser(user);
             }
         });
-        
+
+        loginViewModel.getLoginResult().observe(this, result -> {
+            Log.d("LOGIN", "Login result: " + result);
+            if ("Success".equals(result)) {
+                Toast.makeText(this, "Bienvenue !", Toast.LENGTH_SHORT).show();
+                // Délai court pour attendre la sauvegarde des préférences
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    User loggedInUser = loginViewModel.getLoggedInUserFromPreferences();
+                    Log.d("LOGIN", "User after login: " + (loggedInUser != null ? loggedInUser.getEmail() + " (" + loggedInUser.getRole() + ")" : "null"));
+                    redirectUserBasedOnRole(loggedInUser);
+                }, 500);
+            } else {
+                Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+            }
+        });
         
         loginViewModel.getErrorMessage().observe(this, error -> {
             if (error != null && !error.isEmpty()) {
                 Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
             }
         });
+        } catch (Exception e) {
+            Log.e("LOGIN", "Error setting up login form", e);
+            Toast.makeText(this, "Erreur lors de la configuration du formulaire de connexion", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void redirectUser(User user) {
@@ -139,6 +173,29 @@ public class MainActivity extends AppCompatActivity {
             finish();
         } else {
             Toast.makeText(this, "Interface non disponible pour ce rôle", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void redirectUserBasedOnRole(User user) {
+        try {
+            if (user != null && user.getRole() == Role.ADMIN) {
+                Log.d("LOGIN", "Redirecting to AdminActivity");
+                // Rediriger vers AdminActivity
+                Intent adminIntent = new Intent(MainActivity.this, AdminActivity.class);
+                adminIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(adminIntent);
+                finish();
+            } else {
+                Log.d("LOGIN", "Redirecting to HomeActivity");
+                // Rediriger vers HomeActivity pour les autres rôles
+                Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
+                homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(homeIntent);
+                finish();
+            }
+        } catch (Exception e) {
+            Log.e("LOGIN", "Error in redirectUserBasedOnRole", e);
+            Toast.makeText(this, "Erreur redirection: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
     

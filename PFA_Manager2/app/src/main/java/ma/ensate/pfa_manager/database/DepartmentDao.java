@@ -1,3 +1,4 @@
+// ...existing code...
 package ma.ensate.pfa_manager.database;
 
 import androidx.room.Dao;
@@ -13,9 +14,15 @@ public interface DepartmentDao {
     
     @Insert
     long insert(Department department);
+
+    @Insert
+    void insertAll(List<Department> departments);
     
     @Update
     void update(Department department);
+    
+    @Update
+    void updateAll(List<Department> departments);
     
     @Delete
     void delete(Department department);
@@ -28,4 +35,7 @@ public interface DepartmentDao {
     
     @Query("SELECT * FROM departments WHERE code = :code LIMIT 1")
     Department getByCode(String code);
+
+    @Query("DELETE FROM departments WHERE department_id NOT IN (:ids)")
+    void deleteNotInIds(List<Long> ids);
 }

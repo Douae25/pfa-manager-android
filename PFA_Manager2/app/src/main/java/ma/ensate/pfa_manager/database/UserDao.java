@@ -1,3 +1,4 @@
+// ...existing code...
 package ma.ensate.pfa_manager.database;
 
 import androidx.lifecycle.LiveData;
@@ -17,14 +18,21 @@ public interface UserDao {
     @Insert
     long insert(User user);
 
+    @Insert
+    void insertAll(List<User> users);
+    
     @Update
     void update(User user);
-
+    
+    @Update
+    void updateAll(List<User> users);
+    
     @Delete
     void delete(User user);
-
-    // ========== MÉTHODES SYNCHRONES (pour background thread) ==========
-
+    
+    @Delete
+    void deleteAll(List<User> users);
+    
     @Query("SELECT * FROM users WHERE user_id = :userId")
     User getUserByIdSync(long userId);
 
@@ -75,4 +83,8 @@ public interface UserDao {
     @Transaction
     @Query("SELECT * FROM users WHERE user_id = :studentId")
     LiveData<StudentWithPFA> getStudentWithPFAById(Long studentId);
+
+    
+    @Query("DELETE FROM users WHERE user_id NOT IN (:ids)")
+    void deleteNotInIds(List<Long> ids);
 }

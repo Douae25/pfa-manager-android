@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.LocaleListCompat;
 import androidx.lifecycle.ViewModel;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
+import java.util.Locale;
 
 
 public class SettingsViewModel extends ViewModel {
@@ -29,7 +30,15 @@ public class SettingsViewModel extends ViewModel {
     }
     
     private void setAppLocale(String languageCode) {
-        LocaleListCompat localeList = LocaleListCompat.forLanguageTags(languageCode);
+        Locale locale;
+        if ("fr".equalsIgnoreCase(languageCode)) {
+            locale = new Locale("fr", "FR");
+        } else if ("en".equalsIgnoreCase(languageCode)) {
+            locale = new Locale("en", "US");
+        } else {
+            locale = new Locale(languageCode);
+        }
+        LocaleListCompat localeList = LocaleListCompat.forLanguageTags(locale.toLanguageTag());
         AppCompatDelegate.setApplicationLocales(localeList);
     }
 }

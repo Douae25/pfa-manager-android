@@ -23,9 +23,9 @@ public class HomeActivity extends AppCompatActivity {
         LanguageRepository languageRepository = new LanguageRepository(this);
         SettingsViewModelFactory factory = new SettingsViewModelFactory(languageRepository);
         settingsViewModel = new ViewModelProvider(this, factory).get(SettingsViewModel.class);
-        
+
         settingsViewModel.applySavedLanguage();
-        
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
@@ -38,15 +38,16 @@ public class HomeActivity extends AppCompatActivity {
         });
 
     }
-    
+
     private void setupNavigation() {
         Button btnGoToLogin = findViewById(R.id.btnGoToLogin);
+
         btnGoToLogin.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, MainActivity.class);
             startActivity(intent);
         });
     }
-    
+
     private void setupLanguageToggle() {
         TextView langFr = findViewById(R.id.langFr);
         TextView langEn = findViewById(R.id.langEn);

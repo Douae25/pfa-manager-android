@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gestionnaire PFA</string>
+    <string name="login_title">Connexion</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Mot de passe</string>
+    <string name="btn_login">Se connecter</string>
+    <string name="error_empty">Veuillez remplir tous les champs</string>
+
+    <string name="home_title">Gestion PFA - ENSA Tétouane</string>
+    <string name="home_subtitle">Bienvenue dans l\'application de gestion PFA</string>
+    <string name="btn_home_connect">Se connecter</string>
+
+    <!-- Landing texts -->
+    <string name="landing_title">Gestionnaire PFA</string>
+    <string name="landing_subtitle">École Nationale des Sciences Appliquées</string>
+    <string name="landing_city">Tétouane</string>
+    <string name="landing_description">Gérez vos projets de fin d\'études efficacement</string>
+    <string name="landing_login">Se connecter</string>
+    <string name="landing_footer">© 2026 ENSA Tétouane</string>
+
+    <!-- Language toggle -->
+    <string name="lang_fr">FR</string>
+    <string name="lang_en">EN</string>
+
+    <!-- Admin Panel -->
+    <string name="admin_title">Tableau de bord administrateur</string>
+    <string name="admin_welcome">Bienvenue, Administrateur</string>
+    <string name="admin_convention_requests">Demandes de convention</string>
+    <string name="admin_signed_conventions">Conventions signées</string>
+    <string name="admin_manage_users">Gérer les utilisateurs</string>
+    <string name="admin_no_requests">Aucune demande en attente</string>
+    <string name="admin_view_details">Voir les détails</string>
+    <string name="admin_approve">Approuver</string>
+    <string name="admin_reject">Rejeter</string>
+    <string name="admin_comment">Commentaire</string>
+    <string name="admin_logout">Se déconnecter</string>
+    <string name="convention_list_empty">Aucune convention disponible</string>
+    <string name="search_user_hint">Rechercher par nom, prénom ou email</string>
+
+    <!-- Dynamic Convention Labels -->
+    <string name="label_company">Entreprise</string>
+    <string name="label_supervisor">Encadrant</string>
+    <string name="label_address">Adresse</string>
+    <string name="label_period">Période de stage</string>
+    <string name="label_to">à</string>
+    <string name="label_state">État</string>
+    <string name="label_admin_comment">Commentaire admin</string>
+    <string name="value_na">N/A</string>
+    <string name="value_no_comment">Aucun commentaire</string>
+    <string name="label_start">Début</string>
+    <string name="label_end">Fin</string>
+    <string name="convention_detail_title">Détails de la convention</string>
+    <string name="btn_view_pdf">Voir le PDF</string>
+
+    <!-- Convention List Buttons -->
+    <string name="btn_approve">Approuver</string>
+    <string name="btn_reject">Refuser</string>
+    <string name="btn_validate">Valider</string>
+    <string name="btn_reject_uploaded">Rejeter</string>
+    <string name="label_department">Filière</string>
+</resources>

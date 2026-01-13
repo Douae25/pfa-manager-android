@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header with language toggle -->
+        <include layout="@layout/view_lang_header" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/convention_detail_title"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvCompanyName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_company" />
+
+        <TextView
+            android:id="@+id/tvSupervisor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_supervisor"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/tvDates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_period"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/tvState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_state"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/tvAdminComment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_admin_comment"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/tvStudentDepartment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_department"
+            android:textSize="16sp"
+            android:textColor="#1976D2"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btnViewPdf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_view_pdf"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</ScrollView>
