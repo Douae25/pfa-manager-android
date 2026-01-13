@@ -115,11 +115,11 @@ public class DatabaseInitializer {
     }
 
     private static void createTestUsersForDepartment(UserDao userDao, Long departmentId, String departmentName, int deptIndex) {
-        String[] studentFirstNames = {"Karim", "Fatima", "Mohamed", "Amina", "Hassan", "Nadia"};
-        String[] studentLastNames = {"Benali", "Zahra", "Alaoui", "El Mansouri", "Chakir", "Idrissi"};
+        String[] studentFirstNames = {"Nada", "Fatima", "Douae", "Amina", "Hassan", "Nadia"};
+        String[] studentLastNames = {"Benali", "Zahir", "Aazibou", "El Mansouri", "Chakir", "Idrissi"};
 
-        String[] professorFirstNames = {"Professeur", "Encadrant", "Superviseur"};
-        String[] professorLastNames = {"Principal", "Senior", "Junior"};
+        String[] professorFirstNames = {"Saad", "Lina", "Youness"};
+        String[] professorLastNames = {"Barhouj", "Ait Brahim", "Elkihal"};
 
         // Simplifier le nom du département pour l'email
         String deptCode = departmentName.substring(0, 2).toUpperCase();
