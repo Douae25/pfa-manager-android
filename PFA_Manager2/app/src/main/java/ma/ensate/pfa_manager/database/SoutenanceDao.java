@@ -75,4 +75,9 @@ public interface SoutenanceDao {
 
     @Query("SELECT COUNT(*) FROM soutenances")
     int getTotalCount();
+
+    @Query("SELECT COUNT(*) FROM pfa_dossiers " +
+            "WHERE supervisor_id = :supervisorId " +
+            "AND pfa_id NOT IN (SELECT pfa_id FROM soutenances)")
+    LiveData<Integer> countUnplannedSoutenancesBySupervisor(Long supervisorId);
 }

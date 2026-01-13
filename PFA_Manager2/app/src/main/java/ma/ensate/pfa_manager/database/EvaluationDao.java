@@ -58,4 +58,9 @@ public interface EvaluationDao {
     @Query("SELECT * FROM evaluations WHERE pfa_id IN " +
             "(SELECT pfa_id FROM pfa_dossiers WHERE supervisor_id = :supervisorId)")
     List<Evaluation> getBySupervisorIdSync(Long supervisorId);
+
+    @Query("SELECT COUNT(*) FROM pfa_dossiers " +
+            "WHERE supervisor_id = :supervisorId " +
+            "AND pfa_id NOT IN (SELECT pfa_id FROM evaluations)")
+    LiveData<Integer> countUnevaluatedStudentsBySupervisor(Long supervisorId);
 }
