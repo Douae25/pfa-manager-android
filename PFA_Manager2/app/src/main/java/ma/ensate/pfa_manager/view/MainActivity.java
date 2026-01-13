@@ -20,6 +20,7 @@ import ma.ensate.pfa_manager.model.User;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
 import ma.ensate.pfa_manager.repository.PFADossierRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
+import ma.ensate.pfa_manager.sync.SyncManager;
 import ma.ensate.pfa_manager.util.TestDataHelper;
 import ma.ensate.pfa_manager.view.etudiant.StudentSpaceActivity;
 import ma.ensate.pfa_manager.viewmodel.LoginViewModel;
@@ -115,6 +116,10 @@ public class MainActivity extends AppCompatActivity {
                 intent = new Intent(this, EncadrantDashboardActivity.class);
                 break;
             case STUDENT:
+                // 🔄 Démarrer la synchronisation des données de l'étudiant
+                SyncManager syncManager = SyncManager.getInstance(getApplication());
+                syncManager.syncUserDataFromBackend(user.getUser_id());
+                
                 intent = new Intent(this, StudentSpaceActivity.class);
                 intent.putExtra("user", user);
                 break;

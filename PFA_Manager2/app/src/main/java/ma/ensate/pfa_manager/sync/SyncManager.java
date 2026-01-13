@@ -21,6 +21,8 @@ import ma.ensate.pfa_manager.database.PFADossierDao;
 import ma.ensate.pfa_manager.model.Convention;
 import ma.ensate.pfa_manager.model.ConventionState;
 import ma.ensate.pfa_manager.model.Deliverable;
+import ma.ensate.pfa_manager.model.DeliverableFileType;
+import ma.ensate.pfa_manager.model.DeliverableType;
 import ma.ensate.pfa_manager.model.PFADossier;
 import ma.ensate.pfa_manager.model.PFAStatus;
 import ma.ensate.pfa_manager.model.api.ConventionRequest;
@@ -28,8 +30,10 @@ import ma.ensate.pfa_manager.model.api.ConventionResponse;
 import ma.ensate.pfa_manager.model.api.ApiResponse;
 import ma.ensate.pfa_manager.model.api.DeliverableRequest;
 import ma.ensate.pfa_manager.model.api.DeliverableResponse;
+import ma.ensate.pfa_manager.model.api.EvaluationResponse;
 import ma.ensate.pfa_manager.model.api.PFADossierRequest;
 import ma.ensate.pfa_manager.model.api.PFADossierResponse;
+import ma.ensate.pfa_manager.model.api.SoutenanceResponse;
 import ma.ensate.pfa_manager.network.ApiClient;
 import ma.ensate.pfa_manager.network.ApiService;
 
@@ -457,6 +461,200 @@ public class SyncManager {
     }
     
     // ════════════════════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════════
+    // SYNC INITIAL (Load all user data from backend on login)
+    // ════════════════════════════════════════════════════════════
+    
+    public void syncUserDataFromBackend(Long studentId) {
+        executorService.execute(() -> {
+            try {
+                Log.d(TAG, "🔄 Démarrage de la synchronisation des données utilisateur...");
+                updateSyncStatus(SyncStatus.SYNCING, "Récupération des dossiers PFA...");
+                
+                // 1. Récupérer les PFA dossiers de l'étudiant
+                Call<List<PFADossierResponse>> pfaCall = apiService.getPFADossiersByStudent(studentId);
+                Response<List<PFADossierResponse>> pfaResponse = pfaCall.execute();
+                
+                if (!pfaResponse.isSuccessful() || pfaResponse.body() == null) {
+                    Log.e(TAG, "❌ Erreur lors de la récupération des PFA dossiers");
+                    updateSyncStatus(SyncStatus.ERROR, "Erreur: impossible de récupérer les données");
+                    return;
+                }
+                
+                List<PFADossierResponse> pfaDossierResponses = pfaResponse.body();
+                if (pfaDossierResponses == null || pfaDossierResponses.isEmpty()) {
+                    Log.d(TAG, "✅ Aucun PFA dossier trouvé pour cet étudiant");
+                    updateSyncStatus(SyncStatus.SUCCESS, "Pas de dossier PFA");
+                    return;
+                }
+                
+                PFADossierDao pfaDossierDao = database.pfaDossierDao();
+                
+                // 2. Pour chaque PFA dossier, récupérer et insérer les données associées
+                for (PFADossierResponse pfaResponse2 : pfaDossierResponses) {
+                    Long pfaId = pfaResponse2.getPfaId();
+                    
+                    // Insérer ou mettre à jour le PFA dossier
+                    PFADossier pfaDossier = convertPFADossierResponseToEntity(pfaResponse2);
+                    // ✅ Utiliser le backend_id comme local pfa_id
+                    pfaDossier.setPfa_id(pfaId);
+                    pfaDossier.setBackend_pfa_id(pfaId);
+                    pfaDossier.setIs_synced(true);
+                    pfaDossierDao.insert(pfaDossier);
+                    Log.d(TAG, "✅ PFA dossier inséré: " + pfaId);
+                    
+                    // 2a. Récupérer la convention
+                    updateSyncStatus(SyncStatus.SYNCING, "Récupération des conventions...");
+                    syncConventionForPFA(pfaId);
+                    
+                    // 2b. Récupérer les livrables
+                    updateSyncStatus(SyncStatus.SYNCING, "Récupération des livrables...");
+                    syncDeliverablesForPFA(pfaId);
+                    
+                    // 2c. Récupérer les soutenances
+                    updateSyncStatus(SyncStatus.SYNCING, "Récupération des soutenances...");
+                    syncSoutenanceForPFA(pfaId);
+                    
+                    // 2d. Récupérer les évaluations
+                    updateSyncStatus(SyncStatus.SYNCING, "Récupération des évaluations...");
+                    syncEvaluationsForPFA(pfaId);
+                }
+                
+                Log.d(TAG, "✅ Synchronisation complète des données utilisateur réussie!");
+                updateSyncStatus(SyncStatus.SUCCESS, "Données synchronisées avec succès");
+                
+            } catch (Exception e) {
+                Log.e(TAG, "❌ Erreur lors de la synchronisation: " + e.getMessage(), e);
+                updateSyncStatus(SyncStatus.ERROR, "Erreur: " + e.getMessage());
+            }
+        });
+    }
+    
+    private void syncConventionForPFA(Long pfaId) {
+        try {
+            Call<ConventionResponse> conventionCall = apiService.getConventionByPfaId(pfaId);
+            Response<ConventionResponse> response = conventionCall.execute();
+            
+            if (response.isSuccessful() && response.body() != null) {
+                ConventionResponse conventionResponse = response.body();
+                if (conventionResponse != null) {
+                    Convention convention = convertConventionResponseToEntity(conventionResponse);
+                    // ✅ Utiliser le backend_id comme local convention_id
+                    convention.setConvention_id(conventionResponse.getConventionId());
+                    convention.setBackend_convention_id(conventionResponse.getConventionId());
+                    convention.setIs_synced(true);
+                    convention.setPfa_id(pfaId);
+                    
+                    ConventionDao conventionDao = database.conventionDao();
+                    conventionDao.insert(convention);
+                    Log.d(TAG, "✅ Convention insérée pour PFA: " + pfaId);
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "⚠️ Erreur lors de la récupération de la convention pour PFA " + pfaId + ": " + e.getMessage());
+        }
+    }
+    
+    private void syncDeliverablesForPFA(Long pfaId) {
+        try {
+            Call<List<DeliverableResponse>> deliverablesCall = apiService.getDeliverablesByPfaId(pfaId);
+            Response<List<DeliverableResponse>> response = deliverablesCall.execute();
+            
+            if (response.isSuccessful() && response.body() != null) {
+                List<DeliverableResponse> deliverables = response.body();
+                if (deliverables != null && !deliverables.isEmpty()) {
+                    DeliverableDao deliverableDao = database.deliverableDao();
+                    
+                    for (DeliverableResponse deliverableResponse : deliverables) {
+                        Deliverable deliverable = convertDeliverableResponseToEntity(deliverableResponse);
+                        // ✅ Utiliser le backend_id comme local deliverable_id
+                        deliverable.setDeliverable_id(deliverableResponse.getDeliverableId());
+                        deliverable.setBackend_deliverable_id(deliverableResponse.getDeliverableId());
+                        deliverable.setIs_synced(true);
+                        deliverable.setPfa_id(pfaId);
+                        
+                        deliverableDao.insert(deliverable);
+                    }
+                    Log.d(TAG, "✅ " + deliverables.size() + " livrables insérés pour PFA: " + pfaId);
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "⚠️ Erreur lors de la récupération des livrables pour PFA " + pfaId + ": " + e.getMessage());
+        }
+    }
+    
+    private void syncSoutenanceForPFA(Long pfaId) {
+        try {
+            Call<ApiResponse<SoutenanceResponse>> soutenanceCall = apiService.getSoutenanceByPfaId(pfaId);
+            Response<ApiResponse<SoutenanceResponse>> response = soutenanceCall.execute();
+            
+            if (response.isSuccessful() && response.body() != null) {
+                // À implémenter selon ta structure de données
+                Log.d(TAG, "✅ Soutenance récupérée pour PFA: " + pfaId);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "⚠️ Erreur lors de la récupération de la soutenance pour PFA " + pfaId + ": " + e.getMessage());
+        }
+    }
+    
+    private void syncEvaluationsForPFA(Long pfaId) {
+        try {
+            Call<List<EvaluationResponse>> evaluationsCall = apiService.getEvaluationsByPfaId(pfaId);
+            Response<List<EvaluationResponse>> response = evaluationsCall.execute();
+            
+            if (response.isSuccessful() && response.body() != null) {
+                // À implémenter selon ta structure de données
+                Log.d(TAG, "✅ Évaluations récupérées pour PFA: " + pfaId);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "⚠️ Erreur lors de la récupération des évaluations pour PFA " + pfaId + ": " + e.getMessage());
+        }
+    }
+    
+    // Convertir les réponses API en entités Room
+    private PFADossier convertPFADossierResponseToEntity(PFADossierResponse response) {
+        PFADossier entity = new PFADossier();
+        entity.setStudent_id(response.getStudentId());
+        entity.setSupervisor_id(response.getSupervisorId());
+        entity.setTitle(response.getTitle());
+        entity.setDescription(response.getDescription());
+        entity.setCurrent_status(PFAStatus.valueOf(response.getCurrentStatus()));
+        entity.setUpdated_at(response.getUpdatedAt());
+        return entity;
+    }
+    
+    private Convention convertConventionResponseToEntity(ConventionResponse response) {
+        Convention entity = new Convention();
+        entity.setCompany_name(response.getCompanyName());
+        entity.setCompany_address(response.getCompanyAddress());
+        entity.setCompany_supervisor_name(response.getCompanySupervisorName());
+        entity.setCompany_supervisor_email(response.getCompanySupervisorEmail());
+        entity.setStart_date(response.getStartDate());
+        entity.setEnd_date(response.getEndDate());
+        entity.setScanned_file_uri(response.getScannedFileUri());
+        entity.setIs_validated(response.getIsValidated());
+        entity.setState(ConventionState.UPLOADED);
+        entity.setAdmin_comment(response.getAdminComment());
+        return entity;
+    }
+    
+    private Deliverable convertDeliverableResponseToEntity(DeliverableResponse response) {
+        Deliverable entity = new Deliverable();
+        entity.setFile_title(response.getFileTitle());
+        entity.setFile_uri(response.getFileUri());
+        entity.setUploaded_at(response.getUploadedAt());
+        entity.setDeliverable_file_type(response.getDeliverableFileType() != null ? 
+            DeliverableFileType.valueOf(response.getDeliverableFileType()) : null);
+        entity.setDeliverable_type(response.getDeliverableType() != null ? 
+            DeliverableType.valueOf(response.getDeliverableType()) : null);
+        return entity;
+    }
+    
+    private void updateSyncStatus(SyncStatus status, String message) {
+        syncStatus.postValue(status);
+        syncMessage.postValue(message);
+    }
+
     // Getters pour les LiveData de synchronisation
     // ════════════════════════════════════════════════════════════
     public LiveData<SyncStatus> getSyncStatus() {

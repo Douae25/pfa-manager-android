@@ -159,9 +159,41 @@ public interface ApiService {
     // PFA DOSSIER (Student)
     // ════════════════════════════════════════════════════════════
 
+    @GET("pfa-dossiers/student/{studentId}")
+    Call<List<PFADossierResponse>> getPFADossiersByStudent(
+            @Path("studentId") Long studentId
+    );
+
     @POST("pfa-dossiers/create-or-get")
     Call<PFADossierResponse> createOrGetPFADossier(
             @Body PFADossierRequest request
+    );
+
+    // ════════════════════════════════════════════════════════════
+    // CONVENTIONS (Student)
+    // ════════════════════════════════════════════════════════════
+
+    @GET("conventions/pfa/{pfaId}")
+    Call<ConventionResponse> getConventionByPfaId(
+            @Path("pfaId") Long pfaId
+    );
+
+    // ════════════════════════════════════════════════════════════
+    // DELIVERABLES (Student)
+    // ════════════════════════════════════════════════════════════
+
+    @GET("deliverables/pfa/{pfaId}")
+    Call<List<DeliverableResponse>> getDeliverablesByPfaId(
+            @Path("pfaId") Long pfaId
+    );
+
+    // ════════════════════════════════════════════════════════════
+    // EVALUATIONS (Student)
+    // ════════════════════════════════════════════════════════════
+
+    @GET("evaluations/pfa/{pfaId}")
+    Call<List<EvaluationResponse>> getEvaluationsByPfaId(
+            @Path("pfaId") Long pfaId
     );
 
 }

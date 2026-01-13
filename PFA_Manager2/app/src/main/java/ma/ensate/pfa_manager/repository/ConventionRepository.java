@@ -104,6 +104,9 @@ public class ConventionRepository {
                     
                     // Convertir en objet Convention pour Room
                     Convention convention = new Convention();
+                    // ✅ IMPORTANT: Utiliser le backend_id comme local convention_id
+                    // Ainsi les deux IDs sont identiques (convention_id = backend_convention_id)
+                    convention.setConvention_id(conventionResponse.getConventionId());
                     convention.setPfa_id(conventionResponse.getPfaId());
                     convention.setCompany_name(conventionResponse.getCompanyName());
                     convention.setCompany_address(conventionResponse.getCompanyAddress());
@@ -116,11 +119,10 @@ public class ConventionRepository {
                     convention.setState(ConventionState.valueOf(conventionResponse.getState()));
                     convention.setAdmin_comment(conventionResponse.getAdminComment());
                     convention.setIs_synced(true);  // Marquer comme synced
-                    convention.setBackend_convention_id(conventionResponse.getConventionId());  // Sauvegarder l'ID backend
+                    convention.setBackend_convention_id(conventionResponse.getConventionId());  // Même ID
                     
                     // Sauvegarder en Room
-                    long localId = conventionDao.insert(convention);
-                    convention.setConvention_id(localId);  // Set local ID for callback
+                    conventionDao.insert(convention);
                     
                     if (listener != null) {
                         listener.onSuccess(convention);
