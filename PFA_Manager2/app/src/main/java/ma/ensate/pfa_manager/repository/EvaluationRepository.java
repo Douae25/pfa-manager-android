@@ -1,4 +1,3 @@
-// repository/EvaluationRepository.java (MISE À JOUR)
 package ma.ensate.pfa_manager.repository;
 
 import android.app.Application;
@@ -354,14 +353,7 @@ public class EvaluationRepository {
         void onError(String message);
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // PARTIE COMPATIBILITÉ POUR NOTEFRAGMENT (Code de ton camarade)
-    // ═══════════════════════════════════════════════════════════════════════
 
-    /**
-     * Interface de callback pour renvoyer une liste d'évaluations
-     * Nécessaire car NoteFragment utilise une lambda expression
-     */
     public interface EvaluationListCallback {
         void onEvaluationsLoaded(List<Evaluation> evaluations);
     }

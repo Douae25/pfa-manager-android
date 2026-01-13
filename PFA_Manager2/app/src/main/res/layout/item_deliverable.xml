@@ -73,11 +73,11 @@
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipType"
                 android:layout_width="wrap_content"
-                android:layout_height="28dp"
+                android:layout_height="wrap_content"
                 android:text="Avant"
                 android:textSize="10sp"
-                app:chipMinHeight="24dp"
-                app:chipCornerRadius="12dp"/>
+                app:chipCornerRadius="12dp"
+                app:chipMinHeight="24dp" />
 
         </LinearLayout>
 

@@ -45,4 +45,6 @@ public interface PFADossierDao {
 
     @Query("SELECT * FROM pfa_dossiers WHERE supervisor_id = :supervisorId")
     LiveData<List<PFADossier>> getPFAsBySupervisor(Long supervisorId);
+    @Query("SELECT * FROM pfa_dossiers WHERE pfa_id = :pfaId LIMIT 1")
+    PFADossier getByIdSync(Long pfaId);
 }
