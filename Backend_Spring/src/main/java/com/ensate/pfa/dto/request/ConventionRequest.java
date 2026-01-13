@@ -25,5 +25,9 @@ public class ConventionRequest {
 
     private Long startDate;
     private Long endDate;
+
+    // Optional: Student can update PFA title and description when requesting convention
+    private String pfaTitle;
+    private String pfaDescription;
 }
 

@@ -11,7 +11,6 @@ public class PFADossierRequest {
 
     private Long supervisorId;
 
-    @NotBlank(message = "Title is required")
     private String title;
 
     private String description;

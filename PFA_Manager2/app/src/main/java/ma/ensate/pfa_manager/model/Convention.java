@@ -46,6 +46,12 @@ public class Convention {
     
     @ColumnInfo(name = "admin_comment")
     private String admin_comment;
+
+    @ColumnInfo(name = "is_synced")
+    private boolean is_synced = false;
+
+    @ColumnInfo(name = "backend_convention_id")
+    private Long backend_convention_id;
     
     public Convention() {}
     
@@ -84,4 +90,10 @@ public class Convention {
     
     public String getAdmin_comment() { return admin_comment; }
     public void setAdmin_comment(String admin_comment) { this.admin_comment = admin_comment; }
+
+    public boolean isIs_synced() { return is_synced; }
+    public void setIs_synced(boolean is_synced) { this.is_synced = is_synced; }
+
+    public Long getBackend_convention_id() { return backend_convention_id; }
+    public void setBackend_convention_id(Long backend_convention_id) { this.backend_convention_id = backend_convention_id; }
 }
