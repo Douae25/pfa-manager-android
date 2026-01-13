@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.textfield.TextInputEditText;
 import ma.ensate.pfa_manager.R;
-import ma.ensate.pfa_manager.database.DatabaseInitializer;
 import ma.ensate.pfa_manager.model.Role;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
