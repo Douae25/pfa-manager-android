@@ -24,6 +24,7 @@ import ma.ensate.pfa_manager.model.DeliverableType;
 import ma.ensate.pfa_manager.model.PFADossier;
 import ma.ensate.pfa_manager.model.User;
 import ma.ensate.pfa_manager.model.api.ApiResponse;
+import ma.ensate.pfa_manager.model.api.DeliverableRequest;
 import ma.ensate.pfa_manager.model.api.DeliverableResponse;
 import ma.ensate.pfa_manager.model.dto.DeliverableWithStudent;
 import ma.ensate.pfa_manager.network.ApiClient;
@@ -254,5 +255,165 @@ public class DeliverableRepository {
 
     public void forceRefresh(Long supervisorId) {
         syncDeliverablesFromApi(supervisorId);
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // STUDENT API: Deposit Deliverable (POST)
+    // ════════════════════════════════════════════════════════════
+    public void depositDeliverable(DeliverableRequest request, OnDeliverableDepositListener listener) {
+        Log.d(TAG, "🚀 depositDeliverable() appelée: pfaId=" + request.getPfaId());
+        executor.execute(() -> {
+            try {
+                Log.d(TAG, "📤 Dépôt livrable: type=" + request.getDeliverableType() + 
+                    ", pfaId=" + request.getPfaId());
+                
+                // Appeler l'API
+                Call<DeliverableResponse> call = apiService.depositDeliverable(request);
+                Response<DeliverableResponse> response = call.execute();
+                
+                Log.d(TAG, "📥 Réponse dépôt: code=" + response.code());
+                
+                if (response.isSuccessful() && response.body() != null) {
+                    DeliverableResponse deliverableResponse = response.body();
+                    
+                    // Mapper et sauvegarder en Room
+                    Deliverable deliverable = mapResponseToDeliverable(deliverableResponse);
+                    deliverable.setIs_synced(true);  // Marquer comme synced
+                    deliverable.setBackend_deliverable_id(deliverableResponse.getDeliverableId());
+                    deliverableDao.insert(deliverable);
+                    
+                    Log.d(TAG, "✅ Livrable inséré en Room: ID=" + deliverableResponse.getDeliverableId());
+                    if (listener != null) {
+                        listener.onSuccess(deliverable);
+                    }
+                } else {
+                    // Erreur backend - on sauvegarde quand même localement
+                    String errorMessage = "Erreur dépôt: " + response.code();
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMessage = response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        // Garder le message par défaut
+                    }
+                    Log.e(TAG, "❌ " + errorMessage);
+                    
+                    // Sauvegarder localement même si backend refuse (PENDING = is_synced=false)
+                    try {
+                        Deliverable deliverable = mapRequestToDeliverable(request);
+                        deliverable.setIs_synced(false);  // Marquer comme pending
+                        deliverableDao.insert(deliverable);
+                        Log.d(TAG, "📱 Livrable sauvegardé localement en attente (is_synced=false)");
+                    } catch (Exception ex) {
+                        Log.e(TAG, "❌ Erreur sauvegarde locale: " + ex.getMessage());
+                    }
+                    
+                    if (listener != null) {
+                        listener.onError(errorMessage);
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "❌ Erreur dépôt exception: " + e.getMessage(), e);
+                // Offline mode - sauvegarder en attente de sync (PENDING = is_synced=false)
+                try {
+                    Deliverable deliverable = mapRequestToDeliverable(request);
+                    deliverable.setIs_synced(false);  // Marquer comme pending
+                    deliverableDao.insert(deliverable);
+                    
+                    Log.d(TAG, "📱 Livrable sauvegardé localement (offline, is_synced=false)");
+                    if (listener != null) {
+                        listener.onOffline("Livrable sauvegardé localement. Dépôt synchronisé à la reconnexion.");
+                    }
+                } catch (Exception ex) {
+                    Log.e(TAG, "❌ Erreur sauvegarde offline: " + ex.getMessage(), ex);
+                }
+            }
+        });
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // STUDENT API: Get Deliverable by ID (GET consultation)
+    // ════════════════════════════════════════════════════════════
+    public void getDeliverableById(Long deliverableId, OnGetDeliverableListener listener) {
+        Log.d(TAG, "🚀 getDeliverableById() appelée: id=" + deliverableId);
+        executor.execute(() -> {
+            try {
+                Call<DeliverableResponse> call = apiService.getDeliverableById(deliverableId);
+                Response<DeliverableResponse> response = call.execute();
+                
+                Log.d(TAG, "📥 Réponse consultation: code=" + response.code());
+                
+                if (response.isSuccessful() && response.body() != null) {
+                    DeliverableResponse deliverableResponse = response.body();
+                    
+                    // Mettre à jour en Room
+                    Deliverable deliverable = mapResponseToDeliverable(deliverableResponse);
+                    deliverableDao.update(deliverable);
+                    
+                    Log.d(TAG, "✅ Livrable update en Room");
+                    if (listener != null) {
+                        listener.onSuccess(deliverable);
+                    }
+                } else {
+                    Log.e(TAG, "❌ Erreur consultation: " + response.code());
+                    if (listener != null) {
+                        listener.onError("Erreur: " + response.code());
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "❌ Exception consultation: " + e.getMessage(), e);
+                // Offline: retourner depuis Room
+                try {
+                    Deliverable deliverable = deliverableDao.getByIdSync(deliverableId);
+                    if (listener != null) {
+                        listener.onSuccess(deliverable);
+                    }
+                } catch (Exception ex) {
+                    Log.e(TAG, "❌ Erreur Room: " + ex.getMessage());
+                }
+            }
+        });
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // Mappers: DeliverableResponse/Request → Deliverable
+    // ════════════════════════════════════════════════════════════
+    private Deliverable mapResponseToDeliverable(DeliverableResponse response) {
+        Deliverable deliverable = new Deliverable();
+        deliverable.setDeliverable_id(response.getDeliverableId());
+        deliverable.setPfa_id(response.getPfaId());
+        deliverable.setFile_title(response.getFileTitle());
+        deliverable.setFile_uri(response.getFileUri());
+        deliverable.setDeliverable_file_type(DeliverableFileType.valueOf(response.getDeliverableFileType()));
+        deliverable.setUploaded_at(response.getUploadedAt());
+        deliverable.setDeliverable_type(DeliverableType.valueOf(response.getDeliverableType()));
+        deliverable.setIs_synced(true);
+        deliverable.setBackend_deliverable_id(response.getDeliverableId());
+        return deliverable;
+    }
+
+    private Deliverable mapRequestToDeliverable(DeliverableRequest request) {
+        Deliverable deliverable = new Deliverable();
+        deliverable.setPfa_id(request.getPfaId());
+        deliverable.setFile_title(request.getFileTitle());
+        deliverable.setFile_uri(request.getFilePath());
+        deliverable.setDeliverable_file_type(request.getFileType());
+        deliverable.setUploaded_at(System.currentTimeMillis());
+        deliverable.setDeliverable_type(request.getDeliverableType());
+        return deliverable;
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // LISTENER INTERFACES
+    // ════════════════════════════════════════════════════════════
+    public interface OnDeliverableDepositListener {
+        void onSuccess(Deliverable deliverable);
+        void onError(String error);
+        void onOffline(String message);
+    }
+
+    public interface OnGetDeliverableListener {
+        void onSuccess(Deliverable deliverable);
+        void onError(String error);
     }
 }

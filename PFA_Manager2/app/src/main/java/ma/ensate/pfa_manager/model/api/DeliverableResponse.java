@@ -19,7 +19,7 @@ public class DeliverableResponse {
     @SerializedName("deliverableType")
     private String deliverableType;
 
-    @SerializedName("deliverableFileType")
+    @SerializedName("fileType")
     private String deliverableFileType;
 
     @SerializedName("uploadedAt")

@@ -8,7 +8,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import ma.ensate.pfa_manager.R;
+import ma.ensate.pfa_manager.database.AppDatabase;
+import ma.ensate.pfa_manager.model.PFADossier;
+import ma.ensate.pfa_manager.model.Soutenance;
 import ma.ensate.pfa_manager.model.User;
 import ma.ensate.pfa_manager.repository.PFADossierRepository;
 import ma.ensate.pfa_manager.repository.SoutenanceRepository;
@@ -22,6 +27,10 @@ public class SoutenanceFragment extends Fragment {
     private PFADossierRepository pfaDossierRepository;
     private SoutenanceRepository soutenanceRepository;
     private TextView tvDate, tvLocation;
+    private SwipeRefreshLayout swipeRefresh;
+    
+    private LiveData<Soutenance> soutenanceLiveData;
+    private LiveData<PFADossier> pfaDossierLiveData;
     
     public static SoutenanceFragment newInstance(User user) {
         SoutenanceFragment fragment = new SoutenanceFragment();
@@ -49,63 +58,76 @@ public class SoutenanceFragment extends Fragment {
         
         tvDate = view.findViewById(R.id.tvSoutenanceDate);
         tvLocation = view.findViewById(R.id.tvSoutenanceLocation);
+        swipeRefresh = view.findViewById(R.id.swipeRefresh);
         
+        // Setup SwipeRefreshLayout
+        swipeRefresh.setOnRefreshListener(() -> {
+            loadSoutenanceData();
+            swipeRefresh.setRefreshing(false);
+        });
+        
+        setupLiveDataObservers();
         loadSoutenanceData();
         
         return view;
     }
     
-    @Override
-    public void onResume() {
-        super.onResume();
-        loadSoutenanceData();
-    }
-    
-    private void loadSoutenanceData() {
+    private void setupLiveDataObservers() {
         if (currentUser == null) {
             return;
         }
         
-        // Récupérer le dossier PFA de l'étudiant
-        pfaDossierRepository.getByStudentId(currentUser.getUser_id(), pfaDossier -> {
+        AppDatabase db = AppDatabase.getInstance(requireActivity().getApplication());
+        pfaDossierLiveData = db.pfaDossierDao().getPFAByStudentLive(currentUser.getUser_id());
+        
+        pfaDossierLiveData.observe(getViewLifecycleOwner(), pfaDossier -> {
+            if (soutenanceLiveData != null) {
+                soutenanceLiveData.removeObservers(getViewLifecycleOwner());
+            }
+            
             if (pfaDossier != null) {
-                // Récupérer la soutenance liée à ce dossier
-                soutenanceRepository.getByPfaId(pfaDossier.getPfa_id(), soutenance -> {
-                    if (getActivity() != null) {
-                        requireActivity().runOnUiThread(() -> {
-                            if (soutenance != null) {
-                                // Afficher la date
-                                if (soutenance.getDate_soutenance() != null) {
-                                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-                                    String dateStr = sdf.format(new Date(soutenance.getDate_soutenance()));
-                                    tvDate.setText(dateStr);
-                                } else {
-                                    tvDate.setText(R.string.not_scheduled);
-                                }
-                                
-                                // Afficher la salle
-                                if (soutenance.getLocation() != null && !soutenance.getLocation().isEmpty()) {
-                                    tvLocation.setText(soutenance.getLocation());
-                                } else {
-                                    tvLocation.setText(R.string.not_scheduled);
-                                }
-                            } else {
-                                // Aucune soutenance planifiée
-                                tvDate.setText(R.string.not_scheduled);
-                                tvLocation.setText(R.string.not_scheduled);
-                            }
-                        });
-                    }
+                soutenanceLiveData = db.soutenanceDao().getSoutenanceByPFA(pfaDossier.getPfa_id());
+                soutenanceLiveData.observe(getViewLifecycleOwner(), soutenance -> {
+                    updateSoutenanceUI(soutenance);
                 });
             } else {
-                // Aucun dossier PFA trouvé
-                if (getActivity() != null) {
-                    requireActivity().runOnUiThread(() -> {
-                        tvDate.setText(R.string.not_scheduled);
-                        tvLocation.setText(R.string.not_scheduled);
-                    });
-                }
+                updateSoutenanceUI(null);
             }
         });
+    }
+    
+    private void updateSoutenanceUI(Soutenance soutenance) {
+        if (soutenance != null) {
+            // Afficher la date
+            if (soutenance.getDate_soutenance() != null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+                String dateStr = sdf.format(new Date(soutenance.getDate_soutenance()));
+                tvDate.setText(dateStr);
+            } else {
+                tvDate.setText(R.string.not_scheduled);
+            }
+            
+            // Afficher la salle
+            if (soutenance.getLocation() != null && !soutenance.getLocation().isEmpty()) {
+                tvLocation.setText(soutenance.getLocation());
+            } else {
+                tvLocation.setText(R.string.not_scheduled);
+            }
+        } else {
+            // Aucune soutenance planifiée
+            tvDate.setText(R.string.not_scheduled);
+            tvLocation.setText(R.string.not_scheduled);
+        }
+    }
+    
+    private void loadSoutenanceData() {
+        if (swipeRefresh != null) {
+            swipeRefresh.setRefreshing(true);
+            swipeRefresh.postDelayed(() -> {
+                if (swipeRefresh != null) {
+                    swipeRefresh.setRefreshing(false);
+                }
+            }, 500);
+        }
     }
 }

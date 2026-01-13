@@ -32,6 +32,12 @@ public class Deliverable {
     @ColumnInfo(name = "uploaded_at")
     private Long uploaded_at;
     
+    @ColumnInfo(name = "is_synced")
+    private boolean is_synced = false;
+    
+    @ColumnInfo(name = "backend_deliverable_id")
+    private Long backend_deliverable_id;
+    
     public Deliverable() {}
     
     public Long getDeliverable_id() { return deliverable_id; }
@@ -54,4 +60,10 @@ public class Deliverable {
     
     public Long getUploaded_at() { return uploaded_at; }
     public void setUploaded_at(Long uploaded_at) { this.uploaded_at = uploaded_at; }
+    
+    public boolean isIs_synced() { return is_synced; }
+    public void setIs_synced(boolean is_synced) { this.is_synced = is_synced; }
+    
+    public Long getBackend_deliverable_id() { return backend_deliverable_id; }
+    public void setBackend_deliverable_id(Long backend_deliverable_id) { this.backend_deliverable_id = backend_deliverable_id; }
 }

@@ -90,11 +90,6 @@
     <string name="card_upload_after">Deliverables after defense</string>
     <string name="card_upload_after_desc">Final corrected report</string>
 
-    <!-- Deliverable Types -->
-    <string name="deliverable_rapport_avancement">Progress Report</string>
-    <string name="deliverable_presentation">Presentation</string>
-    <string name="deliverable_rapport_final">Final Report</string>
-
     <!-- Soutenance Fragment -->
     <string name="soutenance_info_title">Defense information</string>
     <string name="soutenance_date">Date:</string>
@@ -152,4 +147,20 @@
     <string name="convention_downloading">Downloading convention...</string>
     <string name="cannot_upload_unsigned_convention">Only validated conventions can be submitted</string>
     <string name="permission_denied">Permission denied - Unable to download PDF</string>
+
+    <!-- View Deliverables -->
+    <string name="view_deliverables_title">My Submitted Deliverables</string>
+    <string name="deliverables_before_defense">📤 Deliverables Before Defense</string>
+    <string name="deliverables_after_defense">📥 Deliverables After Defense</string>
+    <string name="deliverable_rapport_avancement">📄 Progress Report</string>
+    <string name="deliverable_rapport_final">📘 Final Report</string>
+    <string name="deliverable_presentation">🎤 Presentation</string>
+    <string name="deliverable_no_file">❌ No file submitted</string>
+    <string name="deliverable_file_deposited">✅ File submitted</string>
+    <string name="deliverable_deposited_on">Submitted on: %s</string>
+    <string name="btn_download">📥 Download</string>
+    <string name="error_download_url_missing">File URL not found</string>
+    <string name="download_started">Download started...</string>
+    <string name="error_download">Error downloading file</string>
+    <string name="permission_storage_denied">Permission denied. Unable to download.</string>
 </resources>

@@ -4,8 +4,13 @@
     package="ma.ensate.pfa_manager">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
+        android:name=".PFAManagerApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -57,6 +62,22 @@
             android:parentActivityName=".view.EncadrantDashboardActivity" />
 
         <activity android:name=".view.etudiant.StudentSpaceActivity" />
+
+        <activity
+            android:name=".view.etudiant.ConventionRequestActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.etudiant.UploadSignedConventionActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.etudiant.UploadDeliverablesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.etudiant.ViewDeliverablesActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

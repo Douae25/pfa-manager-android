@@ -38,6 +38,9 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     
+    // SwipeRefreshLayout
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    
     // Room Database
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
