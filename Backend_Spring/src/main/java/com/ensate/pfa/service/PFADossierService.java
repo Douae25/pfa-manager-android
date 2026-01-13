@@ -10,4 +10,9 @@ public interface PFADossierService {
     PFADossierResponse getDossierById(Long id);
     List<PFADossierResponse> getDossiersByStudent(Long studentId);
     PFADossierResponse createOrGetDossier(PFADossierRequest request);
+    List<PFADossierResponse> getAllDossiers();
+    
+    // Sync operations
+    PFADossierResponse createDossier(PFADossierRequest request);
+    PFADossierResponse updateDossier(Long id, PFADossierRequest request);
 }

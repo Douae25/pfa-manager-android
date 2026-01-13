@@ -32,11 +32,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         // Initialiser la base de données avec les données par défaut
         DatabaseInitializer.initializeDatabase(getApplication());
-        
+
+        // Synchronisation automatique dès l'ouverture de l'app : uploadAll puis syncAll
+        new Thread(() -> {
+            ma.ensate.pfa_manager.sync.SyncManager.uploadAll(this);
+            ma.ensate.pfa_manager.sync.SyncManager.syncAll(this);
+        }).start();
+
         LanguageRepository languageRepository = new LanguageRepository(this);
         SettingsViewModelFactory factory = new SettingsViewModelFactory(languageRepository);
         settingsViewModel = new ViewModelProvider(this, factory).get(SettingsViewModel.class);
-        
+
         settingsViewModel.applySavedLanguage();
 
         super.onCreate(savedInstanceState);

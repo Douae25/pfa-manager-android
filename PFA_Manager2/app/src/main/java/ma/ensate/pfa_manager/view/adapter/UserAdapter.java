@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
+import android.app.Application;
+import ma.ensate.pfa_manager.repository.DepartmentCacheRepository;
 import ma.ensate.pfa_manager.R;
 import ma.ensate.pfa_manager.model.Role;
 import ma.ensate.pfa_manager.model.User;
@@ -17,8 +19,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     private List<User> users = new ArrayList<>();
     private List<User> allUsers = new ArrayList<>();
 
-    public UserAdapter(List<User> users) {
+
+    private static DepartmentCacheRepository departmentCacheRepository;
+
+    public UserAdapter(List<User> users, Application application) {
         setUsers(users);
+        if (departmentCacheRepository == null) {
+            departmentCacheRepository = new DepartmentCacheRepository(application);
+        }
     }
 
     public void setUsers(List<User> users) {
@@ -84,9 +92,16 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             tvName.setText(name.trim());
             tvEmail.setText(u.getEmail() == null ? "" : u.getEmail());
             tvRole.setText(u.getRole() == null ? "" : u.getRole().name());
-            if (u.getDepartment() != null && u.getDepartment().getName() != null) {
-                tvDepartment.setText(u.getDepartment().getName());
-                tvDepartment.setVisibility(View.VISIBLE);
+            if (u.getDepartment_id() != null) {
+                departmentCacheRepository.getDepartmentNameById(u.getDepartment_id(), deptName -> {
+                    if (deptName != null) {
+                        tvDepartment.setText(deptName);
+                        tvDepartment.setVisibility(View.VISIBLE);
+                    } else {
+                        tvDepartment.setText("");
+                        tvDepartment.setVisibility(View.GONE);
+                    }
+                });
             } else {
                 tvDepartment.setText("");
                 tvDepartment.setVisibility(View.GONE);

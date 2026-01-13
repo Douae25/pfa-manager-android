@@ -4,17 +4,21 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.ColumnInfo;
 import androidx.room.Ignore;
+import com.google.gson.annotations.SerializedName;
 
 @Entity(tableName = "departments")
 public class Department {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "department_id")
+    @SerializedName("department_id")
     private Long department_id;
     
     @ColumnInfo(name = "name")
+    @SerializedName("name")
     private String name;
     
     @ColumnInfo(name = "code")
+    @SerializedName("code")
     private String code;
     
     @Ignore

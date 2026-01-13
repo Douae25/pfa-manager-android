@@ -11,12 +11,20 @@ import ma.ensate.pfa_manager.model.PFAStatus;
 
 @Dao
 public interface PFADossierDao {
+    @Query("DELETE FROM pfa_dossiers WHERE pfa_id NOT IN (:ids)")
+    void deleteNotInIds(List<Long> ids);
     
     @Insert
     long insert(PFADossier dossier);
+
+    @Insert
+    void insertAll(List<PFADossier> dossiers);
     
     @Update
     void update(PFADossier dossier);
+    
+    @Update
+    void updateAll(List<PFADossier> dossiers);
     
     @Delete
     void delete(PFADossier dossier);
@@ -35,4 +43,7 @@ public interface PFADossierDao {
     
     @Query("SELECT * FROM pfa_dossiers WHERE current_status = :status")
     List<PFADossier> getByStatus(PFAStatus status);
+
+    @Query("DELETE FROM pfa_dossiers")
+    void deleteAll();
 }

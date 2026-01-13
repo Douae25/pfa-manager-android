@@ -11,12 +11,20 @@ import ma.ensate.pfa_manager.model.ConventionState;
 
 @Dao
 public interface ConventionDao {
+    @Query("DELETE FROM conventions WHERE convention_id NOT IN (:ids)")
+    void deleteNotInIds(List<Long> ids);
     
     @Insert
     long insert(Convention convention);
+
+    @Insert
+    void insertAll(List<Convention> conventions);
     
     @Update
     void update(Convention convention);
+    
+    @Update
+    void updateAll(List<Convention> conventions);
     
     @Delete
     void delete(Convention convention);
@@ -32,4 +40,7 @@ public interface ConventionDao {
     
     @Query("SELECT * FROM conventions")
     List<Convention> getAll();
+
+    @Query("DELETE FROM conventions")
+    void deleteAll();
 }

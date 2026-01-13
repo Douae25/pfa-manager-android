@@ -12,10 +12,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.card.MaterialCardView;
+import java.util.concurrent.Executors;
 import ma.ensate.pfa_manager.R;
 import ma.ensate.pfa_manager.repository.ConventionRepository;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
+import ma.ensate.pfa_manager.sync.SyncManager;
 import ma.ensate.pfa_manager.view.adapter.ConventionAdapter;
 import ma.ensate.pfa_manager.view.dialog.RejectionDialogHelper;
 import ma.ensate.pfa_manager.viewmodel.AdminViewModel;
@@ -43,6 +45,11 @@ public class AdminActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            SyncManager.uploadAll(this);
+            SyncManager.syncAll(this);
+        });
 
         setupLanguageToggle();
         setupUI();

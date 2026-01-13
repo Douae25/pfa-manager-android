@@ -81,6 +81,59 @@ public class PFADossierServiceImpl implements PFADossierService {
         return mapToResponse(savedDossier);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<PFADossierResponse> getAllDossiers() {
+        return pfaDossierRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public PFADossierResponse createDossier(PFADossierRequest request) {
+        User student = userRepository.findById(request.getStudentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Student", request.getStudentId()));
+
+        PFADossier newDossier = new PFADossier();
+        newDossier.setStudent(student);
+        newDossier.setTitle(request.getTitle());
+        newDossier.setDescription(request.getDescription());
+        newDossier.setCurrentStatus(request.getCurrentStatus() != null ? request.getCurrentStatus() : PFAStatus.CONVENTION_PENDING);
+        
+        if (request.getSupervisorId() != null) {
+            User supervisor = userRepository.findById(request.getSupervisorId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Supervisor", request.getSupervisorId()));
+            newDossier.setSupervisor(supervisor);
+        }
+
+        PFADossier savedDossier = pfaDossierRepository.save(newDossier);
+        return mapToResponse(savedDossier);
+    }
+
+    @Override
+    public PFADossierResponse updateDossier(Long id, PFADossierRequest request) {
+        PFADossier dossier = pfaDossierRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("PFADossier", id));
+
+        if (request.getTitle() != null && !request.getTitle().isEmpty()) {
+            dossier.setTitle(request.getTitle());
+        }
+        if (request.getDescription() != null && !request.getDescription().isEmpty()) {
+            dossier.setDescription(request.getDescription());
+        }
+        if (request.getCurrentStatus() != null) {
+            dossier.setCurrentStatus(request.getCurrentStatus());
+        }
+        if (request.getSupervisorId() != null) {
+            User supervisor = userRepository.findById(request.getSupervisorId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Supervisor", request.getSupervisorId()));
+            dossier.setSupervisor(supervisor);
+        }
+
+        PFADossier updatedDossier = pfaDossierRepository.save(dossier);
+        return mapToResponse(updatedDossier);
+    }
+
     private PFADossierResponse mapToResponse(PFADossier dossier) {
         PFADossierResponse.PFADossierResponseBuilder builder = PFADossierResponse.builder()
                 .pfaId(dossier.getPfaId())

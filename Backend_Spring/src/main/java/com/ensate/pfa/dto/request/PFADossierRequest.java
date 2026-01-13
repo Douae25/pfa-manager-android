@@ -1,5 +1,6 @@
 package com.ensate.pfa.dto.request;
 
+import com.ensate.pfa.entity.enums.PFAStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -15,4 +16,5 @@ public class PFADossierRequest {
     private String title;
 
     private String description;
-}
+    
+    private PFAStatus currentStatus;}

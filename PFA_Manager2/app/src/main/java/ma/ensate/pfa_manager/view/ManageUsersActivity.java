@@ -55,7 +55,7 @@ public class ManageUsersActivity extends AppCompatActivity {
         AdminViewModelFactory factory = new AdminViewModelFactory(conventionRepository, userRepository);
         adminViewModel = new ViewModelProvider(this, factory).get(AdminViewModel.class);
 
-        userAdapter = new UserAdapter(new ArrayList<>());
+        userAdapter = new UserAdapter(new ArrayList<>(), getApplication());
         usersRecyclerView.setAdapter(userAdapter);
 
         adminViewModel.getAllUsers().observe(this, users -> {

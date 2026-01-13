@@ -18,6 +18,7 @@ import ma.ensate.pfa_manager.repository.ConventionRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
 import ma.ensate.pfa_manager.repository.PFADossierRepository;
+import ma.ensate.pfa_manager.repository.DepartmentRepository;
 import ma.ensate.pfa_manager.viewmodel.AdminViewModel;
 import ma.ensate.pfa_manager.viewmodel.AdminViewModelFactory;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
@@ -110,12 +111,20 @@ public class ConventionDetailActivity extends AppCompatActivity {
         pfaDossierRepository.getPFADossierById(c.getPfa_id(), pfaDossier -> runOnUiThread(() -> {
             if (pfaDossier != null) {
                 userRepository.getUserById(pfaDossier.getStudent_id(), user -> runOnUiThread(() -> {
-                    if (user != null && user.getDepartment() != null && user.getDepartment().getName() != null) {
-                        tvStudentDepartment.setText(getString(R.string.label_department) + ": " + user.getDepartment().getName());
+                    if (user != null && user.getDepartment_id() != null) {
+                        DepartmentRepository departmentRepository = new DepartmentRepository(getApplication());
+                        departmentRepository.getDepartmentById(user.getDepartment_id(), department -> runOnUiThread(() -> {
+                            if (department != null && department.getName() != null) {
+                                tvStudentDepartment.setText(getString(R.string.label_department) + ": " + department.getName());
+                            } else {
+                                tvStudentDepartment.setText(getString(R.string.label_department) + ": N/A");
+                            }
+                            tvStudentDepartment.setVisibility(View.VISIBLE);
+                        }));
                     } else {
                         tvStudentDepartment.setText(getString(R.string.label_department) + ": N/A");
+                        tvStudentDepartment.setVisibility(View.VISIBLE);
                     }
-                    tvStudentDepartment.setVisibility(View.VISIBLE);
                 }));
             } else {
                 tvStudentDepartment.setText(getString(R.string.label_department) + ": N/A");
