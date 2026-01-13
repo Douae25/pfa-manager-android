@@ -3,15 +3,20 @@ package ma.ensate.pfa_manager.network;
 import java.util.List;
 
 import ma.ensate.pfa_manager.model.api.ApiResponse;
+import ma.ensate.pfa_manager.model.api.ConventionRequest;
+import ma.ensate.pfa_manager.model.api.ConventionResponse;
 import ma.ensate.pfa_manager.model.api.EvaluationCriteriaResponse;
 import ma.ensate.pfa_manager.model.api.EvaluationRequest;
 import ma.ensate.pfa_manager.model.api.EvaluationResponse;
+import ma.ensate.pfa_manager.model.api.PFADossierRequest;
+import ma.ensate.pfa_manager.model.api.PFADossierResponse;
 import ma.ensate.pfa_manager.model.api.PFAWithSoutenanceResponse;
 import ma.ensate.pfa_manager.model.api.SoutenanceRequest;
 import ma.ensate.pfa_manager.model.api.SoutenanceResponse;
 import ma.ensate.pfa_manager.model.api.SoutenanceWithEvaluationResponse;
 import ma.ensate.pfa_manager.model.api.StudentWithPFAResponse;
 import ma.ensate.pfa_manager.model.api.StudentDetailResponse;
+import ma.ensate.pfa_manager.model.api.DeliverableRequest;
 import ma.ensate.pfa_manager.model.api.DeliverableResponse;
 
 import retrofit2.Call;
@@ -50,6 +55,45 @@ public interface ApiService {
     );
 
     // ════════════════════════════════════════════════════════════
+    // CONVENTIONS
+    // ════════════════════════════════════════════════════════════
+
+    // Student: Request internship convention (POST demande de convention)
+    @POST("conventions")
+    Call<ConventionResponse> requestConvention(
+            @Body ConventionRequest request
+    );
+
+    // Student: Upload signed convention (POST fichier signé)
+    @POST("conventions/{id}/upload-signed")
+    Call<ConventionResponse> uploadSignedConvention(
+            @Path("id") Long conventionId,
+            @Query("scannedFileUri") String scannedFileUri
+    );
+
+    // Student: Get convention by ID (GET consulter convention)
+    @GET("conventions/{id}")
+    Call<ConventionResponse> getConventionById(
+            @Path("id") Long conventionId
+    );
+
+    // ════════════════════════════════════════════════════════════
+    // DELIVERABLES
+    // ════════════════════════════════════════════════════════════
+
+    // Student: Deposit deliverable (POST déposer livrable)
+    @POST("deliverables")
+    Call<DeliverableResponse> depositDeliverable(
+            @Body DeliverableRequest request
+    );
+
+    // Student: Get deliverable by ID (GET consulter livrable)
+    @GET("deliverables/{id}")
+    Call<DeliverableResponse> getDeliverableById(
+            @Path("id") Long deliverableId
+    );
+
+    // ════════════════════════════════════════════════════════════
     // SOUTENANCES
     // ════════════════════════════════════════════════════════════
     @GET("supervisor/soutenances/pfas")
@@ -81,6 +125,12 @@ public interface ApiService {
             @Path("soutenanceId") Long soutenanceId
     );
 
+    // Student: Consult defense date by PFA ID
+    @GET("soutenances/pfa/{pfaId}")
+    Call<ApiResponse<SoutenanceResponse>> getSoutenanceByPfaId(
+            @Path("pfaId") Long pfaId
+    );
+
     // ════════════════════════════════════════════════════════════
     // EVALUATIONS
     // ════════════════════════════════════════════════════════════
@@ -97,6 +147,21 @@ public interface ApiService {
     Call<ApiResponse<EvaluationResponse>> saveEvaluation(
             @Query("supervisorId") Long supervisorId,
             @Body EvaluationRequest request
+    );
+
+    // Student: View evaluation by ID
+    @GET("evaluations/{id}")
+    Call<ApiResponse<EvaluationResponse>> getEvaluationById(
+            @Path("id") Long evaluationId
+    );
+
+    // ════════════════════════════════════════════════════════════
+    // PFA DOSSIER (Student)
+    // ════════════════════════════════════════════════════════════
+
+    @POST("pfa-dossiers/create-or-get")
+    Call<PFADossierResponse> createOrGetPFADossier(
+            @Body PFADossierRequest request
     );
 
 }
