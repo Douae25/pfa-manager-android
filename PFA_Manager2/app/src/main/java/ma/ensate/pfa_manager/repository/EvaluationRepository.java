@@ -368,4 +368,9 @@ public class EvaluationRepository {
             }
         });
     }
+
+    public void forceRefresh(Long supervisorId) {
+        syncEvaluationsFromApi(supervisorId);
+        syncCriteriaFromApi();
+    }
 }

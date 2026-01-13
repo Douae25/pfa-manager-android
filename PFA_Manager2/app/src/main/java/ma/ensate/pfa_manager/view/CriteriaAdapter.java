@@ -40,12 +40,16 @@ public class CriteriaAdapter extends RecyclerView.Adapter<CriteriaAdapter.ViewHo
     }
 
     public double calculateTotalScore() {
+
         double totalScore = 0.0;
         double totalWeight = 0.0;
+
         for (CriteriaWithScore cs : criteriaList) {
+            // score (0-20) × weight (points absolus)
             totalScore += cs.score * cs.getWeight();
             totalWeight += cs.getWeight();
         }
+
         if (totalWeight > 0) {
             return totalScore / totalWeight;
         }
@@ -86,7 +90,21 @@ public class CriteriaAdapter extends RecyclerView.Adapter<CriteriaAdapter.ViewHo
         void bind(CriteriaWithScore item) {
             tvCriteriaLabel.setText(item.getLabel());
             tvCriteriaDescription.setText(item.getDescription());
-            tvWeight.setText(String.format(Locale.FRENCH, "(%.0f%%)", item.getWeight() * 100));
+
+            // ════════════════════════════════════════════════════════════
+            // CORRECTION : Calculer le pourcentage depuis les points absolus
+            // ════════════════════════════════════════════════════════════
+            double totalWeightSum = 0.0;
+            for (CriteriaWithScore cs : criteriaList) {
+                totalWeightSum += cs.getWeight();
+            }
+
+            double percentage = 0.0;
+            if (totalWeightSum > 0) {
+                percentage = (item.getWeight() / totalWeightSum) * 100;
+            }
+
+            tvWeight.setText(String.format(Locale.FRENCH, "(%.0f%%)", percentage));
 
             sliderScore.setValue(item.score.floatValue());
             tvScore.setText(String.format(Locale.FRENCH, "%.1f/20", item.score));
