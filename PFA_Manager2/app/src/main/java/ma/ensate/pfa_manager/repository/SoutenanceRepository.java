@@ -1,4 +1,3 @@
-// repository/SoutenanceRepository.java (MISE À JOUR)
 package ma.ensate.pfa_manager.repository;
 
 import android.app.Application;
@@ -66,6 +65,8 @@ public class SoutenanceRepository {
 
         result.addSource(pfasLive, pfas -> {
             List<Soutenance> soutenances = soutenancesLive.getValue();
+            Log.d(TAG, "📊 PFAs observés: " + (pfas != null ? pfas.size() : 0) +
+                    ", Soutenances: " + (soutenances != null ? soutenances.size() : 0));
             if (pfas != null) {
                 result.setValue(combine(pfas, soutenances));
             }
@@ -73,6 +74,8 @@ public class SoutenanceRepository {
 
         result.addSource(soutenancesLive, soutenances -> {
             List<PFADossier> pfas = pfasLive.getValue();
+            Log.d(TAG, "📊 Soutenances observées: " + (soutenances != null ? soutenances.size() : 0) +
+                    ", PFAs: " + (pfas != null ? pfas.size() : 0));
             if (pfas != null) {
                 result.setValue(combine(pfas, soutenances));
             }
@@ -87,19 +90,49 @@ public class SoutenanceRepository {
 
     public void syncFromApi(Long supervisorId) {
         isSyncing.postValue(true);
-        Log.d(TAG, "🔄 Sync soutenances pour superviseur: " + supervisorId);
+        Log.d(TAG, "🔄 Début sync soutenances pour superviseur: " + supervisorId);
 
         apiService.getPFAsWithSoutenances(supervisorId).enqueue(new Callback<ApiResponse<List<PFAWithSoutenanceResponse>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<PFAWithSoutenanceResponse>>> call,
                                    Response<ApiResponse<List<PFAWithSoutenanceResponse>>> response) {
 
+                Log.d(TAG, "📡 Réponse HTTP code: " + response.code());
+
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<List<PFAWithSoutenanceResponse>> apiResponse = response.body();
+                    Log.d(TAG, "📡 API success: " + apiResponse.isSuccess());
 
                     if (apiResponse.isSuccess() && apiResponse.getData() != null) {
-                        saveSoutenancesLocally(apiResponse.getData());
-                        Log.d(TAG, "✅ Sync réussie: " + apiResponse.getData().size() + " PFAs");
+                        List<PFAWithSoutenanceResponse> data = apiResponse.getData();
+                        Log.d(TAG, "✅ Reçu " + data.size() + " PFAs de l'API");
+
+                        // Log détaillé de chaque item
+                        for (PFAWithSoutenanceResponse item : data) {
+                            Log.d(TAG, "📦 PFA: id=" + item.getPfaId() + ", title=" + item.getTitle());
+                            if (item.getSoutenance() != null) {
+                                SoutenanceResponse s = item.getSoutenance();
+                                Log.d(TAG, "   └── Soutenance: id=" + s.getSoutenanceId() +
+                                        ", pfaId=" + s.getPfaId() +
+                                        ", location=" + s.getLocation() +
+                                        ", status=" + s.getStatus());
+                            } else {
+                                Log.d(TAG, "   └── Pas de soutenance");
+                            }
+                        }
+
+                        saveSoutenancesLocally(data, supervisorId);
+                    } else {
+                        Log.w(TAG, "⚠️ Réponse API: success=false ou data=null");
+                    }
+                } else {
+                    Log.e(TAG, "❌ Réponse non réussie: " + response.code());
+                    if (response.errorBody() != null) {
+                        try {
+                            Log.e(TAG, "❌ Error body: " + response.errorBody().string());
+                        } catch (Exception e) {
+                            Log.e(TAG, "❌ Impossible de lire error body");
+                        }
                     }
                 }
                 isSyncing.postValue(false);
@@ -107,44 +140,86 @@ public class SoutenanceRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<List<PFAWithSoutenanceResponse>>> call, Throwable t) {
-                Log.e(TAG, "❌ Erreur sync: " + t.getMessage());
+                Log.e(TAG, "❌ Erreur réseau: " + t.getMessage(), t);
                 isSyncing.postValue(false);
             }
         });
     }
 
-    private void saveSoutenancesLocally(List<PFAWithSoutenanceResponse> apiData) {
+    private void saveSoutenancesLocally(List<PFAWithSoutenanceResponse> apiData, Long supervisorId) {
         executor.execute(() -> {
+            Log.d(TAG, "💾 === DÉBUT SAUVEGARDE LOCALE ===");
+
+            int savedCount = 0;
+            int errorCount = 0;
+
             for (PFAWithSoutenanceResponse item : apiData) {
+                Log.d(TAG, "🔍 Traitement PFA id=" + item.getPfaId());
+
+                if (item.getSoutenance() == null) {
+                    Log.d(TAG, "   ⏭️ Pas de soutenance, skip");
+                    continue;
+                }
+
+                SoutenanceResponse sr = item.getSoutenance();
+
                 try {
-                    // Sauvegarder la soutenance si elle existe
-                    if (item.getSoutenance() != null) {
-                        SoutenanceResponse sr = item.getSoutenance();
-
-                        Soutenance existing = soutenanceDao.getByPfaIdSync(item.getPfaId());
-                        boolean isNew = (existing == null);
-
-                        Soutenance soutenance = isNew ? new Soutenance() : existing;
-
-                        soutenance.setSoutenance_id(sr.getSoutenanceId());
-                        soutenance.setPfa_id(sr.getPfaId());
-                        soutenance.setLocation(sr.getLocation());
-                        soutenance.setDate_soutenance(sr.getDateSoutenance());
-                        soutenance.setStatus(mapStatus(sr.getStatus()));
-                        soutenance.setCreated_at(sr.getCreatedAt());
-
-                        if (isNew) {
-                            soutenanceDao.insert(soutenance);
-                            Log.d(TAG, "✅ INSERT Soutenance PFA: " + item.getPfaId());
-                        } else {
-                            soutenanceDao.update(soutenance);
-                            Log.d(TAG, "✅ UPDATE Soutenance PFA: " + item.getPfaId());
-                        }
+                    PFADossier pfaInDb = pfaDossierDao.getByIdSync(item.getPfaId());
+                    if (pfaInDb == null) {
+                        Log.w(TAG, "   ⚠️ PFA " + item.getPfaId() + " n'existe pas en local, impossible d'insérer la soutenance");
+                        Log.w(TAG, "   💡 Vérifiez que StudentRepository sync les PFAs d'abord");
+                        errorCount++;
+                        continue;
                     }
+                    Log.d(TAG, "   ✓ PFA trouvé en local: " + pfaInDb.getTitle());
+
+                    // Vérifier si soutenance existe déjà
+                    Soutenance existing = soutenanceDao.getByPfaIdSync(item.getPfaId());
+                    Log.d(TAG, "   Soutenance existante: " + (existing != null ? "OUI (id=" + existing.getSoutenance_id() + ")" : "NON"));
+
+                    // Créer ou mettre à jour
+                    Soutenance soutenance;
+                    if (existing != null) {
+                        soutenance = existing;
+                    } else {
+                        soutenance = new Soutenance();
+                    }
+
+                    if (existing != null) {
+                        soutenance.setSoutenance_id(existing.getSoutenance_id());
+                    }
+                    // Pour une nouvelle soutenance, laisser soutenance_id = null pour autoGenerate
+
+                    soutenance.setPfa_id(sr.getPfaId() != null ? sr.getPfaId() : item.getPfaId());
+                    soutenance.setLocation(sr.getLocation());
+                    soutenance.setDate_soutenance(sr.getDateSoutenance());
+                    soutenance.setStatus(mapStatus(sr.getStatus()));
+                    soutenance.setCreated_at(sr.getCreatedAt() != null ? sr.getCreatedAt() : System.currentTimeMillis());
+
+                    Log.d(TAG, "   📝 Soutenance à sauvegarder: pfa_id=" + soutenance.getPfa_id() +
+                            ", location=" + soutenance.getLocation() +
+                            ", status=" + soutenance.getStatus());
+
+                    if (existing != null) {
+                        soutenanceDao.update(soutenance);
+                        Log.d(TAG, "   ✅ UPDATE réussi pour PFA " + item.getPfaId());
+                    } else {
+                        long newId = soutenanceDao.insert(soutenance);
+                        Log.d(TAG, "   ✅ INSERT réussi pour PFA " + item.getPfaId() + ", nouvel ID=" + newId);
+                    }
+                    savedCount++;
+
                 } catch (Exception e) {
-                    Log.e(TAG, "❌ Erreur sauvegarde: " + e.getMessage());
+                    Log.e(TAG, "   ❌ ERREUR pour PFA " + item.getPfaId() + ": " + e.getMessage(), e);
+                    errorCount++;
                 }
             }
+
+            // Vérification finale
+            int totalInDb = soutenanceDao.getTotalCount();
+            Log.d(TAG, "💾 === FIN SAUVEGARDE ===");
+            Log.d(TAG, "📊 Résultat: " + savedCount + " sauvegardées, " + errorCount + " erreurs");
+            Log.d(TAG, "📊 Total soutenances en DB: " + totalInDb);
         });
     }
 
@@ -161,15 +236,19 @@ public class SoutenanceRepository {
                     return;
                 }
 
-                // 2. Insérer localement d'abord
+                // 2. NE PAS setter l'ID pour autoGenerate
+                soutenance.setSoutenance_id(null);
+
+                // 3. Insérer localement
                 long id = soutenanceDao.insert(soutenance);
                 soutenance.setSoutenance_id(id);
                 Log.d(TAG, "✅ Soutenance insérée localement ID: " + id);
 
-                // 3. Sync avec l'API en background
+                // 4. Sync avec l'API en background
                 syncPlanifierWithApi(supervisorId, soutenance, listener);
 
             } catch (Exception e) {
+                Log.e(TAG, "❌ Erreur planification: " + e.getMessage(), e);
                 listener.onError("Erreur: " + e.getMessage());
             }
         });
@@ -187,14 +266,6 @@ public class SoutenanceRepository {
             public void onResponse(Call<ApiResponse<SoutenanceResponse>> call,
                                    Response<ApiResponse<SoutenanceResponse>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    // Mettre à jour l'ID serveur si nécessaire
-                    SoutenanceResponse sr = response.body().getData();
-                    if (sr != null && sr.getSoutenanceId() != null) {
-                        executor.execute(() -> {
-                            soutenance.setSoutenance_id(sr.getSoutenanceId());
-                            soutenanceDao.update(soutenance);
-                        });
-                    }
                     Log.d(TAG, "✅ Soutenance sync avec API");
                 } else {
                     Log.w(TAG, "⚠️ API sync failed, données locales conservées");
@@ -210,38 +281,64 @@ public class SoutenanceRepository {
         });
     }
 
+    // repository/SoutenanceRepository.java
+
+// ═══════════════════════════════════════════════════════════════════════
+// MODIFIER SOUTENANCE - CORRIGÉ
+// ═══════════════════════════════════════════════════════════════════════
+
     public void modifierSoutenance(Soutenance soutenance, Long supervisorId, OnSoutenanceListener listener) {
+        // ⚠️ Vérification null
+        if (soutenance == null || soutenance.getSoutenance_id() == null) {
+            listener.onError("Erreur: Soutenance invalide");
+            return;
+        }
+
         executor.execute(() -> {
             try {
-                // 1. Modifier localement
                 soutenanceDao.update(soutenance);
-                Log.d(TAG, "✅ Soutenance modifiée localement");
+                Log.d(TAG, "✅ Soutenance modifiée localement, ID: " + soutenance.getSoutenance_id());
 
-                // 2. Sync avec l'API
+                // Sync API seulement si on a un ID valide
                 syncModifierWithApi(supervisorId, soutenance, listener);
 
             } catch (Exception e) {
+                Log.e(TAG, "❌ Erreur modification: " + e.getMessage());
                 listener.onError("Erreur: " + e.getMessage());
             }
         });
     }
 
     private void syncModifierWithApi(Long supervisorId, Soutenance soutenance, OnSoutenanceListener listener) {
+        Long soutenanceId = soutenance.getSoutenance_id();
+
+        // ⚠️ Vérification avant appel API
+        if (soutenanceId == null) {
+            Log.w(TAG, "⚠️ ID null, sync API ignorée");
+            listener.onSuccess("Soutenance modifiée (local uniquement)");
+            return;
+        }
+
         SoutenanceRequest request = new SoutenanceRequest(
                 soutenance.getPfa_id(),
                 soutenance.getLocation(),
                 soutenance.getDate_soutenance()
         );
 
-        apiService.modifierSoutenance(supervisorId, soutenance.getSoutenance_id(), request)
+        Log.d(TAG, "📡 PUT /soutenances/" + soutenanceId);
+
+        apiService.modifierSoutenance(soutenanceId, supervisorId, request)
                 .enqueue(new Callback<ApiResponse<SoutenanceResponse>>() {
                     @Override
                     public void onResponse(Call<ApiResponse<SoutenanceResponse>> call,
                                            Response<ApiResponse<SoutenanceResponse>> response) {
                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                             Log.d(TAG, "✅ Modification sync avec API");
+                            listener.onSuccess("Soutenance modifiée avec succès !");
+                        } else {
+                            Log.w(TAG, "⚠️ API erreur: " + response.code());
+                            listener.onSuccess("Soutenance modifiée localement");
                         }
-                        listener.onSuccess("Soutenance modifiée avec succès !");
                     }
 
                     @Override
@@ -252,19 +349,34 @@ public class SoutenanceRepository {
                 });
     }
 
-    public void supprimerSoutenance(long soutenanceId, Long supervisorId, OnSoutenanceListener listener) {
+// ═══════════════════════════════════════════════════════════════════════
+// SUPPRIMER SOUTENANCE - CORRIGÉ
+// ═══════════════════════════════════════════════════════════════════════
+
+    public void supprimerSoutenance(Long soutenanceId, Long supervisorId, OnSoutenanceListener listener) {
+        // ⚠️ Vérification null
+        if (soutenanceId == null) {
+            listener.onError("Erreur: ID soutenance invalide");
+            return;
+        }
+
         executor.execute(() -> {
             try {
-                // 1. Supprimer localement
                 soutenanceDao.deleteById(soutenanceId);
-                Log.d(TAG, "✅ Soutenance supprimée localement");
+                Log.d(TAG, "✅ Soutenance supprimée localement, ID: " + soutenanceId);
 
-                // 2. Sync avec l'API
-                apiService.supprimerSoutenance(supervisorId, soutenanceId)
+                // Sync avec l'API
+                Log.d(TAG, "📡 DELETE /soutenances/" + soutenanceId);
+
+                apiService.supprimerSoutenance(soutenanceId, supervisorId)
                         .enqueue(new Callback<ApiResponse<Void>>() {
                             @Override
                             public void onResponse(Call<ApiResponse<Void>> call, Response<ApiResponse<Void>> response) {
-                                Log.d(TAG, "✅ Suppression sync avec API");
+                                if (response.isSuccessful()) {
+                                    Log.d(TAG, "✅ Suppression sync avec API");
+                                } else {
+                                    Log.w(TAG, "⚠️ API erreur: " + response.code());
+                                }
                                 listener.onSuccess("Soutenance supprimée !");
                             }
 
@@ -276,11 +388,11 @@ public class SoutenanceRepository {
                         });
 
             } catch (Exception e) {
+                Log.e(TAG, "❌ Erreur suppression: " + e.getMessage());
                 listener.onError("Erreur: " + e.getMessage());
             }
         });
     }
-
     // ═══════════════════════════════════════════════════════════════════════
     // HELPERS
     // ═══════════════════════════════════════════════════════════════════════
@@ -294,7 +406,7 @@ public class SoutenanceRepository {
 
             if (soutenances != null) {
                 for (Soutenance s : soutenances) {
-                    if (s.getPfa_id().equals(pfa.getPfa_id())) {
+                    if (s.getPfa_id() != null && s.getPfa_id().equals(pfa.getPfa_id())) {
                         item.soutenance = s;
                         break;
                     }
@@ -310,12 +422,13 @@ public class SoutenanceRepository {
         try {
             return SoutenanceStatus.valueOf(status);
         } catch (Exception e) {
+            Log.w(TAG, "⚠️ Status inconnu: " + status);
             return SoutenanceStatus.PLANNED;
         }
     }
 
     // ═══════════════════════════════════════════════════════════════════════
-    // MÉTHODES EXISTANTES (gardées pour compatibilité)
+    // MÉTHODES EXISTANTES
     // ═══════════════════════════════════════════════════════════════════════
 
     public LiveData<List<PFADossier>> getPFAsEligibles(Long supervisorId) {
@@ -339,22 +452,6 @@ public class SoutenanceRepository {
         void onError(String message);
     }
 
-    public interface OnSoutenanceInsertedListener {
-        void onSoutenanceInserted(Soutenance soutenance);
-    }
-
-    public interface OnSoutenanceFetchedListener {
-        void onSoutenanceFetched(Soutenance soutenance);
-    }
-
-    public interface OnSoutenancesListFetchedListener {
-        void onSoutenancesListFetched(List<Soutenance> soutenances);
-    }
-
-    public interface SoutenanceCallback {
-        void onSoutenanceLoaded(Soutenance soutenance);
-    }
-
     public void getByPfaId(Long pfaId, SoutenanceCallback callback) {
         executor.execute(() -> {
             Soutenance soutenance = soutenanceDao.getByPfaIdSync(pfaId);
@@ -362,5 +459,9 @@ public class SoutenanceRepository {
                 callback.onSoutenanceLoaded(soutenance);
             }
         });
+    }
+
+    public interface SoutenanceCallback {
+        void onSoutenanceLoaded(Soutenance soutenance);
     }
 }

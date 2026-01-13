@@ -1,4 +1,3 @@
-// repository/StudentDetailRepository.java
 package ma.ensate.pfa_manager.repository;
 
 import android.app.Application;
@@ -58,9 +57,6 @@ public class StudentDetailRepository {
         executor = Executors.newSingleThreadExecutor();
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // MÉTHODES PRINCIPALES (avec sync API)
-    // ═══════════════════════════════════════════════════════════════════════
 
     public LiveData<User> getStudent(Long studentId) {
         return userDao.getUserById(studentId);
@@ -90,18 +86,11 @@ public class StudentDetailRepository {
         return evaluationDao.getByPfaIdLive(pfaId);
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // SYNCHRONISATION DEPUIS L'API
-    // ═══════════════════════════════════════════════════════════════════════
-
-    /**
-     * Synchronise toutes les données d'un étudiant depuis l'API
-     */
     public void syncStudentDetail(Long supervisorId, Long studentId) {
         isSyncing.postValue(true);
         Log.d(TAG, "🔄 Sync détail étudiant: " + studentId);
 
-        apiService.getStudentDetail(supervisorId, studentId).enqueue(new Callback<ApiResponse<StudentDetailResponse>>() {
+        apiService.getStudentDetail(studentId, supervisorId).enqueue(new Callback<ApiResponse<StudentDetailResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<StudentDetailResponse>> call,
                                    Response<ApiResponse<StudentDetailResponse>> response) {
@@ -129,9 +118,7 @@ public class StudentDetailRepository {
         });
     }
 
-    /**
-     * Sauvegarde les données de l'API dans Room
-     */
+
     private void saveStudentDetailToRoom(StudentDetailResponse data) {
         executor.execute(() -> {
             try {

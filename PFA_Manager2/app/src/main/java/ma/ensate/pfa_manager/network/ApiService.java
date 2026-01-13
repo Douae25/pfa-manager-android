@@ -70,15 +70,16 @@ public interface ApiService {
 
     @PUT("supervisor/soutenances/{soutenanceId}")
     Call<ApiResponse<SoutenanceResponse>> modifierSoutenance(
-            @Query("supervisorId") Long supervisorId,
             @Path("soutenanceId") Long soutenanceId,
+            @Query("supervisorId") Long supervisorId,
             @Body SoutenanceRequest request
     );
 
     @DELETE("supervisor/soutenances/{soutenanceId}")
     Call<ApiResponse<Void>> supprimerSoutenance(
-            @Query("supervisorId") Long supervisorId,
-            @Path("soutenanceId") Long soutenanceId
+            @Path("soutenanceId") Long soutenanceId,
+            @Query("supervisorId") Long supervisorId
+
     );
 
     // ════════════════════════════════════════════════════════════

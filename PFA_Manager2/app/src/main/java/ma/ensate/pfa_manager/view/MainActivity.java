@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         TestDataHelper.insertTestData(this); 
-        insertTestUserIfNeeded();
+       // insertTestUserIfNeeded();
 
         setupLanguageToggle();
         setupBackNavigation();
@@ -119,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("user", user);
                 break;
             case ADMIN:
-                // intent = new Intent(this, AdminDashboardActivity.class);
                 break;
             case COORDINATOR:
                 // intent = new Intent(this, CoordinatorDashboardActivity.class);
@@ -135,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     
-    private void insertTestUserIfNeeded() {
+   /* private void insertTestUserIfNeeded() {
         UserRepository userRepository = new UserRepository(getApplication());
         PFADossierRepository pfaDossierRepository = new PFADossierRepository(getApplication());
         
@@ -166,5 +165,5 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-    }
+    }*/
 }

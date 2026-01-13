@@ -1,4 +1,3 @@
-// service/SoutenanceService.java
 package com.ensate.pfa.service.supervisor;
 
 import com.ensate.pfa.dto.request.SoutenanceRequest;
@@ -137,7 +136,23 @@ public class SoutenanceService {
       throw new RuntimeException("Cette soutenance n'est pas sous votre supervision");
     }
 
+    // Vider la liste des jurys (supprime les entrées dans
+    // soutenance_jury)
+    if (soutenance.getJuryMembers() != null) {
+      soutenance.getJuryMembers().clear();
+    }
+
+    // Détacher du PFA
+    pfa.setSoutenance(null);
+    pfaDossierRepository.save(pfa);
+
+    // Sauvegarder pour appliquer le clear()
+    soutenanceRepository.save(soutenance);
+    soutenanceRepository.flush();
+
+    // supprimer la soutenance
     soutenanceRepository.delete(soutenance);
+    soutenanceRepository.flush();
   }
 
   private SoutenanceDTO toSoutenanceDTO(Soutenance s, PFADossier pfa, User student) {
