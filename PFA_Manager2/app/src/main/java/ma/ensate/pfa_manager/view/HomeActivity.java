@@ -10,6 +10,7 @@ import ma.ensate.pfa_manager.R;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModelFactory;
+import ma.ensate.pfa_manager.database.DatabaseInitializer;
 
 
 public class HomeActivity extends AppCompatActivity {
@@ -26,6 +27,8 @@ public class HomeActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        DatabaseInitializer.initializeWithDefaultData(getApplicationContext());
 
         setupNavigation();
         setupLanguageToggle();

@@ -2,6 +2,7 @@ package com.ensate.pfa.service.impl;
 
 import com.ensate.pfa.dto.request.PFADossierRequest;
 import com.ensate.pfa.dto.response.ConventionResponse;
+import com.ensate.pfa.dto.response.PFADossierDTO;
 import com.ensate.pfa.dto.response.PFADossierResponse;
 import com.ensate.pfa.entity.PFADossier;
 import com.ensate.pfa.entity.User;
@@ -166,5 +167,28 @@ public class PFADossierServiceImpl implements PFADossierService {
         }
 
         return builder.build();
+    }
+
+    @Override
+    public List<PFADossierDTO> getAllPFADossiers() {
+        return pfaDossierRepository.findAll().stream()
+                .map(pfa -> PFADossierDTO.builder()
+                        .pfaId(pfa.getPfaId())
+                        .title(pfa.getTitle())
+                        .description(pfa.getDescription())
+                        .currentStatus(pfa.getCurrentStatus().name())
+                        .studentId(pfa.getStudent() != null ?
+                                pfa.getStudent().getUserId() : null)
+                        .studentName(pfa.getStudent() != null ?
+                                pfa.getStudent().getFirstName() + " " +
+                                        pfa.getStudent().getLastName() : null)
+                        .supervisorId(pfa.getSupervisor() != null ?
+                                pfa.getSupervisor().getUserId() : null)
+                        .supervisorName(pfa.getSupervisor() != null ?
+                                pfa.getSupervisor().getFirstName() + " " +
+                                        pfa.getSupervisor().getLastName() : null)
+                        .updatedAt(pfa.getUpdatedAt())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

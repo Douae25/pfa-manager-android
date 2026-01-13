@@ -85,9 +85,8 @@ public class UserRepository {
     }
 
     public LiveData<User> getUserByEmailLiveData(String email) {
-        return userDao.getUserByEmail(email);
+        return userDao.getUserByEmailLiveData(email);
     }
-
     // ========== INTERFACES CALLBACKS ==========
 
     
@@ -99,7 +98,7 @@ public class UserRepository {
             }
         });
     }
-    
+
     public interface OnUserInsertedListener {
         void onUserInserted(User user);
     }

@@ -3,10 +3,10 @@ package ma.ensate.pfa_manager.model;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.ColumnInfo;
-import java.io.Serializable;
-import androidx.room.TypeConverters;
 import androidx.room.ForeignKey;
+import androidx.room.TypeConverters;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 
 @Entity(
     tableName = "users",
@@ -14,10 +14,11 @@ import com.google.gson.annotations.SerializedName;
         entity = Department.class,
         parentColumns = "department_id",
         childColumns = "department_id",
-        onDelete = ForeignKey.CASCADE
+        onDelete = ForeignKey.CASCADE // ou SET_NULL selon ton besoin
     )
 )
 public class User implements Serializable {
+
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "user_id")
     @SerializedName("user_id")
@@ -47,22 +48,19 @@ public class User implements Serializable {
     @SerializedName("phone_number")
     private String phone_number;
 
-    @ColumnInfo(name = "created_at")
-    @SerializedName("created_at")
-    private Long created_at;
-
-
-    // Pour la synchronisation avec le backend (clé étrangère)
+    // ID du département pour coordinateur et filtrage par département
     @ColumnInfo(name = "department_id")
     @SerializedName("department_id")
     private Long department_id;
 
-    // Optionnel : garder l'objet Department pour usage local (non synchronisé)
+    @ColumnInfo(name = "created_at")
+    @SerializedName("created_at")
+    private Long created_at;
 
-    // Constructeur vide (requis pour Firebase/Room)
+    // Constructeur vide (requis par Room/Firebase)
     public User() {}
 
-    // Getters et Setters
+    // -------------------- Getters & Setters --------------------
     public Long getUser_id() { return user_id; }
     public void setUser_id(Long user_id) { this.user_id = user_id; }
 
@@ -79,16 +77,14 @@ public class User implements Serializable {
     public void setLast_name(String last_name) { this.last_name = last_name; }
 
     public Role getRole() { return role; }
-
-    public Long getDepartment_id() { return department_id; }
-    public void setDepartment_id(Long department_id) { this.department_id = department_id; }
     public void setRole(Role role) { this.role = role; }
 
     public String getPhone_number() { return phone_number; }
     public void setPhone_number(String phone_number) { this.phone_number = phone_number; }
 
+    public Long getDepartment_id() { return department_id; }
+    public void setDepartment_id(Long department_id) { this.department_id = department_id; }
+
     public Long getCreated_at() { return created_at; }
     public void setCreated_at(Long created_at) { this.created_at = created_at; }
-
-
 }

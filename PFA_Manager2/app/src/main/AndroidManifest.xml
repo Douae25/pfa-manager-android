@@ -23,6 +23,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
+        <!-- HOME / MAIN -->
         <activity
             android:name=".view.HomeActivity"
             android:exported="true">
@@ -36,6 +37,7 @@
             android:name=".view.MainActivity"
             android:exported="false" />
 
+        <!-- ENCADRANT -->
         <activity
             android:name=".view.EncadrantDashboardActivity"
             android:exported="false" />
@@ -64,10 +66,16 @@
             android:exported="false"
             android:parentActivityName=".view.EncadrantDashboardActivity" />
 
+        <!-- ADMIN -->
         <activity
             android:name=".view.AdminActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".view.ManageUsersActivity"
+            android:exported="false" />
+
+        <!-- CONVENTION -->
         <activity
             android:name=".view.ConventionListActivity"
             android:exported="false" />
@@ -76,10 +84,7 @@
             android:name=".view.ConventionDetailActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".view.ManageUsersActivity"
-            android:exported="false" />
-
+        <!-- ETUDIANT -->
         <activity
             android:name=".view.etudiant.StudentSpaceActivity"
             android:exported="false" />
@@ -100,6 +105,24 @@
             android:name=".view.etudiant.ViewDeliverablesActivity"
             android:exported="false" />
 
+        <!-- COORDINATEUR FILIERE -->
+        <activity
+            android:name=".view.coordinateur_filiere.CoordinatorDashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.coordinateur_filiere.ManageStudentsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.coordinateur_filiere.ManageProfessorsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.coordinateur_filiere.ManageAssignmentsActivity"
+            android:exported="false" />
+
+        <!-- FILE PROVIDER -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
