@@ -59,8 +59,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TestDataHelper.insertTestData(this); 
-
         setupLanguageToggle();
         setupBackNavigation();
         
@@ -114,8 +112,10 @@ public class MainActivity extends AppCompatActivity {
 
         loginViewModel.getUserLoginStatus().observe(this, user -> {
             if (user != null) {
-                Toast.makeText(this, "Bienvenue " + user.getFirst_name(), Toast.LENGTH_SHORT).show();
-                redirectUser(user);
+                String displayName = (user.getFirst_name() != null && !user.getFirst_name().isEmpty()) 
+                    ? user.getFirst_name() 
+                    : user.getEmail();
+                Toast.makeText(this, "Bienvenue " + displayName, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -127,7 +127,11 @@ public class MainActivity extends AppCompatActivity {
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     User loggedInUser = loginViewModel.getLoggedInUserFromPreferences();
                     Log.d("LOGIN", "User after login: " + (loggedInUser != null ? loggedInUser.getEmail() + " (" + loggedInUser.getRole() + ")" : "null"));
-                    redirectUserBasedOnRole(loggedInUser);
+                    if (loggedInUser != null) {
+                        redirectUser(loggedInUser);
+                    } else {
+                        Toast.makeText(this, "Utilisateur introuvable après connexion", Toast.LENGTH_SHORT).show();
+                    }
                 }, 500);
             } else {
                 Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
@@ -161,6 +165,8 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("user", user);
                 break;
             case ADMIN:
+                intent = new Intent(this, AdminActivity.class);
+                intent.putExtra("user", user);
                 break;
             case COORDINATOR:
                 // intent = new Intent(this, CoordinatorDashboardActivity.class);
@@ -176,28 +182,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void redirectUserBasedOnRole(User user) {
-        try {
-            if (user != null && user.getRole() == Role.ADMIN) {
-                Log.d("LOGIN", "Redirecting to AdminActivity");
-                // Rediriger vers AdminActivity
-                Intent adminIntent = new Intent(MainActivity.this, AdminActivity.class);
-                adminIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(adminIntent);
-                finish();
-            } else {
-                Log.d("LOGIN", "Redirecting to HomeActivity");
-                // Rediriger vers HomeActivity pour les autres rôles
-                Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
-                homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(homeIntent);
-                finish();
-            }
-        } catch (Exception e) {
-            Log.e("LOGIN", "Error in redirectUserBasedOnRole", e);
-            Toast.makeText(this, "Erreur redirection: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
+    // redirectUserBasedOnRole was replaced by redirectUser for all roles to avoid returning to HomeActivity
     
    /* private void insertTestUserIfNeeded() {
         UserRepository userRepository = new UserRepository(getApplication());

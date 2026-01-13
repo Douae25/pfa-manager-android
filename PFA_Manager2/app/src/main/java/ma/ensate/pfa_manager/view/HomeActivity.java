@@ -8,10 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import ma.ensate.pfa_manager.R;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
-import ma.ensate.pfa_manager.util.TestDataHelper;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModelFactory;
-import java.util.concurrent.Executors;
 
 
 public class HomeActivity extends AppCompatActivity {
@@ -32,11 +30,6 @@ public class HomeActivity extends AppCompatActivity {
         setupNavigation();
         setupLanguageToggle();
         
-        // Load test data in background to avoid blocking UI
-        Executors.newSingleThreadExecutor().execute(() -> {
-            TestDataHelper.resetAndReload(this);
-        });
-
     }
 
     private void setupNavigation() {

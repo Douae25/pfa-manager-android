@@ -841,11 +841,11 @@ public class SyncManager {
         .build();
 
     public static void syncAll(Context context) {
-        // Synchroniser d'abord les enfants, puis les parents
-        syncConventions(context);
-        syncPFADossiers(context);
-        syncUsers(context);
-        syncDepartments(context);
+        // Synchroniser d'abord les parents, puis les enfants pour respecter les clés étrangères
+        syncDepartments(context);   // parents
+        syncUsers(context);         // dépend de departments
+        syncPFADossiers(context);   // dépend de users
+        syncConventions(context);   // dépend de pfa_dossiers/users
         log("--- syncAll END ---");
     }
 
@@ -870,12 +870,7 @@ public class SyncManager {
                             db.departmentDao().insert(dep);
                         }
                     }
-                    List<Long> remoteIds = new java.util.ArrayList<>();
-                    for (Department dep : remoteDepartments) {
-                        if (dep.getDepartment_id() != null) remoteIds.add(dep.getDepartment_id());
-                    }
-                    Log.d("SyncManager", "Department IDs conservés: " + remoteIds);
-                    db.departmentDao().deleteNotInIds(remoteIds);
+                    // Ne pas supprimer les départements absents de la réponse pour éviter les cascades qui vident les users.
                 } else {
                     Log.d("SyncManager", "Department: body null");
                 }
@@ -914,12 +909,9 @@ public class SyncManager {
                         db.userDao().insert(user);
                     }
                 }
-                List<Long> remoteIds = new java.util.ArrayList<>();
-                for (User user : remoteUsers) {
-                    if (user.getUser_id() != null) remoteIds.add(user.getUser_id());
-                }
-                Log.d("SyncManager", "User IDs conservés: " + remoteIds);
-                db.userDao().deleteNotInIds(remoteIds);
+                // Do NOT delete local users that are not returned yet by backend (e.g., freshly created offline).
+                // Previously we removed any user whose id was absent from the remote list, which wiped Room
+                // after inserting a new student locally then syncing. We keep locals to avoid losing accounts.
             } else {
                 Log.d("SyncManager", "User: rien reçu");
             }
@@ -963,10 +955,10 @@ public class SyncManager {
                 Log.d("SyncManager", "PFADossier IDs conservés: " + remoteIds);
                 db.pfaDossierDao().deleteNotInIds(remoteIds);
             } else {
-                Log.d("SyncManager", "PFADossier: rien reçu");
+                Log.d("SyncManager", "PFADossier: rien reçu - code: " + response.code() + ", message: " + response.message());
             }
         } catch (Exception e) {
-            Log.e("SyncManager", "PFADossier sync failed", e);
+            Log.e("SyncManager", "❌ PFADossier sync failed: " + e.getMessage(), e);
         }
     }
 
@@ -1007,10 +999,10 @@ public class SyncManager {
                 Log.d("SyncManager", "Convention IDs conservés: " + remoteIds);
                 db.conventionDao().deleteNotInIds(remoteIds);
             } else {
-                Log.d("SyncManager", "Convention: rien reçu");
+                Log.d("SyncManager", "⚠️ Convention: rien reçu - code: " + response.code() + ", message: " + response.message());
             }
         } catch (Exception e) {
-            Log.e("SyncManager", "Convention sync failed", e);
+            Log.e("SyncManager", "❌ Convention sync failed: " + e.getMessage(), e);
         }
     }
 }
