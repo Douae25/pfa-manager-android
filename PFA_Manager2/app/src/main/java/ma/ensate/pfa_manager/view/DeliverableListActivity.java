@@ -214,8 +214,16 @@ public class DeliverableListActivity extends AppCompatActivity
     }
 
     private void showFileInfoDialog(DeliverableWithStudent item) {
-        File file = new File(item.getFileUri());
-        boolean fileExists = file.exists();
+        String fileUri = item.getFileUri();
+
+        // ════════════════════════════════════════════════════════════
+        // CORRECTION : Détecter si c'est une URL distante ou fichier local
+        // ════════════════════════════════════════════════════════════
+        boolean isRemoteUrl = fileUri != null &&
+                (fileUri.startsWith("http://") || fileUri.startsWith("https://"));
+
+        File file = isRemoteUrl ? null : new File(fileUri);
+        boolean fileAccessible = isRemoteUrl || (file != null && file.exists());
 
         String typeLabel = "";
         if (item.getDeliverableType() != null) {
@@ -251,7 +259,12 @@ public class DeliverableListActivity extends AppCompatActivity
 
         message.append("\n");
 
-        if (fileExists) {
+        // ════════════════════════════════════════════════════════════
+        // CORRECTION : Afficher info selon le type
+        // ════════════════════════════════════════════════════════════
+        if (isRemoteUrl) {
+            message.append("📁 Fichier distant");
+        } else if (file != null && file.exists()) {
             message.append("Taille: ").append(formatFileSize(file.length()));
         } else {
             message.append("⚠️ Le fichier n'existe pas sur le stockage.");
@@ -261,7 +274,10 @@ public class DeliverableListActivity extends AppCompatActivity
         builder.setTitle("Détails du livrable");
         builder.setMessage(message.toString());
 
-        if (fileExists) {
+        // ════════════════════════════════════════════════════════════
+        // CORRECTION : Bouton "Ouvrir" visible pour URL distantes aussi
+        // ════════════════════════════════════════════════════════════
+        if (fileAccessible) {
             builder.setPositiveButton("Ouvrir", (dialog, which) -> {
                 openFile(item.getFileUri(), item.getFileTitle());
             });
@@ -270,7 +286,6 @@ public class DeliverableListActivity extends AppCompatActivity
         builder.setNegativeButton("Fermer", null);
         builder.show();
     }
-
     private void openFile(String fileUri, String title) {
         if (fileUri == null || fileUri.isEmpty()) {
             Toast.makeText(this, "Fichier non disponible", Toast.LENGTH_SHORT).show();

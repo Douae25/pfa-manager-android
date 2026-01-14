@@ -95,11 +95,6 @@
     <string name="card_upload_after">Livrables après soutenance</string>
     <string name="card_upload_after_desc">Rapport final corrigé</string>
 
-    <!-- Deliverable Types -->
-    <string name="deliverable_rapport_avancement">Rapport d\'avancement</string>
-    <string name="deliverable_presentation">Présentation</string>
-    <string name="deliverable_rapport_final">Rapport final</string>
-
     <!-- Soutenance Fragment -->
     <string name="soutenance_info_title">Informations de soutenance</string>
     <string name="soutenance_date">Date :</string>
@@ -160,4 +155,20 @@
     <string name="convention_downloading">Téléchargement de la convention...</string>
     <string name="cannot_upload_unsigned_convention">Seules les conventions validées peuvent être déposées</string>
     <string name="permission_denied">Permission refusée - Impossible de télécharger le PDF</string>
+
+    <!-- View Deliverables -->
+    <string name="view_deliverables_title">Mes Livrables Déposés</string>
+    <string name="deliverables_before_defense">📤 Livrables Avant Soutenance</string>
+    <string name="deliverables_after_defense">📥 Livrables Après Soutenance</string>
+    <string name="deliverable_rapport_avancement">📄 Rapport d\'Avancement</string>
+    <string name="deliverable_rapport_final">📘 Rapport Final</string>
+    <string name="deliverable_presentation">🎤 Présentation</string>
+    <string name="deliverable_no_file">❌ Aucun fichier déposé</string>
+    <string name="deliverable_file_deposited">✅ Fichier déposé</string>
+    <string name="deliverable_deposited_on">Déposé le: %s</string>
+    <string name="btn_download">📥 Télécharger</string>
+    <string name="error_download_url_missing">URL du fichier introuvable</string>
+    <string name="download_started">Téléchargement démarré...</string>
+    <string name="error_download">Erreur lors du téléchargement</string>
+    <string name="permission_storage_denied">Permission refusée. Impossible de télécharger.</string>
 </resources>

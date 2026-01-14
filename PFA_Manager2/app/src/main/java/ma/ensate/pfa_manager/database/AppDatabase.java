@@ -18,7 +18,7 @@ import ma.ensate.pfa_manager.util.InitialDataLoader;
         Evaluation.class,
         EvaluationCriteria.class,
         EvaluationDetail.class
-}, version = 2, exportSchema = false) 
+}, version = 3, exportSchema = false) 
 @TypeConverters({RoleConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -42,10 +42,13 @@ public abstract class AppDatabase extends RoomDatabase {
                             "pfa_manager_database"
                     )
                     .fallbackToDestructiveMigration()
+                    .enableMultiInstanceInvalidation()
                     .build();
             
             // Charger les données initiales au démarrage de l'app
             InitialDataLoader.loadInitialData(context);
+            // Enable WAL mode for better concurrent access
+            instance.getOpenHelper().getWritableDatabase().enableWriteAheadLogging();
         }
         return instance;
     }

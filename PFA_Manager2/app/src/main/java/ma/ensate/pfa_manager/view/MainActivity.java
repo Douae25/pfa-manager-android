@@ -32,6 +32,7 @@ import ma.ensate.pfa_manager.model.User;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
 import ma.ensate.pfa_manager.repository.PFADossierRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
+import ma.ensate.pfa_manager.sync.SyncManager;
 import ma.ensate.pfa_manager.util.TestDataHelper;
 import ma.ensate.pfa_manager.view.etudiant.StudentSpaceActivity;
 import ma.ensate.pfa_manager.viewmodel.LoginViewModel;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         TestDataHelper.insertTestData(this); 
-        insertTestUserIfNeeded();
+        // insertTestUserIfNeeded();
         
         // Initialiser Credential Manager pour Google Sign-In
         credentialManager = CredentialManager.create(this);
@@ -198,11 +199,14 @@ public class MainActivity extends AppCompatActivity {
                 intent = new Intent(this, EncadrantDashboardActivity.class);
                 break;
             case STUDENT:
+                // 🔄 Démarrer la synchronisation des données de l'étudiant
+                SyncManager syncManager = SyncManager.getInstance(getApplication());
+                syncManager.syncUserDataFromBackend(user.getUser_id());
+                
                 intent = new Intent(this, StudentSpaceActivity.class);
                 intent.putExtra("user", user);
                 break;
             case ADMIN:
-                // intent = new Intent(this, AdminDashboardActivity.class);
                 break;
             case COORDINATOR:
                 // intent = new Intent(this, CoordinatorDashboardActivity.class);
@@ -218,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     
-    private void insertTestUserIfNeeded() {
+   /* private void insertTestUserIfNeeded() {
         UserRepository userRepository = new UserRepository(getApplication());
         PFADossierRepository pfaDossierRepository = new PFADossierRepository(getApplication());
         
@@ -249,5 +253,5 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-    }
+    }*/
 }

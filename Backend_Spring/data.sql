@@ -30,5 +30,6 @@ INSERT INTO users (user_id, email, password, first_name, last_name, role, depart
 (4, 'youness.elkihal@etu.uae.ac.ma', 'password', 'Youness', 'Elkihal', 'STUDENT', 1, '+212600000004', NOW()),
 -- Saad Barhrouj 
 (5, 'saad.barhrouj@etu.uae.ac.ma', 'password', 'Saad', 'Barhrouj', 'PROFESSOR', 1, '+212600000005', NOW())
+(9, 'dummy7@ensate.ma', '123456', 'Dummy7', 'User7', 'STUDENT', 1, '+212600000005', NOW())
 ON DUPLICATE KEY UPDATE user_id = user_id;
 

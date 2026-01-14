@@ -133,11 +133,11 @@
             <com.google.android.material.chip.Chip
                 android:id="@+id/tvPFAStatus"
                 android:layout_width="wrap_content"
-                android:layout_height="32dp"
+                android:layout_height="match_parent"
                 android:text="EN COURS"
                 android:textSize="11sp"
-                app:chipMinHeight="28dp"
-                app:chipCornerRadius="14dp"/>
+                app:chipCornerRadius="14dp"
+                app:chipMinHeight="28dp" />
 
             <LinearLayout
                 android:id="@+id/layoutScore"

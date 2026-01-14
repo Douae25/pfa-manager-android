@@ -1,4 +1,3 @@
-// viewmodel/PlanningViewModel.java (MISE À JOUR)
 package ma.ensate.pfa_manager.viewmodel;
 
 import android.app.Application;
@@ -21,7 +20,6 @@ public class PlanningViewModel extends AndroidViewModel {
     private final MutableLiveData<String> statusMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> operationSuccess = new MutableLiveData<>(false);
 
-    // AJOUT : Pour stocker le supervisorId
     private Long currentSupervisorId;
 
     public PlanningViewModel(@NonNull Application application) {
@@ -29,7 +27,6 @@ public class PlanningViewModel extends AndroidViewModel {
         repository = new SoutenanceRepository(application);
     }
 
-    // AJOUT : Setter pour le supervisorId
     public void setSupervisorId(Long supervisorId) {
         this.currentSupervisorId = supervisorId;
     }
@@ -64,7 +61,6 @@ public class PlanningViewModel extends AndroidViewModel {
         soutenance.setStatus(SoutenanceStatus.PLANNED);
         soutenance.setCreated_at(System.currentTimeMillis());
 
-        // MODIFICATION : Passer le supervisorId
         repository.planifierSoutenance(soutenance, currentSupervisorId,
                 new SoutenanceRepository.OnSoutenanceListener() {
                     @Override
@@ -86,7 +82,6 @@ public class PlanningViewModel extends AndroidViewModel {
         soutenance.setLocation(lieu.trim());
         soutenance.setDate_soutenance(dateSoutenance);
 
-        // MODIFICATION : Passer le supervisorId
         repository.modifierSoutenance(soutenance, currentSupervisorId,
                 new SoutenanceRepository.OnSoutenanceListener() {
                     @Override
@@ -102,8 +97,13 @@ public class PlanningViewModel extends AndroidViewModel {
                 });
     }
 
-    public void supprimerSoutenance(long soutenanceId) {
-        // MODIFICATION : Passer le supervisorId
+
+    public void supprimerSoutenance(Long soutenanceId) {
+        if (soutenanceId == null) {
+            statusMessage.setValue("Erreur: ID invalide");
+            return;
+        }
+
         repository.supprimerSoutenance(soutenanceId, currentSupervisorId,
                 new SoutenanceRepository.OnSoutenanceListener() {
                     @Override

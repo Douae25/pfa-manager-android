@@ -19,6 +19,7 @@ import ma.ensate.pfa_manager.model.PFAStatus;
 import ma.ensate.pfa_manager.model.User;
 import ma.ensate.pfa_manager.repository.PFADossierRepository;
 import ma.ensate.pfa_manager.view.etudiant.UploadDeliverablesActivity;
+import ma.ensate.pfa_manager.view.etudiant.ViewDeliverablesActivity;
 
 public class DeliverablesFragment extends Fragment {
     
@@ -27,6 +28,7 @@ public class DeliverablesFragment extends Fragment {
     private PFADossier currentPfa;
     private CardView cardUploadBefore;
     private CardView cardUploadAfter;
+    private CardView cardViewDeliverables;
     private SwipeRefreshLayout swipeRefresh;
     private LiveData<PFADossier> pfaLiveData;
     
@@ -53,6 +55,7 @@ public class DeliverablesFragment extends Fragment {
         
         cardUploadBefore = view.findViewById(R.id.cardUploadBefore);
         cardUploadAfter = view.findViewById(R.id.cardUploadAfter);
+        cardViewDeliverables = view.findViewById(R.id.cardViewDeliverables);
         swipeRefresh = view.findViewById(R.id.swipeRefresh);
         pfaDossierRepository = new PFADossierRepository(requireActivity().getApplication());
         
@@ -75,6 +78,17 @@ public class DeliverablesFragment extends Fragment {
                 startActivity(intent);
             } else {
                 Toast.makeText(requireContext(), "Disponible seulement lorsque le PFA est en cours.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        
+        cardViewDeliverables.setOnClickListener(v -> {
+            if (currentPfa != null) {
+                Intent intent = new Intent(getActivity(), ViewDeliverablesActivity.class);
+                intent.putExtra("user", currentUser);
+                intent.putExtra("pfa_id", currentPfa.getPfa_id());
+                startActivity(intent);
+            } else {
+                Toast.makeText(requireContext(), "Aucun dossier PFA trouvé.", Toast.LENGTH_SHORT).show();
             }
         });
         
