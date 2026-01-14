@@ -32,6 +32,7 @@ import ma.ensate.pfa_manager.repository.DatabaseInitializer;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
 import ma.ensate.pfa_manager.repository.UserRepository;
 import ma.ensate.pfa_manager.sync.SyncManager;
+import ma.ensate.pfa_manager.util.TestDataHelper;
 import ma.ensate.pfa_manager.view.coordinateur_filiere.CoordinatorDashboardActivity;
 import ma.ensate.pfa_manager.view.etudiant.StudentSpaceActivity;
 import ma.ensate.pfa_manager.viewmodel.LoginViewModel;
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TestDataHelper.insertTestData(this); 
+        TestDataHelper.insertTestData(this);
         // insertTestUserIfNeeded();
         
         // Initialiser Credential Manager pour Google Sign-In

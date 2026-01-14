@@ -3,9 +3,6 @@
     <string name="app_name">PFA Manager</string>
     <string name="login_title">Login</string>
     <string name="hint_email">Email</string>
-    <string name="hint_password">Password</string>
-    <string name="btn_login">Sign In</string>
-    <string name="error_empty">Please fill all fields</string>
     <string name="hint_password">Mot de passe</string>
     <string name="btn_login">Se connecter</string>
     <string name="btn_google_signin">Se connecter avec Google</string>

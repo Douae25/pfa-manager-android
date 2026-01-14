@@ -551,6 +551,276 @@ Response:
 
 ---
 
+### Coordinator/Coordinateur Endpoints
+
+#### CoordinatorController - Student Management
+
+```
+GET    /api/coordinator/students/{departmentId}                    - Liste des étudiants avec évaluations
+```
+
+**Use Case: Consulter les étudiants avec évaluations**
+- **Endpoint:** `GET /api/coordinator/students/1`
+- **Method:** `CoordinatorService.getStudentsWithEvaluations(Long departmentId)`
+- **Response DTO:** `List<StudentWithEvaluationDTO>`
+  - Fields: `studentId`, `studentFirstName`, `studentLastName`, `studentEmail`, `pfaId`, `pfaTitle`, `pfaStatus`, `supervisorId`, `supervisorFirstName`, `supervisorLastName`, `evaluationId`, `totalScore`
+- **Description:** Retourne la liste de tous les étudiants d'un département avec leurs informations PFA, superviseur et évaluation.
+
+---
+
+#### CoordinatorController - Professor Management
+
+```
+GET    /api/coordinator/professors/{departmentId}                  - Liste des professeurs avec statistiques
+```
+
+**Use Case: Consulter les professeurs avec statistiques**
+- **Endpoint:** `GET /api/coordinator/professors/1`
+- **Method:** `CoordinatorService.getProfessorsWithStats(Long departmentId)`
+- **Response DTO:** `List<ProfessorWithStatsDTO>`
+  - Fields: `professorId`, `professorFirstName`, `professorLastName`, `professorEmail`, `phoneNumber`, `studentCount`, `averageScore`
+- **Description:** Retourne la liste des professeurs d'un département avec le nombre d'étudiants encadrés et la note moyenne.
+
+---
+
+#### CoordinatorController - Assignment Management
+
+```
+GET    /api/coordinator/assignments/{departmentId}                 - Affectations encadrants-étudiants
+POST   /api/coordinator/assignments/auto-assign                    - Affectation automatique équitable
+```
+
+**Use Case: Consulter les affectations**
+- **Endpoint:** `GET /api/coordinator/assignments/1`
+- **Method:** `CoordinatorService.getAssignments(Long departmentId)`
+- **Response DTO:** `List<ProfessorAssignmentDTO>`
+  - Fields: `professorId`, `professorFirstName`, `professorLastName`, `professorEmail`, `students` (liste de `AssignedStudentDTO`)
+- **Description:** Retourne les affectations encadrant-étudiants pour un département.
+
+**Use Case: Affectation automatique équitable**
+- **Endpoint:** `POST /api/coordinator/assignments/auto-assign`
+- **Method:** `CoordinatorService.autoAssignStudentsToProfessors(Long departmentId)`
+- **Request DTO:** `AutoAssignRequest`
+  - Fields: `departmentId`
+- **Response:** `Integer` (nombre d'étudiants affectés)
+- **Description:** Affecte automatiquement les étudiants sans encadrant aux professeurs de manière équitable.
+
+---
+
+### Administration Endpoints
+
+#### UserController - User Management
+
+```
+GET    /api/users                                                  - Liste tous les utilisateurs
+GET    /api/users/{id}                                             - Récupérer un utilisateur par ID
+POST   /api/users                                                  - Créer un nouvel utilisateur
+PUT    /api/users/{id}                                             - Modifier un utilisateur
+DELETE /api/users/{id}                                             - Supprimer un utilisateur
+```
+
+**Use Case: Lister les utilisateurs**
+- **Endpoint:** `GET /api/users`
+- **Response DTO:** `List<UserDto>`
+  - Fields: `userId`, `email`, `password`, `firstName`, `lastName`, `role`, `phoneNumber`, `createdAt`, `departmentId`
+- **Description:** Retourne la liste de tous les utilisateurs du système.
+
+**Use Case: Récupérer un utilisateur**
+- **Endpoint:** `GET /api/users/10`
+- **Response DTO:** `User`
+- **Description:** Retourne les détails d'un utilisateur spécifique.
+
+**Use Case: Créer un utilisateur**
+- **Endpoint:** `POST /api/users`
+- **Request DTO:** `UserDto`
+  - Fields: `email`, `password`, `firstName`, `lastName`, `role`, `phoneNumber`, `departmentId`
+- **Response DTO:** `UserDto`
+- **Description:** Crée un nouvel utilisateur dans le système.
+
+**Use Case: Modifier un utilisateur**
+- **Endpoint:** `PUT /api/users/10`
+- **Request DTO:** `User`
+- **Response DTO:** `User`
+- **Description:** Met à jour les informations d'un utilisateur existant.
+
+**Use Case: Supprimer un utilisateur**
+- **Endpoint:** `DELETE /api/users/10`
+- **Response:** `204 No Content`
+- **Description:** Supprime un utilisateur du système.
+
+---
+
+#### DepartmentController - Department Management
+
+```
+GET    /api/departments                                            - Liste tous les départements
+GET    /api/departments/{id}                                       - Récupérer un département par ID
+POST   /api/departments                                            - Créer un nouveau département
+PUT    /api/departments/{id}                                       - Modifier un département
+DELETE /api/departments/{id}                                       - Supprimer un département
+```
+
+**Use Case: Lister les départements**
+- **Endpoint:** `GET /api/departments`
+- **Response DTO:** `List<DepartmentDto>`
+  - Fields: `departmentId`, `name`, `code`
+- **Description:** Retourne la liste de tous les départements.
+
+**Use Case: Récupérer un département**
+- **Endpoint:** `GET /api/departments/1`
+- **Response DTO:** `Department`
+- **Description:** Retourne les détails d'un département spécifique.
+
+**Use Case: Créer un département**
+- **Endpoint:** `POST /api/departments`
+- **Request DTO:** `Department`
+  - Fields: `name`, `code`
+- **Response DTO:** `Department`
+- **Description:** Crée un nouveau département.
+
+**Use Case: Modifier un département**
+- **Endpoint:** `PUT /api/departments/1`
+- **Request DTO:** `Department`
+- **Response DTO:** `Department`
+- **Description:** Met à jour les informations d'un département existant.
+
+**Use Case: Supprimer un département**
+- **Endpoint:** `DELETE /api/departments/1`
+- **Response:** `204 No Content`
+- **Description:** Supprime un département du système.
+
+---
+
+#### REST Endpoints Summary (Coordinator)
+
+**CoordinatorController**
+```
+GET    /api/coordinator/students/{departmentId}       - Students with evaluations
+GET    /api/coordinator/professors/{departmentId}     - Professors with stats
+GET    /api/coordinator/assignments/{departmentId}    - Professor-student assignments
+POST   /api/coordinator/assignments/auto-assign       - Auto-assign students
+```
+
+#### REST Endpoints Summary (Administration)
+
+**UserController**
+```
+GET    /api/users                                     - List all users
+GET    /api/users/{id}                                - Get user by ID
+POST   /api/users                                     - Create user
+PUT    /api/users/{id}                                - Update user
+DELETE /api/users/{id}                                - Delete user
+```
+
+**DepartmentController**
+```
+GET    /api/departments                               - List all departments
+GET    /api/departments/{id}                          - Get department by ID
+POST   /api/departments                               - Create department
+PUT    /api/departments/{id}                          - Update department
+DELETE /api/departments/{id}                          - Delete department
+```
+
+---
+
+### Coordinator Workflow: Affectation automatique des encadrants
+
+**STEP 1: Consulter les professeurs disponibles**
+```
+GET /api/coordinator/professors/1
+
+Response:
+[
+  {
+    "professorId": 10,
+    "professorFirstName": "Ahmed",
+    "professorLastName": "Alami",
+    "professorEmail": "ahmed.alami@ensate.ma",
+    "phoneNumber": "0612345678",
+    "studentCount": 3,
+    "averageScore": 15.5
+  },
+  {
+    "professorId": 11,
+    "professorFirstName": "Fatima",
+    "professorLastName": "Benali",
+    "professorEmail": "fatima.benali@ensate.ma",
+    "phoneNumber": "0623456789",
+    "studentCount": 2,
+    "averageScore": 16.0
+  }
+]
+```
+
+**STEP 2: Lancer l'affectation automatique**
+```
+POST /api/coordinator/assignments/auto-assign
+{
+  "departmentId": 1
+}
+
+Response:
+{
+  "success": true,
+  "message": "5 étudiant(s) affecté(s) avec succès",
+  "data": 5
+}
+```
+
+**STEP 3: Vérifier les affectations**
+```
+GET /api/coordinator/assignments/1
+
+Response:
+[
+  {
+    "professorId": 10,
+    "professorFirstName": "Ahmed",
+    "professorLastName": "Alami",
+    "professorEmail": "ahmed.alami@ensate.ma",
+    "students": [
+      {
+        "studentId": 50,
+        "studentFirstName": "Youns",
+        "studentLastName": "KIHL",
+        "studentEmail": "youns.kihl@student.ensate.ma",
+        "pfaId": 20,
+        "pfaTitle": "E-Commerce Platform"
+      }
+    ]
+  }
+]
+```
+
+---
+
+### Coordinator Workflow: Superviser les évaluations
+
+**STEP 1: Consulter les étudiants avec évaluations**
+```
+GET /api/coordinator/students/1
+
+Response:
+[
+  {
+    "studentId": 50,
+    "studentFirstName": "Youns",
+    "studentLastName": "KIHL",
+    "studentEmail": "youns.kihl@student.ensate.ma",
+    "pfaId": 20,
+    "pfaTitle": "E-Commerce Platform",
+    "pfaStatus": "IN_PROGRESS",
+    "supervisorId": 10,
+    "supervisorFirstName": "Ahmed",
+    "supervisorLastName": "Alami",
+    "evaluationId": 5,
+    "totalScore": 35.0
+  }
+]
+```
+
+---
+
 ## Validation & Error Handling
 
 ### Exception Handling

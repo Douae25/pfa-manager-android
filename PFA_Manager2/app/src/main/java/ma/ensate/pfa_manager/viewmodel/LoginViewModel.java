@@ -90,11 +90,7 @@ public class LoginViewModel extends ViewModel {
             .remove("user_role")
             .apply();
     }
-}
-    
-    /**
-     * Login avec Google : vérifie uniquement l'email dans la BD locale
-     */
+
     public void loginWithGoogleEmail(String email) {
         if (email == null || email.isEmpty()) {
             errorMessage.setValue("Email Google invalide");
