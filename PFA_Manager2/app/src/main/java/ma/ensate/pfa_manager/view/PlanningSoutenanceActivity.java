@@ -151,8 +151,33 @@ public class PlanningSoutenanceActivity extends AppCompatActivity
         dialog.show(getSupportFragmentManager(), "plan_dialog");
     }
 
+    // PlanningSoutenanceActivity.java
+
+    @Override
+    public void onDeleteClick(PFAWithSoutenance item) {
+        // ⚠️ Vérification null
+        if (item.soutenance == null || item.soutenance.getSoutenance_id() == null) {
+            Toast.makeText(this, "Erreur: soutenance invalide", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Supprimer la soutenance")
+                .setMessage("Voulez-vous vraiment supprimer cette planification ?")
+                .setPositiveButton("Supprimer", (d, w) -> {
+                    viewModel.supprimerSoutenance(item.soutenance.getSoutenance_id());
+                })
+                .setNegativeButton("Annuler", null)
+                .show();
+    }
+
     @Override
     public void onEditClick(PFAWithSoutenance item) {
+        if (item.soutenance == null) {
+            Toast.makeText(this, "Erreur: pas de soutenance à modifier", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         SoutenanceFormDialog dialog = SoutenanceFormDialog.newInstance(
                 item.pfa.getPfa_id(),
                 item.pfa.getTitle(),
@@ -166,17 +191,5 @@ public class PlanningSoutenanceActivity extends AppCompatActivity
             viewModel.modifierSoutenance(item.soutenance, lieu, date);
         });
         dialog.show(getSupportFragmentManager(), "edit_dialog");
-    }
-
-    @Override
-    public void onDeleteClick(PFAWithSoutenance item) {
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Supprimer la soutenance")
-                .setMessage("Voulez-vous vraiment supprimer cette planification ?")
-                .setPositiveButton("Supprimer", (d, w) -> {
-                    viewModel.supprimerSoutenance(item.soutenance.getSoutenance_id());
-                })
-                .setNegativeButton("Annuler", null)
-                .show();
     }
 }

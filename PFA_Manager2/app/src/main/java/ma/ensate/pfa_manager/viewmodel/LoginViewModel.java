@@ -38,4 +38,22 @@ public class LoginViewModel extends ViewModel {
             }
         });
     }
+    
+    /**
+     * Login avec Google : vérifie uniquement l'email dans la BD locale
+     */
+    public void loginWithGoogleEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            errorMessage.setValue("Email Google invalide");
+            return;
+        }
+        
+        userRepository.getUserByEmail(email, user -> {
+            if (user != null) {
+                userLoginStatus.postValue(user);
+            } else {
+                errorMessage.postValue("Aucun compte trouvé pour " + email + ". Contactez l'administrateur.");
+            }
+        });
+    }
 }

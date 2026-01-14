@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 import java.util.List;
@@ -14,8 +15,7 @@ import ma.ensate.pfa_manager.model.SoutenanceStatus;
 
 @Dao
 public interface SoutenanceDao {
-
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(Soutenance soutenance);
 
     @Update
@@ -25,13 +25,16 @@ public interface SoutenanceDao {
     void delete(Soutenance soutenance);
 
     @Query("SELECT * FROM soutenances WHERE soutenance_id = :id")
-    Soutenance getById(long id);
+    Soutenance getById(Long id);
 
     @Query("SELECT * FROM soutenances WHERE pfa_id = :pfaId LIMIT 1")
     Soutenance getByPfaId(long pfaId);
 
     @Query("SELECT * FROM soutenances WHERE pfa_id = :pfaId LIMIT 1")
-    LiveData<Soutenance> getSoutenanceByPFA(long pfaId);
+    LiveData<Soutenance> getSoutenanceByPFA(Long pfaId);
+
+    @Query("SELECT * FROM soutenances WHERE pfa_id = :pfaId LIMIT 1")
+    Soutenance getByPfaIdSync(Long pfaId);
 
     @Query("SELECT * FROM soutenances WHERE status = :status")
     List<Soutenance> getByStatus(SoutenanceStatus status);
@@ -68,7 +71,13 @@ public interface SoutenanceDao {
     int countSoutenanceByPfa(Long pfaId);
 
     @Query("DELETE FROM soutenances WHERE soutenance_id = :id")
-    void deleteById(long id);
-    @Query("SELECT * FROM soutenances WHERE pfa_id = :pfaId LIMIT 1")
-    Soutenance getByPfaIdSync(Long pfaId);
+    void deleteById(Long id);
+
+    @Query("SELECT COUNT(*) FROM soutenances")
+    int getTotalCount();
+
+    @Query("SELECT COUNT(*) FROM pfa_dossiers " +
+            "WHERE supervisor_id = :supervisorId " +
+            "AND pfa_id NOT IN (SELECT pfa_id FROM soutenances)")
+    LiveData<Integer> countUnplannedSoutenancesBySupervisor(Long supervisorId);
 }

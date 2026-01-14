@@ -6,6 +6,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import ma.ensate.pfa_manager.model.*;
+import ma.ensate.pfa_manager.util.InitialDataLoader;
 
 @Database(entities = {
         User.class,
@@ -17,7 +18,7 @@ import ma.ensate.pfa_manager.model.*;
         Evaluation.class,
         EvaluationCriteria.class,
         EvaluationDetail.class
-}, version = 2, exportSchema = false) 
+}, version = 3, exportSchema = false) 
 @TypeConverters({RoleConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -41,7 +42,13 @@ public abstract class AppDatabase extends RoomDatabase {
                             "pfa_manager_database"
                     )
                     .fallbackToDestructiveMigration()
+                    .enableMultiInstanceInvalidation()
                     .build();
+            
+            // Charger les données initiales au démarrage de l'app
+            InitialDataLoader.loadInitialData(context);
+            // Enable WAL mode for better concurrent access
+            instance.getOpenHelper().getWritableDatabase().enableWriteAheadLogging();
         }
         return instance;
     }

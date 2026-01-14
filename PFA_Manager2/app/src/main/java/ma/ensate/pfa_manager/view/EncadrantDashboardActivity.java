@@ -3,35 +3,31 @@ package ma.ensate.pfa_manager.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProvider;
 
 import ma.ensate.pfa_manager.R;
 import ma.ensate.pfa_manager.model.User;
-import ma.ensate.pfa_manager.util.TestDataHelper;
 import ma.ensate.pfa_manager.viewmodel.EncadrantDashboardViewModel;
 
 public class EncadrantDashboardActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
     private TextView tvProfName;
     private TextView tvStudentCount;
-    private TextView tvPfaCount;
-    private TextView tvTotalNotifications;
+    private TextView tvUnplannedSoutenances;
+    private TextView tvUnevaluatedStudents;
 
     private CardView cardStudents;
     private CardView cardValidations;
     private CardView cardEvaluations;
     private CardView cardPlanning;
 
-    private FrameLayout notificationContainer;
-    private TextView badgeNotifications;
+    private ImageView btnLogout;
     private TextView badgeValidations;
     private TextView badgePlanning;
 
@@ -55,25 +51,20 @@ public class EncadrantDashboardActivity extends AppCompatActivity {
         initViewModel();
         observeData();
         setupClickListeners();
-
     }
 
     private void initViews() {
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         tvProfName = findViewById(R.id.tvProfName);
         tvStudentCount = findViewById(R.id.tvStudentCount);
-        tvPfaCount = findViewById(R.id.tvPfaCount);
-        tvTotalNotifications = findViewById(R.id.tvTotalNotifications);
+        tvUnplannedSoutenances = findViewById(R.id.tvUnplannedSoutenances);
+        tvUnevaluatedStudents = findViewById(R.id.tvUnevaluatedStudents);
 
         cardStudents = findViewById(R.id.cardStudents);
         cardValidations = findViewById(R.id.cardValidations);
         cardEvaluations = findViewById(R.id.cardEvaluations);
         cardPlanning = findViewById(R.id.cardPlanning);
 
-        notificationContainer = findViewById(R.id.notificationContainer);
-        badgeNotifications = findViewById(R.id.badgeNotifications);
+        btnLogout = findViewById(R.id.btnLogout);
         badgeValidations = findViewById(R.id.badgeValidations);
         badgePlanning = findViewById(R.id.badgePlanning);
     }
@@ -91,8 +82,12 @@ public class EncadrantDashboardActivity extends AppCompatActivity {
             tvStudentCount.setText(String.valueOf(count));
         });
 
-        viewModel.getPfaCount().observe(this, count -> {
-            tvPfaCount.setText(String.valueOf(count != null ? count : 0));
+        viewModel.getUnplannedSoutenancesCount().observe(this, count -> {
+            tvUnplannedSoutenances.setText(String.valueOf(count != null ? count : 0));
+        });
+
+        viewModel.getUnevaluatedStudentsCount().observe(this, count -> {
+            tvUnevaluatedStudents.setText(String.valueOf(count != null ? count : 0));
         });
 
         viewModel.getDeliverablesCount().observe(this, count -> {
@@ -101,12 +96,6 @@ public class EncadrantDashboardActivity extends AppCompatActivity {
 
         viewModel.getSoutenancesCount().observe(this, count -> {
             updateBadge(badgePlanning, count != null ? count : 0);
-        });
-
-        viewModel.getTotalNotifications().observe(this, total -> {
-            int notifCount = total != null ? total : 0;
-            tvTotalNotifications.setText(String.valueOf(notifCount));
-            updateBadge(badgeNotifications, notifCount);
         });
     }
 
@@ -129,8 +118,12 @@ public class EncadrantDashboardActivity extends AppCompatActivity {
     }
 
     private void setupClickListeners() {
-        notificationContainer.setOnClickListener(v -> {
-            showToast("Centre de notifications");
+        // Bouton Logout - Retour vers HomeActivity
+        btnLogout.setOnClickListener(v -> {
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         });
 
         cardStudents.setOnClickListener(v -> {
@@ -156,9 +149,5 @@ public class EncadrantDashboardActivity extends AppCompatActivity {
             intent.putExtra("USER_ID", currentSupervisorId);
             startActivity(intent);
         });
-    }
-
-    private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

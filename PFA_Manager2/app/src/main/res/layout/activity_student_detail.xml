@@ -215,12 +215,12 @@
                     <com.google.android.material.chip.Chip
                         android:id="@+id/tvPfaStatus"
                         android:layout_width="wrap_content"
-                        android:layout_height="32dp"
+                        android:layout_height="45dp"
                         android:layout_marginTop="12dp"
                         android:text="En cours"
                         android:textSize="11sp"
-                        app:chipMinHeight="28dp"
-                        app:chipCornerRadius="14dp"/>
+                        app:chipCornerRadius="14dp"
+                        app:chipMinHeight="28dp" />
 
                 </LinearLayout>
 

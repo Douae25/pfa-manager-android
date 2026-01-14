@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,11 +26,14 @@ import ma.ensate.pfa_manager.model.Deliverable;
 import ma.ensate.pfa_manager.model.DeliverableType;
 import ma.ensate.pfa_manager.model.DeliverableFileType;
 import ma.ensate.pfa_manager.model.User;
+import ma.ensate.pfa_manager.model.api.DeliverableRequest;
 import ma.ensate.pfa_manager.repository.DeliverableRepository;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
 import ma.ensate.pfa_manager.repository.PFADossierRepository;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModelFactory;
+import ma.ensate.pfa_manager.database.AppDatabase;
+import android.app.DownloadManager;
 
 public class UploadDeliverablesActivity extends AppCompatActivity {
     
@@ -67,6 +71,14 @@ public class UploadDeliverablesActivity extends AppCompatActivity {
     private TextView tvRapportFinalName;
     private LinearLayout rapportFinalControls;
     private String rapportFinalPath = null;
+    
+    // Existing deliverables
+    private Deliverable existingRapportAvancement;
+    private Deliverable existingPresentation;
+    private Deliverable existingRapportFinal;
+    private ImageButton ibDownloadRapportAvancement;
+    private ImageButton ibDownloadPresentation;
+    private ImageButton ibDownloadRapportFinal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +101,7 @@ public class UploadDeliverablesActivity extends AppCompatActivity {
         initViews();
         setupTitle();
         setupSections();
+        loadExistingDeliverables();
         setupUploadButton();
     }
 
@@ -197,6 +210,67 @@ public class UploadDeliverablesActivity extends AppCompatActivity {
         });
     }
     
+    private void loadExistingDeliverables() {
+        Long pfaId = currentUser.getUser_id(); // Get the PFA ID for this student
+        AppDatabase db = AppDatabase.getInstance(getApplication());
+        
+        // Load deliverables from database on background thread
+        new Thread(() -> {
+            try {
+                List<Deliverable> deliverables = db.deliverableDao().getByPfaId(pfaId.longValue());
+                
+                runOnUiThread(() -> {
+                    for (Deliverable d : deliverables) {
+                        if (d.getDeliverable_file_type() != null) {
+                            switch (d.getDeliverable_file_type()) {
+                                case RAPPORT_AVANCEMENT:
+                                    existingRapportAvancement = d;
+                                    displayExistingDeliverable(d, "Rapport d'Avancement");
+                                    break;
+                                case PRESENTATION:
+                                    existingPresentation = d;
+                                    displayExistingDeliverable(d, "Présentation");
+                                    break;
+                                case RAPPORT_FINAL:
+                                    existingRapportFinal = d;
+                                    displayExistingDeliverable(d, "Rapport Final");
+                                    break;
+                            }
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+    
+    private void displayExistingDeliverable(Deliverable deliverable, String typeLabel) {
+        Toast.makeText(this, "Livrable existant: " + typeLabel, Toast.LENGTH_SHORT).show();
+        // Les bouttons télécharger seront ajoutés au layout si nécessaire
+    }
+    
+    private void downloadDeliverable(Deliverable deliverable) {
+        if (deliverable == null || deliverable.getFile_uri() == null || deliverable.getFile_uri().isEmpty()) {
+            Toast.makeText(this, "URI du fichier non disponible", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+            Uri uri = Uri.parse(deliverable.getFile_uri());
+            DownloadManager.Request request = new DownloadManager.Request(uri);
+            request.setTitle(deliverable.getFile_title());
+            request.setDescription("Téléchargement de " + deliverable.getFile_title());
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, deliverable.getFile_title());
+            
+            downloadManager.enqueue(request);
+            Toast.makeText(this, "Téléchargement démarré", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Erreur lors du téléchargement: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+    
     private void openFilePicker(int requestCode) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
@@ -293,34 +367,33 @@ public class UploadDeliverablesActivity extends AppCompatActivity {
                 return;
             }
             
-            // Sauvegarder chaque fichier en BD
-            new Thread(() -> {
-                int successCount = 0;
-                
-                // Upload tous les rapports d'avancement (peut y en avoir plusieurs)
-                for (String path : rapportAvancementPaths) {
-                    successCount += uploadFile(pfaDossier.getPfa_id(), path, DeliverableFileType.RAPPORT_AVANCEMENT);
-                }
-                // Upload présentation et rapport final
-                if (presentationPath != null) {
-                    successCount += uploadFile(pfaDossier.getPfa_id(), presentationPath, DeliverableFileType.PRESENTATION);
-                }
-                if (rapportFinalPath != null) {
-                    successCount += uploadFile(pfaDossier.getPfa_id(), rapportFinalPath, DeliverableFileType.RAPPORT_FINAL);
-                }
-                
-                final int finalSuccessCount = successCount;
-                runOnUiThread(() -> {
-                    if (finalSuccessCount > 0) {
-                        Toast.makeText(this, 
-                            getString(R.string.deliverables_uploaded_success) + " (" + finalSuccessCount + " fichier(s))", 
-                            Toast.LENGTH_LONG).show();
-                        finish();
-                    } else {
-                        Toast.makeText(this, R.string.error_upload_failed, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }).start();
+            // Utiliser backend_pfa_id si disponible, sinon local pfa_id
+            Long pfaId = pfaDossier.getBackend_pfa_id() != null ? 
+                pfaDossier.getBackend_pfa_id() : pfaDossier.getPfa_id();
+            
+            // Counter pour tracker les uploads
+            int[] totalFiles = {0};
+            int[] successCount = {0};
+            
+            // Count total files
+            totalFiles[0] = rapportAvancementPaths.size();
+            if (presentationPath != null) totalFiles[0]++;
+            if (rapportFinalPath != null) totalFiles[0]++;
+            
+            // Upload tous les rapports d'avancement (peut y en avoir plusieurs)
+            for (String path : rapportAvancementPaths) {
+                uploadFile(pfaId, path, DeliverableFileType.RAPPORT_AVANCEMENT, 
+                    successCount, totalFiles[0]);
+            }
+            // Upload présentation et rapport final
+            if (presentationPath != null) {
+                uploadFile(pfaId, presentationPath, DeliverableFileType.PRESENTATION, 
+                    successCount, totalFiles[0]);
+            }
+            if (rapportFinalPath != null) {
+                uploadFile(pfaId, rapportFinalPath, DeliverableFileType.RAPPORT_FINAL, 
+                    successCount, totalFiles[0]);
+            }
         });
     }
     
@@ -334,22 +407,62 @@ public class UploadDeliverablesActivity extends AppCompatActivity {
         }
     }
     
-    private int uploadFile(long pfaId, String filePath, DeliverableFileType fileType) {
+    private void uploadFile(long pfaId, String filePath, DeliverableFileType fileType, 
+                           int[] successCount, int totalFiles) {
         try {
-            Deliverable deliverable = new Deliverable();
-            deliverable.setPfa_id(pfaId);
-            deliverable.setFile_title(new File(filePath).getName());
-            deliverable.setFile_uri(filePath);
-            deliverable.setDeliverable_type(isBeforeSoutenance ? 
+            // Create DeliverableRequest
+            DeliverableRequest request = new DeliverableRequest();
+            request.setPfaId(pfaId);
+            request.setFileTitle(new File(filePath).getName());
+            request.setFilePath(filePath);
+            request.setFileType(fileType);
+            request.setDeliverableType(isBeforeSoutenance ? 
                 DeliverableType.BEFORE_DEFENSE : DeliverableType.AFTER_DEFENSE);
-            deliverable.setDeliverable_file_type(fileType);
-            deliverable.setUploaded_at(System.currentTimeMillis());
             
-            deliverableRepository.insert(deliverable);
-            return 1;
+            // Call repository method which calls API
+            deliverableRepository.depositDeliverable(request, new DeliverableRepository.OnDeliverableDepositListener() {
+                @Override
+                public void onSuccess(Deliverable deliverable) {
+                    successCount[0]++;
+                    checkUploadCompletion(successCount[0], totalFiles);
+                }
+                
+                @Override
+                public void onError(String error) {
+                    runOnUiThread(() -> 
+                        Toast.makeText(UploadDeliverablesActivity.this, 
+                            "Erreur dépôt: " + error, Toast.LENGTH_SHORT).show()
+                    );
+                    checkUploadCompletion(successCount[0], totalFiles);
+                }
+                
+                @Override
+                public void onOffline(String message) {
+                    successCount[0]++;
+                    runOnUiThread(() -> 
+                        Toast.makeText(UploadDeliverablesActivity.this, 
+                            message, Toast.LENGTH_LONG).show()
+                    );
+                    checkUploadCompletion(successCount[0], totalFiles);
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
-            return 0;
+            runOnUiThread(() -> 
+                Toast.makeText(this, "Erreur: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+            );
+            checkUploadCompletion(successCount[0], totalFiles);
+        }
+    }
+    
+    private void checkUploadCompletion(int successCount, int totalFiles) {
+        if (successCount >= totalFiles) {
+            runOnUiThread(() -> {
+                Toast.makeText(this, 
+                    getString(R.string.deliverables_uploaded_success) + " (" + successCount + " fichier(s))", 
+                    Toast.LENGTH_LONG).show();
+                finish();
+            });
         }
     }
     

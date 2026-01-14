@@ -121,27 +121,46 @@ public class UploadSignedConventionActivity extends AppCompatActivity {
             return;
         }
 
-        // Copier le fichier dans le stockage app avant de le sauvegarder
+        // Copier le fichier dans le stockage app avant de l'uploader
         new Thread(() -> {
             try {
                 String savedFilePath = copyFileToAppStorage(selectedFileUri, fileName);
                 if (savedFilePath != null) {
-                    conventionRepository.getById(conventionId, convention -> {
-                        if (convention != null) {
-                            convention.setScanned_file_uri(savedFilePath);
-                            convention.setState(ConventionState.UPLOADED);
-                            conventionRepository.update(convention);
-                            
-                            runOnUiThread(() -> {
-                                Toast.makeText(this, R.string.convention_uploaded_success, Toast.LENGTH_LONG).show();
-                                finish();
-                            });
-                        } else {
-                            runOnUiThread(() -> 
-                                Toast.makeText(this, R.string.error_no_convention, Toast.LENGTH_SHORT).show()
-                            );
+                    // Appeler l'API pour uploader la convention au backend
+                    conventionRepository.uploadSignedConvention(
+                        conventionId, 
+                        savedFilePath, 
+                        new ConventionRepository.OnConventionUploadListener() {
+                            @Override
+                            public void onSuccess(Convention convention) {
+                                runOnUiThread(() -> {
+                                    Toast.makeText(UploadSignedConventionActivity.this, 
+                                        "✅ Convention uploadée avec succès", 
+                                        Toast.LENGTH_LONG).show();
+                                    finish();
+                                });
+                            }
+
+                            @Override
+                            public void onError(String error) {
+                                runOnUiThread(() -> 
+                                    Toast.makeText(UploadSignedConventionActivity.this, 
+                                        "❌ Erreur: " + error, 
+                                        Toast.LENGTH_LONG).show()
+                                );
+                            }
+
+                            @Override
+                            public void onOffline(String message) {
+                                runOnUiThread(() -> {
+                                    Toast.makeText(UploadSignedConventionActivity.this, 
+                                        "📱 " + message, 
+                                        Toast.LENGTH_LONG).show();
+                                    finish();
+                                });
+                            }
                         }
-                    });
+                    );
                 } else {
                     runOnUiThread(() -> 
                         Toast.makeText(this, R.string.error_select_file, Toast.LENGTH_SHORT).show()

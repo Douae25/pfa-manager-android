@@ -40,6 +40,15 @@ public class ConventionServiceImpl implements ConventionService {
             throw new BadRequestException("Convention already exists for this PFA dossier");
         }
 
+        // Update PFA Dossier title and description if provided
+        if (request.getPfaTitle() != null && !request.getPfaTitle().isEmpty()) {
+            dossier.setTitle(request.getPfaTitle());
+        }
+        if (request.getPfaDescription() != null && !request.getPfaDescription().isEmpty()) {
+            dossier.setDescription(request.getPfaDescription());
+        }
+        dossier.setUpdatedAt(System.currentTimeMillis());
+
         Convention convention = new Convention();
         convention.setPfaDossier(dossier);
         convention.setCompanyName(request.getCompanyName());

@@ -34,6 +34,12 @@ public class PFADossier {
     
     @ColumnInfo(name = "updated_at")
     private Long updated_at;
+
+    @ColumnInfo(name = "is_synced")
+    private boolean is_synced = false;  // false = en attente de sync, true = synchronisé
+
+    @ColumnInfo(name = "backend_pfa_id")
+    private Long backend_pfa_id;  // ID retourné par le backend après sync
     
     public PFADossier() {}
     
@@ -57,4 +63,10 @@ public class PFADossier {
     
     public Long getUpdated_at() { return updated_at; }
     public void setUpdated_at(Long updated_at) { this.updated_at = updated_at; }
+
+    public boolean isIs_synced() { return is_synced; }
+    public void setIs_synced(boolean is_synced) { this.is_synced = is_synced; }
+
+    public Long getBackend_pfa_id() { return backend_pfa_id; }
+    public void setBackend_pfa_id(Long backend_pfa_id) { this.backend_pfa_id = backend_pfa_id; }
 }

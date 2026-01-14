@@ -1,4 +1,3 @@
-// viewmodel/StudentListViewModel.java (MODIFIÉ)
 package ma.ensate.pfa_manager.viewmodel;
 
 import android.app.Application;

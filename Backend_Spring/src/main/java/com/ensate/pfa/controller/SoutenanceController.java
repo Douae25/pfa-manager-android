@@ -13,7 +13,7 @@ public class SoutenanceController {
 
     private final SoutenanceService soutenanceService;
 
-    // Student use case: Consult defense date (Consulter date de soutenance)
+    // Student use case: Consult defense date (Consulter date de soutenance et location)
     @GetMapping("/pfa/{pfaId}")
     public ResponseEntity<SoutenanceResponse> getSoutenanceByPfaId(@PathVariable Long pfaId) {
         return ResponseEntity.ok(soutenanceService.getSoutenanceByPfaId(pfaId));

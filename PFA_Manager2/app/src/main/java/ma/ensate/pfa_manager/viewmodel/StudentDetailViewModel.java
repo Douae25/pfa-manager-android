@@ -1,4 +1,3 @@
-// viewmodel/StudentDetailViewModel.java
 package ma.ensate.pfa_manager.viewmodel;
 
 import android.app.Application;
@@ -61,16 +60,10 @@ public class StudentDetailViewModel extends AndroidViewModel {
         pfaIdLiveData.setValue(pfaId);
     }
 
-    /**
-     * NOUVELLE MÉTHODE : Définir le supervisorId et lancer la sync
-     */
     public void setSupervisorId(Long supervisorId) {
         supervisorIdLiveData.setValue(supervisorId);
     }
 
-    /**
-     * NOUVELLE MÉTHODE : Synchroniser les données depuis l'API
-     */
     public void syncFromApi() {
         Long supervisorId = supervisorIdLiveData.getValue();
         Long studentId = studentIdLiveData.getValue();
@@ -80,7 +73,7 @@ public class StudentDetailViewModel extends AndroidViewModel {
         }
     }
 
-    // Getters existants (inchangés)
+
     public LiveData<User> getStudent() { return student; }
     public LiveData<List<PFADossier>> getStudentPFAs() { return studentPFAs; }
     public LiveData<List<Deliverable>> getDeliverables() { return deliverables; }
