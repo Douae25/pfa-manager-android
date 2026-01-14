@@ -6,6 +6,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import ma.ensate.pfa_manager.model.*;
+import ma.ensate.pfa_manager.util.InitialDataLoader;
 
 @Database(entities = {
         User.class,
@@ -42,6 +43,9 @@ public abstract class AppDatabase extends RoomDatabase {
                     )
                     .fallbackToDestructiveMigration()
                     .build();
+            
+            // Charger les données initiales au démarrage de l'app
+            InitialDataLoader.loadInitialData(context);
         }
         return instance;
     }

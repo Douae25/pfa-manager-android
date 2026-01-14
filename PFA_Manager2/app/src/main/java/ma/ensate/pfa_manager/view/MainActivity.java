@@ -2,14 +2,26 @@ package ma.ensate.pfa_manager.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.credentials.CredentialManager;
+import androidx.credentials.CredentialManagerCallback;
+import androidx.credentials.GetCredentialRequest;
+import androidx.credentials.GetCredentialResponse;
+import androidx.credentials.exceptions.GetCredentialException;
 import androidx.lifecycle.ViewModelProvider;
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption;
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.concurrent.Executors;
 
 import ma.ensate.pfa_manager.R;
 // Imports combinés
@@ -29,8 +41,10 @@ import ma.ensate.pfa_manager.viewmodel.SettingsViewModelFactory;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
     private LoginViewModel loginViewModel;
     private SettingsViewModel settingsViewModel;
+    private CredentialManager credentialManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +58,15 @@ public class MainActivity extends AppCompatActivity {
 
         TestDataHelper.insertTestData(this); 
         insertTestUserIfNeeded();
+        
+        // Initialiser Credential Manager pour Google Sign-In
+        credentialManager = CredentialManager.create(this);
 
         setupLanguageToggle();
         setupBackNavigation();
-        setupLoginForm();
+        
+        // Defer login setup to avoid main thread congestion
+        new Handler(Looper.getMainLooper()).postDelayed(this::setupLoginForm, 300);
     }
 
     private void setupLanguageToggle() {
@@ -79,7 +98,9 @@ public class MainActivity extends AppCompatActivity {
         TextInputEditText emailInput = findViewById(R.id.emailInput);
         TextInputEditText passwordInput = findViewById(R.id.passwordInput);
         Button loginBtn = findViewById(R.id.loginBtn);
+        android.widget.LinearLayout googleSignInBtn = findViewById(R.id.googleSignInBtn);
 
+        // Login classique avec email/password
         loginBtn.setOnClickListener(v -> {
             String email = emailInput.getText().toString().trim();
             String password = passwordInput.getText().toString().trim();
@@ -91,6 +112,9 @@ public class MainActivity extends AppCompatActivity {
 
             loginViewModel.login(email, password);
         });
+        
+        // Google Sign-In avec Credential Manager
+        googleSignInBtn.setOnClickListener(v -> initiateGoogleSignIn());
 
         loginViewModel.getUserLoginStatus().observe(this, user -> {
             if (user != null) {
@@ -105,6 +129,65 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    
+    private void initiateGoogleSignIn() {
+        GetGoogleIdOption googleIdOption = new GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(false)
+                .setServerClientId(getString(R.string.google_web_client_id))
+                .setAutoSelectEnabled(true)
+                .build();
+
+        GetCredentialRequest request = new GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption)
+                .build();
+
+        credentialManager.getCredentialAsync(
+                this,
+                request,
+                null, // cancellationSignal
+                Executors.newSingleThreadExecutor(),
+                new CredentialManagerCallback<GetCredentialResponse, GetCredentialException>() {
+                    @Override
+                    public void onResult(GetCredentialResponse result) {
+                        handleGoogleSignInResult(result);
+                    }
+
+                    @Override
+                    public void onError(GetCredentialException e) {
+                        runOnUiThread(() -> {
+                            Log.e(TAG, "Google Sign-In failed", e);
+                            Toast.makeText(MainActivity.this, 
+                                "Erreur Google Sign-In: " + e.getMessage(), 
+                                Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                }
+        );
+    }
+    
+    private void handleGoogleSignInResult(GetCredentialResponse result) {
+        try {
+            GoogleIdTokenCredential googleIdTokenCredential = 
+                GoogleIdTokenCredential.createFrom(result.getCredential().getData());
+            
+            String email = googleIdTokenCredential.getId();
+            String displayName = googleIdTokenCredential.getDisplayName();
+            
+            Log.d(TAG, "Google Sign-In success: " + email);
+            
+            runOnUiThread(() -> {
+                Toast.makeText(this, "Connexion Google: " + displayName, Toast.LENGTH_SHORT).show();
+                // Vérifier l'email dans la BD locale
+                loginViewModel.loginWithGoogleEmail(email);
+            });
+            
+        } catch (Exception e) {
+            runOnUiThread(() -> {
+                Log.e(TAG, "Invalid Google ID token", e);
+                Toast.makeText(this, "Token Google invalide: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+        }
     }
 
     private void redirectUser(User user) {
