@@ -46,4 +46,5 @@
 
     <!-- Info -->
     <color name="info_bg">#E8EAF6</color>
+    <color name="gray">#9E9E9E</color>
 </resources>

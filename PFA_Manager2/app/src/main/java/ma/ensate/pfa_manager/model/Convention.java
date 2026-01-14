@@ -5,46 +5,59 @@ import androidx.room.PrimaryKey;
 import androidx.room.ColumnInfo;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
+import com.google.gson.annotations.SerializedName;
 
 @Entity(tableName = "conventions",
-    foreignKeys = @ForeignKey(entity = PFADossier.class, parentColumns = "pfa_id", childColumns = "pfa_id"),
+    foreignKeys = @ForeignKey(entity = PFADossier.class, parentColumns = "pfa_id", childColumns = "pfa_id", onDelete = ForeignKey.CASCADE),
     indices = {@Index("pfa_id")})
 public class Convention {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "convention_id")
+    @SerializedName("convention_id")
     private Long convention_id;
     
     @ColumnInfo(name = "pfa_id")
+    @SerializedName("pfa_id")
     private Long pfa_id;
     
     @ColumnInfo(name = "company_name")
+    @SerializedName("company_name")
     private String company_name;
     
     @ColumnInfo(name = "company_address")
+    @SerializedName("company_address")
     private String company_address;
     
     @ColumnInfo(name = "company_supervisor_name")
+    @SerializedName("company_supervisor_name")
     private String company_supervisor_name;
     
     @ColumnInfo(name = "company_supervisor_email")
+    @SerializedName("company_supervisor_email")
     private String company_supervisor_email;
     
     @ColumnInfo(name = "start_date")
+    @SerializedName("start_date")
     private Long start_date;
     
     @ColumnInfo(name = "end_date")
+    @SerializedName("end_date")
     private Long end_date;
     
     @ColumnInfo(name = "scanned_file_uri")
+    @SerializedName("scanned_file_uri")
     private String scanned_file_uri;
     
     @ColumnInfo(name = "is_validated")
+    @SerializedName("is_validated")
     private Boolean is_validated;
     
     @ColumnInfo(name = "state")
+    @SerializedName("state")
     private ConventionState state;
     
     @ColumnInfo(name = "admin_comment")
+    @SerializedName("admin_comment")
     private String admin_comment;
 
     @ColumnInfo(name = "is_synced")

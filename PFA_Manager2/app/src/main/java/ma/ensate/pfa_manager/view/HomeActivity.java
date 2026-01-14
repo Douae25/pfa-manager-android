@@ -8,10 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import ma.ensate.pfa_manager.R;
 import ma.ensate.pfa_manager.repository.LanguageRepository;
-import ma.ensate.pfa_manager.util.TestDataHelper;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModel;
 import ma.ensate.pfa_manager.viewmodel.SettingsViewModelFactory;
-import java.util.concurrent.Executors;
+import ma.ensate.pfa_manager.database.DatabaseInitializer;
 
 
 public class HomeActivity extends AppCompatActivity {
@@ -23,30 +22,28 @@ public class HomeActivity extends AppCompatActivity {
         LanguageRepository languageRepository = new LanguageRepository(this);
         SettingsViewModelFactory factory = new SettingsViewModelFactory(languageRepository);
         settingsViewModel = new ViewModelProvider(this, factory).get(SettingsViewModel.class);
-        
+
         settingsViewModel.applySavedLanguage();
-        
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        DatabaseInitializer.initializeWithDefaultData(getApplicationContext());
 
         setupNavigation();
         setupLanguageToggle();
         
-        // Load test data in background to avoid blocking UI
-        Executors.newSingleThreadExecutor().execute(() -> {
-            TestDataHelper.resetAndReload(this);
-        });
-
     }
-    
+
     private void setupNavigation() {
         Button btnGoToLogin = findViewById(R.id.btnGoToLogin);
+
         btnGoToLogin.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, MainActivity.class);
             startActivity(intent);
         });
     }
-    
+
     private void setupLanguageToggle() {
         TextView langFr = findViewById(R.id.langFr);
         TextView langEn = findViewById(R.id.langEn);

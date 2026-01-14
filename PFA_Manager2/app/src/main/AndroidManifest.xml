@@ -19,20 +19,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PFA_Manager"
-        tools:targetApi="31"
-        android:usesCleartextTraffic="true"> <activity
-        android:name=".view.HomeActivity"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-    </activity>
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+
+        <!-- HOME / MAIN -->
+        <activity
+            android:name=".view.HomeActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".view.MainActivity"
             android:exported="false" />
 
+        <!-- ENCADRANT -->
         <activity
             android:name=".view.EncadrantDashboardActivity"
             android:exported="false" />
@@ -61,7 +66,28 @@
             android:exported="false"
             android:parentActivityName=".view.EncadrantDashboardActivity" />
 
-        <activity android:name=".view.etudiant.StudentSpaceActivity" />
+        <!-- ADMIN -->
+        <activity
+            android:name=".view.AdminActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.ManageUsersActivity"
+            android:exported="false" />
+
+        <!-- CONVENTION -->
+        <activity
+            android:name=".view.ConventionListActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.ConventionDetailActivity"
+            android:exported="false" />
+
+        <!-- ETUDIANT -->
+        <activity
+            android:name=".view.etudiant.StudentSpaceActivity"
+            android:exported="false" />
 
         <activity
             android:name=".view.etudiant.ConventionRequestActivity"
@@ -79,6 +105,24 @@
             android:name=".view.etudiant.ViewDeliverablesActivity"
             android:exported="false" />
 
+        <!-- COORDINATEUR FILIERE -->
+        <activity
+            android:name=".view.coordinateur_filiere.CoordinatorDashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.coordinateur_filiere.ManageStudentsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.coordinateur_filiere.ManageProfessorsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.coordinateur_filiere.ManageAssignmentsActivity"
+            android:exported="false" />
+
+        <!-- FILE PROVIDER -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

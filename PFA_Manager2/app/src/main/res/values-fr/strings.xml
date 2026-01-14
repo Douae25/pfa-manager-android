@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gestionnaire PFA</string>
+    <string name="login_title">Connexion</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Mot de passe</string>
+    <string name="btn_login">Se connecter</string>
+    <string name="error_empty">Veuillez remplir tous les champs</string>
+
+    <string name="home_title">Gestion PFA - ENSA Tétouane</string>
+    <string name="home_subtitle">Bienvenue dans l\'application de gestion PFA</string>
+    <string name="btn_home_connect">Se connecter</string>
+
+    <!-- Landing texts -->
+    <string name="landing_title">Gestionnaire PFA</string>
+    <string name="landing_subtitle">École Nationale des Sciences Appliquées</string>
+    <string name="landing_city">Tétouane</string>
+    <string name="landing_description">Gérez vos projets de fin d\'études efficacement</string>
+    <string name="landing_login">Se connecter</string>
+    <string name="landing_footer">© 2026 ENSA Tétouane</string>
+
+    <!-- Language toggle -->
+    <string name="lang_fr">FR</string>
+    <string name="lang_en">EN</string>
+
+    <!-- Admin Panel -->
+    <string name="admin_title">Tableau de bord administrateur</string>
+    <string name="admin_welcome">Bienvenue, Administrateur</string>
+    <string name="admin_convention_requests">Demandes de convention</string>
+    <string name="admin_signed_conventions">Conventions signées</string>
+    <string name="admin_manage_users">Gérer les utilisateurs</string>
+    <string name="admin_no_requests">Aucune demande en attente</string>
+    <string name="admin_view_details">Voir les détails</string>
+    <string name="admin_approve">Approuver</string>
+    <string name="admin_reject">Rejeter</string>
+    <string name="admin_comment">Commentaire</string>
+    <string name="admin_logout">Se déconnecter</string>
+    <string name="convention_list_empty">Aucune convention disponible</string>
+    <string name="search_user_hint">Rechercher par nom, prénom ou email</string>
+
+    <!-- Dynamic Convention Labels -->
+    <string name="label_company">Entreprise</string>
+    <string name="label_supervisor">Encadrant</string>
+    <string name="label_address">Adresse</string>
+    <string name="label_period">Période de stage</string>
+    <string name="label_to">à</string>
+    <string name="label_state">État</string>
+    <string name="label_admin_comment">Commentaire admin</string>
+    <string name="value_na">N/A</string>
+    <string name="value_no_comment">Aucun commentaire</string>
+    <string name="label_start">Début</string>
+    <string name="label_end">Fin</string>
+    <string name="convention_detail_title">Détails de la convention</string>
+    <string name="btn_view_pdf">Voir le PDF</string>
+
+    <!-- Convention List Buttons -->
+    <string name="btn_approve">Approuver</string>
+    <string name="btn_reject">Refuser</string>
+    <string name="btn_validate">Valider</string>
+    <string name="btn_reject_uploaded">Rejeter</string>
+    <string name="label_department">Filière</string>
+
+    <!-- Student Space -->
+    <string name="student_welcome">Bienvenue %s</string>
+    <string name="menu_convention_request">Demander une convention</string>
+    <string name="menu_convention_request_desc">Remplir le formulaire de demande</string>
+    <string name="menu_convention_view">Convention générée</string>
+    <string name="menu_convention_view_desc">Télécharger la convention</string>
+    <string name="menu_upload_signed">Déposer convention signée</string>
+    <string name="menu_upload_signed_desc">Uploader la convention signée</string>
+    <string name="menu_deliverables">Livrables</string>
+    <string name="menu_deliverables_desc">Déposer les livrables</string>
+    <string name="menu_soutenance">Soutenance</string>
+    <string name="menu_soutenance_desc">Voir date et jury</string>
+    <string name="menu_note">Note finale</string>
+    <string name="menu_note_desc">Consulter votre note</string>
+
+    <!-- Convention Request -->
+    <string name="convention_request_title">Demande de convention</string>
+    <string name="section_student_info">Informations étudiant</string>
+    <string name="section_company_info">Informations entreprise</string>
+    <string name="section_supervisor_info">Encadrant professionnel</string>
+    <string name="section_dates">Période de stage</string>
+    <string name="section_project_info">Projet</string>
+
+    <string name="hint_first_name">Prénom</string>
+    <string name="hint_last_name">Nom</string>
+    <string name="hint_student_number">Numéro étudiant</string>
+    <string name="hint_company_name">Nom de l\'entreprise</string>
+    <string name="hint_company_address">Adresse de l\'entreprise</string>
+    <string name="hint_supervisor_name">Nom de l\'encadrant</string>
+    <string name="hint_supervisor_email">Email de l\'encadrant</string>
+    <string name="hint_start_date">Date de début (23/06 – 05/09)</string>
+    <string name="hint_end_date">Date de fin (23/06 – 05/09)</string>
+
+    <!-- File Upload -->
+    <string name="hint_file_name">Nom du fichier</string>
+    <string name="btn_select_file">Sélectionner un fichier</string>
+    <string name="btn_upload">Déposer</string>
+    <string name="btn_remove">Supprimer</string>
+    <string name="no_file_selected">Aucun fichier sélectionné</string>
+    <string name="file_selected">Fichier sélectionné : %s</string>
+    <string name="error_select_file">Veuillez sélectionner un fichier</string>
+    <string name="error_no_convention">Aucune convention trouvée</string>
+    <string name="error_no_pfa_dossier">Aucun dossier PFA trouvé</string>
+    <string name="error_upload_failed">Échec du téléchargement</string>
+    <string name="convention_uploaded_success">Convention signée téléchargée avec succès !</string>
+    <string name="file_already_uploaded">Fichier déjà déposé: %s</string>
+    <string name="btn_view_uploaded_file">Télécharger la convention signée</string>
+    <string name="error_file_not_found">Fichier introuvable</string>
+    <string name="deliverable_uploaded_success">Livrable téléchargé avec succès !</string>
+
+    <!-- Upload Activity Titles -->
+    <string name="upload_signed_convention_title">Déposer convention signée</string>
+    <string name="upload_signed_convention_desc">Téléchargez votre convention scannée et signée par l\'entreprise</string>
+    <string name="upload_deliverables_before">Livrables avant soutenance</string>
+    <string name="upload_deliverables_after">Livrables après soutenance</string>
+    <string name="upload_deliverables_info">Téléchargez vos livrables (rapport, présentation, code, etc.)</string>
+
+    <!-- Multiple File Upload -->
+    <string name="btn_add_file">+ Ajouter un fichier</string>
+    <string name="btn_upload_all">Télécharger tous les fichiers</string>
+    <string name="file_added">Fichier ajouté</string>
+    <string name="error_no_files">Veuillez ajouter au moins un fichier</string>
+    <string name="no_files_added">Aucun fichier ajouté</string>
+    <string name="deliverables_uploaded_success">Livrables téléchargés avec succès !</string>
+
+    <!-- Logout -->
+    <string name="btn_logout">Déconnexion</string>
+
+    <!-- Convention States -->
+    <string name="convention_not_requested">Aucune demande de convention</string>
+    <string name="convention_pending">Votre demande n\'a pas été traitée - En cours</string>
+    <string name="convention_pending_message">Votre demande est en attente de traitement par l\'administration</string>
+    <string name="convention_validated">Convention validée - Prête à télécharger</string>
+    <string name="convention_rejected">Votre demande est refusée</string>
+    <string name="convention_rejected_message">Votre demande de convention a été refusée. Veuillez contacter l\'administration</string>
+    <string name="convention_not_available">La convention n\'est pas disponible</string>
+    <string name="convention_rejected_request">Demande de convention refusée</string>
+    <string name="convention_reason_prefix">Motif : %1$s</string>
+    <string name="convention_reason_default">Motif non renseigné</string>
+    <string name="convention_downloading">Téléchargement de la convention…</string>
+    <string name="cannot_upload_unsigned_convention">Seules les conventions validées peuvent être déposées</string>
+    <string name="permission_denied">Permission refusée – Impossible de télécharger le PDF</string>
+
+    <!-- View Deliverables -->
+    <string name="view_deliverables_title">Mes Livrables Déposés</string>
+    <string name="deliverables_before_defense">📤 Livrables Avant Soutenance</string>
+    <string name="deliverables_after_defense">📥 Livrables Après Soutenance</string>
+    <string name="deliverable_rapport_avancement">📄 Rapport d\'Avancement</string>
+    <string name="deliverable_rapport_final">📘 Rapport Final</string>
+    <string name="deliverable_presentation">🎤 Présentation</string>
+    <string name="deliverable_no_file">❌ Aucun fichier déposé</string>
+    <string name="deliverable_file_deposited">✅ Fichier déposé</string>
+    <string name="deliverable_deposited_on">Déposé le: %s</string>
+    <string name="btn_download">📥 Télécharger</string>
+    <string name="error_download_url_missing">URL du fichier introuvable</string>
+    <string name="download_started">Téléchargement démarré…</string>
+    <string name="error_download">Erreur lors du téléchargement</string>
+    <string name="permission_storage_denied">Permission refusée. Impossible de télécharger.</string>
+</resources>

@@ -11,11 +11,15 @@ import java.util.List;
 @Repository
 public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
 
+   //List<Evaluation> findByPfaDossierPfaId(Long pfaId);
    // List<Evaluation> findByPfaDossierPfaId(Long pfaId);
 
     List<Evaluation> findByEvaluatorUserId(Long evaluatorId);
 
     Optional<Evaluation> findFirstByPfaDossierPfaId(Long pfaId);
+
+    List<Evaluation> findByEvaluatorUserIdAndPfaDossierStudentDepartmentDepartmentId(
+            Long evaluatorId, Long departmentId);
 
     @Query("SELECT AVG(e.totalScore) FROM Evaluation e WHERE e.pfaDossier.pfaId = :pfaId")
     Double calculateAverageScoreByPfaId(Long pfaId);

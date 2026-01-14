@@ -85,10 +85,19 @@ public class UserRepository {
     }
 
     public LiveData<User> getUserByEmailLiveData(String email) {
-        return userDao.getUserByEmail(email);
+        return userDao.getUserByEmailLiveData(email);
     }
-
     // ========== INTERFACES CALLBACKS ==========
+
+    
+    public void getUserById(long userId, OnUserFetchedListener listener) {
+        executorService.execute(() -> {
+            User user = userDao.getUserByIdSync(userId);
+            if (listener != null) {
+                listener.onUserFetched(user);
+            }
+        });
+    }
 
     public interface OnUserInsertedListener {
         void onUserInserted(User user);

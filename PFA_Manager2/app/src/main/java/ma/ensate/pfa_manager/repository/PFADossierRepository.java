@@ -16,6 +16,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import retrofit2.Call;
 import retrofit2.Response;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import ma.ensate.pfa_manager.database.PFADossierDao;
+import ma.ensate.pfa_manager.database.AppDatabase;
+import ma.ensate.pfa_manager.model.PFADossier;
 
 public class PFADossierRepository {
     private PFADossierDao pfaDossierDao;
@@ -33,6 +38,7 @@ public class PFADossierRepository {
     public interface PFADossierResponseCallback {
         void onResult(PFADossierResponse pfaDossierResponse);
     }
+
 
     public PFADossierRepository(Application application) {
         AppDatabase db = AppDatabase.getInstance(application);
@@ -198,5 +204,22 @@ public class PFADossierRepository {
                 }
             }
         });
+    }
+
+    public LiveData<PFADossier> getPFADossierById(long pfaId) {
+        MutableLiveData<PFADossier> liveData = new MutableLiveData<>();
+        new Thread(() -> {
+            PFADossier dossier = pfaDossierDao.getById(pfaId);
+            liveData.postValue(dossier);
+        }).start();
+        return liveData;
+    }
+
+    // Ajoute une méthode callback pour compatibilité avec l'usage existant
+    public void getPFADossierById(long pfaId, PFADossierCallback callback) {
+        new Thread(() -> {
+            PFADossier dossier = pfaDossierDao.getById(pfaId);
+            callback.onResult(dossier);
+        }).start();
     }
 }

@@ -1,5 +1,6 @@
 package com.ensate.pfa.dto.request;
 
+import com.ensate.pfa.entity.enums.PFAStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -11,7 +12,9 @@ public class PFADossierRequest {
 
     private Long supervisorId;
 
+    @NotBlank(message = "Title is required")
     private String title;
 
     private String description;
-}
+    
+    private PFAStatus currentStatus;}
