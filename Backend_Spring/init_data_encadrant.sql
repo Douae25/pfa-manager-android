@@ -39,22 +39,22 @@ INSERT INTO pfa_dossiers (pfa_id, title, description, current_status, student_id
 -- ==========================================
 -- Convention liée au PFA 1 (Saad)
 INSERT INTO conventions (pfa_id, company_name, company_address, company_supervisor_name, company_supervisor_email, start_date, end_date, is_validated, state, scanned_file_uri) VALUES 
-(1, 'Capgemini', 'Casanearshore', 'M. Responsable', 'rh@capgemini.com', UNIX_TIMESTAMP()*1000, (UNIX_TIMESTAMP() + 7776000)*1000, 1, 'VALIDATED', 'http://10.119.71.25:8080/uploads/convention_saad.pdf');
+(1, 'Capgemini', 'Casanearshore', 'M. Responsable', 'rh@capgemini.com', UNIX_TIMESTAMP()*1000, (UNIX_TIMESTAMP() + 7776000)*1000, 1, 'VALIDATED', 'http://192.168.222.1:8080/uploads/convention_saad.pdf');
 
 -- Convention liée au PFA 2 (Nada)
 INSERT INTO conventions (pfa_id, company_name, company_address, company_supervisor_name, company_supervisor_email, start_date, end_date, is_validated, state, scanned_file_uri) VALUES 
-(2, 'DXC Technology', 'Technopolis Rabat', 'Mme. Directrice', 'rh@dxc.com', UNIX_TIMESTAMP()*1000, (UNIX_TIMESTAMP() + 7776000)*1000, 0, 'SIGNED_UPLOADED', 'http://10.119.71.25:8080/uploads/convention_nada.pdf');
+(2, 'DXC Technology', 'Technopolis Rabat', 'Mme. Directrice', 'rh@dxc.com', UNIX_TIMESTAMP()*1000, (UNIX_TIMESTAMP() + 7776000)*1000, 0, 'SIGNED_UPLOADED', 'http://192.168.222.1:8080/uploads/convention_nada.pdf');
 
 -- ==========================================
 -- 4. LIVRABLES (Liés aux PFA 1 et 2) - IP DÉJÀ À JOUR
 -- ==========================================
 INSERT INTO deliverables (pfa_id, file_title, file_uri, deliverable_type, file_type, uploaded_at, is_validated) VALUES 
 -- Saad (PFA 1) : Rapport
-(1, 'Rapport V1', 'http://10.119.71.25:8080/uploads/rapport.pdf', 'BEFORE_DEFENSE', 'PROGRESS_REPORT', UNIX_TIMESTAMP()*1000, 1),
+(1, 'Rapport V1', 'http://192.168.222.1:8080/uploads/rapport.pdf', 'BEFORE_DEFENSE', 'PROGRESS_REPORT', UNIX_TIMESTAMP()*1000, 1),
 -- Saad (PFA 1) : Présentation
-(1, 'Présentation', 'http://10.119.71.25:8080/uploads/pres.pdf', 'AFTER_DEFENSE', 'PRESENTATION', UNIX_TIMESTAMP()*1000, 0),
+(1, 'Présentation', 'http://192.168.222.1:8080/uploads/pres.pdf', 'AFTER_DEFENSE', 'PRESENTATION', UNIX_TIMESTAMP()*1000, 0),
 -- Nada (PFA 2) : Cahier des charges
-(2, 'Cahier des charges', 'http://10.119.71.25:8080/uploads/rapport.pdf', 'BEFORE_DEFENSE', 'PROGRESS_REPORT', UNIX_TIMESTAMP()*1000, 0);
+(2, 'Cahier des charges', 'http://192.168.222.1:8080/uploads/rapport.pdf', 'BEFORE_DEFENSE', 'PROGRESS_REPORT', UNIX_TIMESTAMP()*1000, 0);
 
 -- ==========================================
 -- 5. SOUTENANCE (Commence à l'ID 1)

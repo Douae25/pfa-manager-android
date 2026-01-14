@@ -38,6 +38,7 @@
     <color name="stat_orange">#F57C00</color>
     <color name="stat_orange_bg">#FFFFFF</color>
     <color name="stat_orange_light">#FFE0B2</color>
+    <color name="warning">#FF9800</color>
 
     <!-- Stats Purple -->
     <color name="stat_purple">#7B1FA2</color>

@@ -6,6 +6,14 @@
     <string name="hint_password">Password</string>
     <string name="btn_login">Sign In</string>
     <string name="error_empty">Please fill all fields</string>
+    <string name="hint_password">Mot de passe</string>
+    <string name="btn_login">Se connecter</string>
+    <string name="btn_google_signin">Se connecter avec Google</string>
+    <string name="google_logo_desc">Logo Google officiel</string>
+    <string name="error_empty">Veuillez remplir tous les champs</string>
+    
+    <string name="google_web_client_id">942733759470-7ef97jki2ji6qobgefqkloa3g0f1ukio.apps.googleusercontent.com</string>
+    <string name="google_android_client_id">942733759470-pvfat6moc58cvls9p9qj043e5fa6k9c4.apps.googleusercontent.com</string>
 
     <string name="home_title">PFA Management - ENSA Tetouan</string>
     <string name="home_subtitle">Welcome to the PFA management app</string>

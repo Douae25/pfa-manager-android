@@ -9,6 +9,7 @@ import ma.ensate.pfa_manager.model.*;
 import androidx.annotation.NonNull;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
+import ma.ensate.pfa_manager.util.InitialDataLoader;
 
 @Database(entities = {
         User.class,
@@ -47,6 +48,8 @@ public abstract class AppDatabase extends RoomDatabase {
                     .enableMultiInstanceInvalidation()
                     .build();
             
+            // Charger les données initiales au démarrage de l'app
+            InitialDataLoader.loadInitialData(context);
             // Enable WAL mode for better concurrent access
             instance.getOpenHelper().getWritableDatabase().enableWriteAheadLogging();
         }
